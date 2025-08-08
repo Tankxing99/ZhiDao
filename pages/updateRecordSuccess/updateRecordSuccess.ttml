@@ -1,0 +1,19 @@
+<view tt:if="{{category === "insertRecord"}}">
+  <view class="icon-box-img icon">
+    <icon type="success" size="53" color="#07c160"></icon>
+  </view>
+  <view class="title">插入成功</view>
+  <view class="info">可在"控制台>组件中心>文档型数据库>云数据库"中进行查看「demo」集合
+  </view>
+  <view class="button" bindtap="goBack">我知道了</view>
+</view>
+
+<view tt:if="{{category === "updateRecord"}}">
+  <view class="icon-box-img icon">
+    <icon type="success" size="53" color="#07c160"></icon>
+  </view>
+  <view class="title">更新成功</view>
+  <view class="info">可在"控制台>组件中心>文档型数据库>云数据库"中进行查看「demo」集合
+  </view>
+  <view class="button" bindtap="goBack">我知道了</view>
+</view>

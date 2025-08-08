@@ -1,0 +1,34 @@
+<view tt:if="{{category === "insertRecord"}}">
+    <view class="top_tip">在 demo 集合插入一条数据</view>
+    <view class="code_box">
+        <view class="code_box_record">
+            <view class="code_box_record_title">城市</view>
+            <view class="code_box_record_title">销量</view>
+        </view>
+        <view class="line"></view>
+        <view class="code_box_record">
+            <input class="code_box_record_detail" bindinput="bindInsertInput" data-key="city" type="text" ></input>
+            <input class="code_box_record_detail" bindinput="bindInsertInput" data-key="sales"  type="number" ></input>
+        </view>
+    </view>
+    <view class="button" bindtap="insertRecord">插入数据</view>
+    <view class="tip">在”cloudfunctions>quickstart>insert_record“找到查询记录函数，体验该能力</view>
+</view>
+
+
+<view  tt:if="{{category === "updateRecord"}}">
+    <view class="top_tip">更新 demo 集合的销量数据。</view>
+    <view  tt:if="{{updatedRecord}}" class="code_box">
+      <view class="code_box_record">
+        <view class="code_box_record_title">城市</view>
+        <view class="code_box_record_title">销量</view>
+      </view>
+      <view class="line"></view>
+      <view class="code_box_record" tt:for="{{updatedRecord}}" tt:key="_id">
+        <view class="code_box_record_detail">{{item.city}}</view>
+        <input class="code_box_record_detail" bindinput="bindUpdateInput" data-index="{{index}}" value="{{item.sales}}" type="number" ></input>
+      </view>
+    </view>
+    <view class="button" bindtap="updateRecord">更新</view>
+    <view class="tip">在”cloudfunctions>quickstart>update_record“找到查询记录函数，体验该能力</view>
+  </view>

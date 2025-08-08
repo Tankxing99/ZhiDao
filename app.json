@@ -1,0 +1,36 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/examples/examples",
+    "pages/exampleDetail/exampleDetail",
+    "pages/updateRecord/updateRecord",
+    "pages/updateRecordResult/updateRecordResult",
+    "pages/updateRecordSuccess/updateRecordSuccess"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "Mini Program",
+    "navigationBarTextStyle": "black"
+  },
+  "tabBar": {
+    "color": "#A2A9B0",
+    "selectedColor": "#3C89FF",
+    "backgroundColor": "#ffffff",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "快速开始",
+        "iconPath": "images/icons/home.png",
+        "selectedIconPath": "images/icons/home-active.png"
+      },
+      {
+        "pagePath": "pages/examples/examples",
+        "text": "基础能力",
+        "iconPath": "images/icons/examples.png",
+        "selectedIconPath": "images/icons/examples-active.png"
+      }
+    ]
+  },
+  "usePrivacyCheck": true
+}

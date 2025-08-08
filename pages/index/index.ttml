@@ -1,0 +1,96 @@
+<!--index.ttml-->
+<view class="container">
+  <view class="main">
+    <view class="title font_title_1">快速开始</view>
+    <view class="sub_title">
+      欢迎使用抖音云！本页将带你了解如何使用抖音云提供的能力快速开发小程序。
+    </view>
+    <view class="ability_container">
+      <view class="ability_title">你将学习到</view>
+      <view class="ability_item" tt:for="{{ knowledgePoints }}" tt:for-item="point" tt:key="id">
+        {{ point.title }}
+      </view>
+    </view>
+
+    <view class="step_container" tt:for="{{ steps }}" tt:key="id" tt:for-item="step">
+      <view class="seperator" />
+      <view id="step_{{ step.id }}" data-step="{{ step.id }}" class="step_title">
+        <view class="step_id_container">
+          <view class="step_id_mark">Step</view>
+          <view class="step_id_content">{{ step.id }}</view>
+        </view>
+        <view class="font_title_2">{{ step.title }}</view>
+      </view>
+      <view class="step_content">
+        <block tt:for="{{ step.contents }}" tt:for-item="item" tt:key="index">
+          <view tt:if="{{ item.type === 'point' }}" class="point_zone">
+            <view tt:if="{{item.title}}" class="ponit_title">{{ item.title }}</view>
+            <view tt:for="{{ item.content }}" tt:for-item="point" tt:key="id">
+              <view class="point_item">
+                <rich-text class="inline" nodes="<span>{{point.title}}</span>"></rich-text>
+                <rich-text tt:if="{{point.link}}" class="inline"
+                  nodes="<span style='color: #336df4; cursor: pointer'>{{point.linkText}}</span>"
+                  data-url="{{point.link}}" data-title="{{point.linkText}}" bindtap="copyLink"></rich-text>
+                <rich-text tt:if="{{point.extra}}" class="inline" nodes="<span>{{point.extra}}</span>"></rich-text>
+              </view>
+            </view>
+          </view>
+          <view tt:if="{{ item.type === 'point2' }}" class="point_zone">
+            <view tt:if="{{item.title}}" class="ponit_title">{{ item.title }}</view>
+            <view tt:for="{{ item.content }}" tt:for-item="point" tt:key="id">
+              <view class="point_item_2">
+                <rich-text class="inline" nodes="<span>{{point.title}}</span>"></rich-text>
+                <rich-text tt:if="{{point.link}}" class="inline"
+                  nodes="<span style='color: #336df4; cursor: pointer'>{{point.linkText}}</span>"
+                  data-url="{{point.link}}" data-title="{{point.linkText}}" bindtap="copyLink"></rich-text>
+                <rich-text tt:if="{{point.extra}}" class="inline" nodes="<span>{{point.extra}}</span>"></rich-text>
+              </view>
+            </view>
+          </view>
+          <view tt:if="{{ item.type === 'text' }}" class="text_zone">
+            <view>
+              <rich-text class="inline" nodes="<span style='line-height: 26px;'>{{ item.content}}</span>" />
+              <rich-text tt:if="{{item.link}}" class="inline"
+                nodes="<span style='color: #336df4; cursor: pointer'>{{item.linkText}}</span>" data-url="{{item.link}}"
+                data-title="{{item.linkText}}"
+                bindtap="copyLink"></rich-text>
+              <rich-text tt:if="{{item.extra}}" class="inline" nodes="<span>{{item.extra}}</span>"></rich-text>
+            </view>
+          </view>
+          <view tt:if="{{ item.type === 'code' }}" class="code_zone">
+            <image class="btn-copy" data-code="{{ item.content }}" bind:tap="copyCode"
+              src="../../images/icons/copy.png" />
+            <rich-text nodes="<pre style='overflow: scroll;'>{{ item.content }}</pre>" />
+          </view>
+          <view tt:if="{{ item.type === 'image' }}" class="image_zone">
+            <image src="../../images/{{ item.content }}" mode="widthFix" />
+          </view>
+          <view tt:if="{{ item.type === 'banner' }}" class="banner_zone">
+            <image class="icon-info" src="../../images//icons/info.svg" />
+            <view class="banner_text"> {{item.content}}
+            </view>
+          </view>
+        </block>
+      </view>
+      <view tt:if="{{ step.showJumpButton }}" class="btn-view-demo-page" data-type="{{step.showJumpPageType}}"
+        bind:tap="jumpPage">查看调用结果</view>
+      <view class="step_content">
+        <block tt:for="{{ step.extra }}" tt:for-item="item" tt:key="index">
+          <view tt:if="{{ item.type === 'text' }}" class="text_zone">
+            <view>
+              <rich-text class="inline" nodes="<span style='line-height: 26px;'>{{ item.content}}</span>" />
+              <rich-text tt:if="{{item.link}}" class="inline"
+                nodes="<span style='color: #336df4; cursor: pointer'>{{item.linkText}}</span>" data-url="{{item.link}}"
+                data-title="{{item.linkText}}"
+                bindtap="copyLink"></rich-text>
+              <rich-text tt:if="{{item.extra}}" class="inline" nodes="<span>{{item.extra}}</span>"></rich-text>
+            </view>
+          </view>
+          <view tt:if="{{ item.type === 'image' }}" class="image_zone">
+            <image src="../../images/{{ item.content }}" mode="widthFix" />
+          </view>
+        </block>
+      </view>
+    </view>
+  </view>
+</view>
