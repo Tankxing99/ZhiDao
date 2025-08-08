@@ -1,0 +1,36 @@
+{
+  "version": "v1",
+  "questions": [
+    {
+      "id": "light",
+      "type": "single",
+      "title": "你的居住环境光照？",
+      "options": [
+        { "value": "low", "label": "弱光" },
+        { "value": "medium", "label": "中等" },
+        { "value": "high", "label": "充足" }
+      ]
+    },
+    {
+      "id": "space",
+      "type": "single",
+      "title": "摆放空间大小？",
+      "options": [
+        { "value": "small", "label": "小" },
+        { "value": "medium", "label": "中" },
+        { "value": "large", "label": "大" }
+      ]
+    },
+    {
+      "id": "level",
+      "type": "single",
+      "title": "养护经验水平？",
+      "options": [
+        { "value": "beginner", "label": "新手" },
+        { "value": "intermediate", "label": "进阶" },
+        { "value": "expert", "label": "达人" }
+      ]
+    }
+  ]
+}
+

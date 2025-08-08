@@ -1,0 +1,27 @@
+[
+  {
+    "id": "p1",
+    "name": "虎皮兰",
+    "tags": ["low", "small", "beginner"],
+    "onShelf": true,
+    "cover": "https://example-cdn/plant1.jpg",
+    "updatedAt": 1754660000000
+  },
+  {
+    "id": "p2",
+    "name": "绿萝",
+    "tags": ["low", "medium", "beginner"],
+    "onShelf": true,
+    "cover": "https://example-cdn/plant2.jpg",
+    "updatedAt": 1754661000000
+  },
+  {
+    "id": "p3",
+    "name": "琴叶榕",
+    "tags": ["high", "large", "intermediate"],
+    "onShelf": false,
+    "cover": "https://example-cdn/plant3.jpg",
+    "updatedAt": 1754662000000
+  }
+]
+
