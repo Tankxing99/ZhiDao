@@ -10,5 +10,9 @@ RUN npm ci --omit=dev || npm i --omit=dev
 COPY server/zhidao-api/. .
 ENV PORT=8000
 EXPOSE 8000
+# 兼容平台默认入口，提供 /opt/application/run.sh 启动脚本
+RUN mkdir -p /opt/application \
+  && printf '#!/bin/sh\nset -eu\ncd /app\nexec npm start\n' > /opt/application/run.sh \
+  && chmod +x /opt/application/run.sh
 CMD ["npm","start"]
 
