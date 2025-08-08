@@ -3,6 +3,7 @@ import cors from 'cors';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { dySDK } from '@open-dy/node-server-sdk';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -68,7 +69,7 @@ app.post('/listPlants', (req, res) => {
 // POST /submitAnswers
 // req: { openId?: string, answers: Array<{id:string,value:any}>, clientTs?: number }
 // resp: { ok: true }
-app.post('/submitAnswers', (req, res) => {
+app.post('/submitAnswers', async (req, res) => {
   const { answers, openId = '', clientTs } = req.body || {};
   if (!Array.isArray(answers) || answers.length === 0) {
     return badRequest(res, 'answers required');
@@ -77,7 +78,37 @@ app.post('/submitAnswers', (req, res) => {
   const invalid = answers.some((a) => !a || typeof a.id !== 'string');
   if (invalid) return badRequest(res, 'answers item must contain id');
 
-  // In this phase we only accept and return ok. DB persistence will be added next.
+  // prefer openId from gateway header, fallback to body.openId
+  let headerOpenId = '';
+  let anonymousOpenid = '';
+  try {
+    const serviceCtx = dySDK.context({ headers: req.headers });
+    const ctx = serviceCtx.getContext();
+    headerOpenId = ctx?.openId || '';
+    anonymousOpenid = ctx?.anonymousOpenid || '';
+  } catch (_) {
+    // ignore context errors
+  }
+
+  const finalOpenId = headerOpenId || openId || anonymousOpenid || '';
+
+  // attempt to persist; failure should not affect response
+  try {
+    const db = dySDK.database();
+    const record = {
+      openId: finalOpenId,
+      anonymousOpenid: anonymousOpenid || undefined,
+      answers,
+      clientTs: Number.isFinite(clientTs) ? clientTs : (typeof clientTs === 'number' ? clientTs : undefined),
+      createdAt: db.serverDate(),
+      source: 'miniapp',
+    };
+    await db.collection('user_answer').add(record);
+  } catch (e) {
+    // log but do not fail the request
+    console.warn('[submitAnswers] persist skipped:', e?.message || e);
+  }
+
   res.json({ ok: true });
 });
 

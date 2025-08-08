@@ -8,8 +8,8 @@
     "start": "node src/index.js"
   },
   "dependencies": {
+    "@open-dy/node-server-sdk": "^1.2.2",
     "cors": "^2.8.5",
     "express": "^4.19.2"
   }
 }
-
