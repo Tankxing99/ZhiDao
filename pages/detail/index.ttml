@@ -1,0 +1,7 @@
+<view class="container detail">
+  <image class="hero" src="{{plant.cover}}" mode="widthFix" />
+  <view class="section">
+    <view class="title">{{plant.name}}</view>
+    <view class="subtitle">{{plant.tags && plant.tags.join(' / ')}}</view>
+  </view>
+</view>

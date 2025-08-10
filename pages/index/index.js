@@ -1,71 +1,45 @@
-const { QuickStartPoints, QuickStartSteps } = require("./constants");
+const cloud = getApp().globalData?.cloud;
+const { parseJson, toastError } = require('../../utils/index');
 
 Page({
   data: {
-    knowledgePoints: QuickStartPoints,
-    steps: QuickStartSteps,
+    list: [],
+    loading: false,
   },
-  onLoad: function () {
-    console.log("Welcome to Mini Code");
+  onLoad() {
+    this.loadPlants();
   },
-
-  copyCode(e) {
-    const code = e.target?.dataset?.code || "";
-    tt.setClipboardData({
-      data: code,
-      success: (res) => {
-        tt.showToast({
-          title: "已复制",
-        });
-      },
-      fail: (err) => {
-        // 隐私协议中未定义相关隐私信息类型，详见配置隐私协议 https://developer.open-douyin.com/docs/resource/zh-CN/mini-app/open-capacity/basic-capacities/privacy-agreement
-        if (err.errNo === 10202) {
-          return tt.showToast({
-            icon: "none",
-            title: "复制失败，请先配置隐私协议",
-          });
-        }
-
-        tt.showToast({
-          icon: "fail",
-          title: "复制失败",
-        });
-      },
-    });
+  async loadPlants() {
+    this.setData({ loading: true });
+    try {
+      const app = getApp();
+      const cloud = app.globalData.cloud;
+      const payload = JSON.stringify({ page: 1, pageSize: 20 });
+      const { data, statusCode } = await cloud.callContainer({
+        path: '/listPlants',
+        init: {
+          method: 'POST',
+          header: { 'content-type': 'application/json' },
+          body: payload,
+          timeout: 60000,
+        },
+      });
+      const resp = parseJson(data) || {};
+      if (statusCode !== 200 || resp.ok !== true) {
+        return toastError(statusCode, resp.message || '请求失败');
+      }
+      this.setData({ list: resp.data || [] });
+    } catch (e) {
+      tt.showToast({ icon: 'none', title: '加载失败' });
+    } finally {
+      this.setData({ loading: false });
+    }
   },
-
-  copyLink(e) {
-    const link = e.target?.dataset?.url || "";
-    tt.setClipboardData({
-      data: link,
-      success: () => {
-        tt.showToast({
-          icon: "none",
-          title: "已复制链接，请在浏览器中打开",
-        });
-      },
-      fail: (err) => {
-        // 隐私协议中未定义相关隐私信息类型，详见配置隐私协议 https://developer.open-douyin.com/docs/resource/zh-CN/mini-app/open-capacity/basic-capacities/privacy-agreement
-        if (err.errNo === 10202) {
-          return tt.showToast({
-            icon: "none",
-            title: "链接复制失败，请先配置隐私协议",
-          });
-        }
-
-        tt.showToast({
-          icon: "fail",
-          title: "链接复制失败",
-        });
-      },
-    });
+  goQuestion() {
+    tt.navigateTo({ url: '/pages/question/index' });
   },
-
-  jumpPage(e) {
-    const { type } = e.currentTarget.dataset;
-    tt.navigateTo({
-      url: `/pages/exampleDetail/exampleDetail?type=${type}`,
-    });
+  goDetail(e) {
+    const id = e.currentTarget.dataset.id;
+    tt.navigateTo({ url: `/pages/detail/index?id=${id}` });
   },
 });

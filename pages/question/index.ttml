@@ -1,0 +1,28 @@
+<view class="container">
+  <view class="title">环境偏好</view>
+  <view class="group">
+    <text>光照</text>
+    <radio-group bindchange="onChange" data-id="light">
+      <label><radio value="low"/> 弱光</label>
+      <label><radio value="medium"/> 中等</label>
+      <label><radio value="high"/> 充足</label>
+    </radio-group>
+  </view>
+  <view class="group">
+    <text>空间</text>
+    <radio-group bindchange="onChange" data-id="space">
+      <label><radio value="small"/> 小</label>
+      <label><radio value="medium"/> 中</label>
+      <label><radio value="large"/> 大</label>
+    </radio-group>
+  </view>
+  <view class="group">
+    <text>经验</text>
+    <radio-group bindchange="onChange" data-id="level">
+      <label><radio value="beginner"/> 新手</label>
+      <label><radio value="intermediate"/> 进阶</label>
+      <label><radio value="expert"/> 达人</label>
+    </radio-group>
+  </view>
+  <button class="btn primary" bindtap="submit">提交</button>
+</view>

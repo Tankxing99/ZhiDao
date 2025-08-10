@@ -1,9 +1,9 @@
+const { getConfig } = require('./config/config');
+
 App({
   onLaunch: async function () {
-    const cloud = tt.createCloud({
-      envID: "xxx", // 抖音云环境 ID
-      serviceID: "xxx", // 抖音云服务 ID
-    });
+    const { envID, serviceID } = getConfig();
+    const cloud = tt.createCloud({ envID, serviceID });
 
     let isLogin = false;
     try {
@@ -18,6 +18,7 @@ App({
     this.globalData = {
       cloud,
       isLogin,
+      tempRecommend: [], // 临时存放推荐结果
     };
   },
 

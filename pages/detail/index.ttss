@@ -1,0 +1,7 @@
+page{background:#f5f5f7}
+.container.detail{padding:0 0 16px}
+.hero{width:100%}
+.section{background:#fff;margin-top:-12px;border-radius:12px 12px 0 0;padding:16px}
+.title{font-size:20px;font-weight:700;color:#000}
+.subtitle{color:#6e6e73;margin-top:6px}
+

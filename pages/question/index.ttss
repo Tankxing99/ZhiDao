@@ -1,0 +1,9 @@
+page{background:#f5f5f7}
+.container{padding:16px}
+.title{font-size:20px;font-weight:700;color:#000;margin-bottom:12px}
+.group{margin:12px 0;background:#fff;border-radius:12px;padding:12px}
+.group text{display:block;color:#6e6e73;font-size:12px;margin-bottom:8px}
+label{display:inline-flex;align-items:center;margin-right:16px;color:#111}
+radio{margin-right:6px}
+.btn.primary{background:#007aff;color:#fff;padding:10px 14px;border-radius:12px}
+

@@ -66,6 +66,76 @@ app.post('/listPlants', (req, res) => {
   res.json({ ok: true, data, total, page: p, pageSize: ps });
 });
 
+
+// helpers for recommendation
+function toAnswerMap(answers) {
+  const map = {};
+  (answers || []).forEach((a) => { if (a && a.id) map[a.id] = a.value; });
+  return map;
+}
+
+function isCompatible(userValue, tags, dimension) {
+  if (!userValue || !Array.isArray(tags)) return false;
+  switch (dimension) {
+    case 'light':
+      if (userValue === 'low' && (tags.includes('medium') || tags.includes('high'))) return true;
+      if (userValue === 'medium' && tags.includes('high')) return true;
+      break;
+    case 'space':
+      if (userValue === 'large' && (tags.includes('medium') || tags.includes('small'))) return true;
+      if (userValue === 'medium' && tags.includes('small')) return true;
+      break;
+    case 'level':
+      if (userValue === 'expert' && (tags.includes('intermediate') || tags.includes('beginner'))) return true;
+      if (userValue === 'intermediate' && tags.includes('beginner')) return true;
+      break;
+  }
+  return false;
+}
+
+function isMatch(userValue, tags, dimension) {
+  if (!userValue || !Array.isArray(tags)) return false;
+  if (tags.includes(userValue)) return true;
+  return isCompatible(userValue, tags, dimension);
+}
+
+function scorePlant(answersMap, plant) {
+  const weights = { light: 1.2, space: 1.0, level: 1.1 };
+  const base = 10;
+  let score = 0;
+  ['light','space','level'].forEach((dim) => {
+    if (isMatch(answersMap[dim], plant.tags || [], dim)) {
+      score += base * (weights[dim] || 1);
+    }
+  });
+  return score;
+}
+
+// POST /recommendPlants
+// req: { answers: Array<{id:string,value:string}>, topN?: number }
+// resp: { ok: true, data: Plant[] }
+app.post('/recommendPlants', (req, res) => {
+  const { answers, topN = 10 } = req.body || {};
+  if (!Array.isArray(answers) || answers.length === 0) {
+    return badRequest(res, 'answers required');
+  }
+  const answersMap = toAnswerMap(answers);
+
+  let plants = readJSON('plants.json', []);
+  // only onShelf
+  plants = plants.filter((x) => x && x.onShelf === true);
+
+  // score and sort
+  const scored = plants.map((p) => ({ ...p, score: scorePlant(answersMap, p) }));
+  scored.sort((a, b) => {
+    if (b.score !== a.score) return b.score - a.score;
+    return (b.updatedAt || 0) - (a.updatedAt || 0);
+  });
+
+  const data = scored.slice(0, Number(topN) > 0 ? Number(topN) : 10);
+  res.json({ ok: true, data });
+});
+
 // POST /submitAnswers
 // req: { openId?: string, answers: Array<{id:string,value:any}>, clientTs?: number }
 // resp: { ok: true }

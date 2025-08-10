@@ -1,0 +1,22 @@
+<view class="page">
+  <view class="header">
+    <text class="title">为你推荐</text>
+  </view>
+  <block tt:if="{{list.length===0}}">
+    <view class="empty">暂无推荐，请返回重试</view>
+  </block>
+  <block tt:else>
+    <view class="list">
+      <block tt:for="{{list}}" tt:for-item="item" tt:key="id">
+        <view class="card" data-id="{{item.id}}" bindtap="goDetail">
+          <image class="cover" src="{{item.cover}}" mode="aspectFill" />
+          <view class="info">
+            <text class="name">{{item.name}}</text>
+            <text class="tags">{{item.tags && item.tags.join(' / ')}}</text>
+          </view>
+        </view>
+      </block>
+    </view>
+  </block>
+</view>
+
