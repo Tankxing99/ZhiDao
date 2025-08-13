@@ -7,4 +7,4 @@
 .info{flex:1;padding:12px;display:flex;flex-direction:column;justify-content:center}
 .name{font-size:16px;font-weight:600;margin-bottom:6px}
 .tags{font-size:12px;color:#8e8e93}
-
+.reason{font-size:12px;color:#3c89ff;margin-top:4px}

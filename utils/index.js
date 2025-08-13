@@ -1,7 +1,13 @@
-function parseJson(jsonString) {
+function parseJson(input) {
     try {
-        const parsedObject = JSON.parse(jsonString);
-        return parsedObject;
+        // 兼容抖音云 callContainer 在不同 IDE/端返回 data 可能是 string 或 object
+        if (typeof input === 'string') {
+            return JSON.parse(input);
+        }
+        if (input && typeof input === 'object') {
+            return input; // 已是对象则原样返回
+        }
+        return null; // 其他类型按失败处理
     } catch (error) {
         console.error("解析错误:", error.message);
         return null; // 返回 null 表示解析失败

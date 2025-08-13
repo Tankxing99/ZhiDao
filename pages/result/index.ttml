@@ -13,6 +13,7 @@
           <view class="info">
             <text class="name">{{item.name}}</text>
             <text class="tags">{{item.tags && item.tags.join(' / ')}}</text>
+            <text class="reason">{{item._reasonText}}</text>
           </view>
         </view>
       </block>

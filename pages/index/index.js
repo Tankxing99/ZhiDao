@@ -7,9 +7,10 @@ Page({
     loading: false,
   },
   onLoad() {
-    this.loadPlants();
+    // 首页改为落地页，不在首屏拉列表，保留方法以便后续扩展
   },
   async loadPlants() {
+    // 如后续需要在首页展示列表，可调用该方法
     this.setData({ loading: true });
     try {
       const app = getApp();
@@ -36,7 +37,8 @@ Page({
     }
   },
   goQuestion() {
-    tt.navigateTo({ url: '/pages/question/index' });
+    // 改为逐题作答页面
+    tt.navigateTo({ url: '/pages/quiz/step/index?idx=0' });
   },
   goDetail(e) {
     const id = e.currentTarget.dataset.id;

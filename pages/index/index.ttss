@@ -1,15 +1,10 @@
-/* iOS Human Interface style list */
-page{background:#f5f5f7}
-.container.ios{padding:16px}
-.header-large{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-.large-title{font-size:22px;font-weight:700;color:#000}
-.pill-btn{padding:6px 12px;border-radius:999px;border:1px solid #3c89ff;color:#3c89ff;background:#fff}
-.group{display:flex;flex-direction:column;gap:12px}
-.cell{display:flex;gap:12px;align-items:center;background:#fff;border-radius:12px;padding:12px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
-.cell-cover{width:64px;height:64px;border-radius:8px;background:#eee}
-.cell-body{flex:1;min-width:0}
-.cell-title{font-size:16px;font-weight:600;color:#111;line-height:22px}
-.cell-subtitle{font-size:12px;color:#6e6e73;line-height:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.actions{display:flex;gap:12px;margin-top:16px}
-.btn-ghost{padding:8px 12px;border-radius:10px;border:1px solid #d1d1d6;background:#fff;color:#111}
-.btn-primary{padding:8px 12px;border-radius:10px;background:#007aff;color:#fff}
+/* Landing page inspired by the provided mock */
+page{background:#f7f7fb}
+.landing{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+.hero{width:100%;max-width:560px;background:#fff;border-radius:20px;box-shadow:0 8px 30px rgba(17,20,37,.08);padding:32px 24px;display:flex;flex-direction:column;align-items:center}
+.hero-illu{width:100%;height:200px;border-radius:16px;margin-bottom:16px}
+.hero-title{display:flex;flex-direction:column;align-items:center;gap:6px;margin:8px 0 20px}
+.hero-title text{font-size:22px;color:#111;font-weight:700}
+.hero-title .highlight{font-size:26px;color:#1f2a6b}
+.start-btn{width:72%;padding:14px 0;border-radius:999px;background:#232e6b;color:#fff;font-weight:700}
+.disclaimer{margin-top:16px;color:#8e8e93;font-size:12px}

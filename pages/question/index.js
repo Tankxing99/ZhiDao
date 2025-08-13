@@ -53,11 +53,15 @@ Page({
   fetchRecommend(a){
     const app = getApp();
     const cloud = app.globalData.cloud;
-    const body = { answers:[
+    const answersArr = [
       { id:'light', value:a.light },
       { id:'space', value:a.space },
       { id:'level', value:a.level }
-    ], topN: 10 };
+    ];
+    // 供结果页生成“推荐理由”
+    app.globalData.tempAnswers = answersArr;
+
+    const body = { answers: answersArr, topN: 10 };
     const payload = JSON.stringify(body);
     tt.showLoading({ title: '获取推荐' });
     cloud.callContainer({

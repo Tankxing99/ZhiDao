@@ -1,23 +1,11 @@
-<view class="container ios">
-  <view class="header-large">
-    <text class="large-title">推荐绿植</text>
-    <button class="pill-btn" bindtap="goQuestion">去答题</button>
-  </view>
-
-  <view class="group">
-    <block tt:for="{{list}}" tt:key="id">
-      <view class="cell" data-id="{{item.id}}" bindtap="goDetail">
-        <image class="cell-cover" src="{{item.cover}}" mode="aspectFill" />
-        <view class="cell-body">
-          <view class="cell-title">{{item.name}}</view>
-          <view class="cell-subtitle">{{item.tags && item.tags.join(' / ')}}</view>
-        </view>
-      </view>
-    </block>
-  </view>
-
-  <view class="actions">
-    <button class="btn-ghost" tt:if="{{!loading}}" bindtap="loadPlants">刷新</button>
-    <button class="btn-primary" tt:if="{{loading}}" disabled>加载中...</button>
+<view class="landing">
+  <view class="hero">
+    <image class="hero-illu" src="/images/p1.png" mode="aspectFill"></image>
+    <view class="hero-title">
+      <text>为你找到</text>
+      <text class="highlight">最适合的绿植</text>
+    </view>
+    <button class="start-btn" bindtap="goQuestion">开始测试</button>
+    <text class="disclaimer">*本产品测试结果可靠*</text>
   </view>
 </view>

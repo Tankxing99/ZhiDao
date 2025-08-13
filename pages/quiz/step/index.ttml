@@ -1,0 +1,29 @@
+<view class="page">
+  <block tt:if="{{loading}}">
+    <view class="loading">加载中...</view>
+  </block>
+  <block tt:elif="{{!question}}">
+    <view class="empty">暂无题目</view>
+  </block>
+  <block tt:else>
+    <view class="header">
+      <text class="progress">{{idx+1}}/{{total}}</text>
+    </view>
+    <view class="banner">
+      <image class="illustration" src="/images/quiz-banner.png" mode="aspectFill"></image>
+    </view>
+    <view class="qcard">
+      <text class="qtitle">{{question.title}}</text>
+      <view class="options">
+        <block tt:for="{{question.options}}" tt:key="value" tt:for-item="opt">
+          <button class="opt {{selected===opt.value?'active':''}}" data-value="{{opt.value}}" bindtap="onSelect">{{opt.label}}</button>
+        </block>
+      </view>
+    </view>
+    <view class="footer">
+      <button class="nav prev" bindtap="goPrev" tt:if="{{idx>0}}">上一题</button>
+      <button class="nav next" bindtap="goNext">{{idx===total-1?'提交':'下一题'}}</button>
+    </view>
+  </block>
+</view>
+
