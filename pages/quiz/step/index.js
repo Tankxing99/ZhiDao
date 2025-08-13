@@ -38,10 +38,18 @@ Page({
           cloud = tt.createCloud({ envID, serviceID });
           if(app.globalData){ app.globalData.cloud = cloud; }
         }
-        const { statusCode, data } = await cloud.callContainer({
+        let { statusCode, data } = await cloud.callContainer({
           path: '/getQuestionConfig',
           init: { method: 'GET', header: { 'content-type': 'application/json' }, timeout: 30000 },
         });
+        // 兼容部分环境 GET 被转发成 POST 的情况（极少数网关策略）
+        if(statusCode!==200){
+          const probe = await cloud.callContainer({
+            path: '/getQuestionConfig',
+            init: { method: 'POST', header: { 'content-type': 'application/json' }, timeout: 30000 },
+          });
+          statusCode = probe.statusCode; data = probe.data;
+        }
         const resp = parseJson(data) || {};
         if(statusCode===200 && resp.ok===true){
           cfg = { version: resp.version, questions: resp.questions||[] };

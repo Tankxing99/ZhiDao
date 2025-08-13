@@ -39,6 +39,13 @@ app.get('/getQuestionConfig', (req, res) => {
   res.json({ ok: true, version: cfg.version, questions: cfg.questions });
 });
 
+// POST /getQuestionConfig (same as GET for gateway compatibility)
+app.post('/getQuestionConfig', (req, res) => {
+  const cfg = readJSON('question_config.json', { version: 'v0', questions: [] });
+  res.json({ ok: true, version: cfg.version, questions: cfg.questions });
+});
+
+
 // POST /listPlants
 // req: { page?: number, pageSize?: number, tags?: string[] }
 // resp: { ok: true, data: Plant[], total: number, page: number, pageSize: number }
