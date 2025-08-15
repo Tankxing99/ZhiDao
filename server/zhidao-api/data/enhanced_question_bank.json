@@ -368,7 +368,7 @@
           "type": "multiple",
           "title": "需要避免对以下宠物有毒的植物：",
           "description": "我们将排除对您的宠物有害的植物",
-          "triggerConditions": ["safety-critical"],
+          "triggerConditions": ["safety-critical", "pet-safe-only"],
           "options": [
             {
               "value": "cats",

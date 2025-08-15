@@ -21,6 +21,10 @@ Page({
   async onLoad(options){
     const idx = Number(options?.idx || 0);
     this.setData({ idx });
+
+    // 清除缓存以确保获取最新配置（调试用）
+    // tt.removeStorageSync('question_config_cache');
+
     await this.ensureConfigLoaded();
     this.applyQuestion();
   },
@@ -114,6 +118,8 @@ Page({
 
   // 初始化动态问卷系统
   initDynamicQuestionnaire(questionBank) {
+    console.log('[initDynamicQuestionnaire] 初始化动态问卷系统');
+
     // 简化版动态问卷管理器（内联实现）
     this.dynamicQuestionnaire = {
       questionBank,
@@ -121,8 +127,20 @@ Page({
       answers: [],
       currentPhase: 'userProfile',
       currentQuestionIndex: 0,
-      phaseOrder: ['userProfile', 'environment', 'aesthetic', 'safety']
+      phaseOrder: ['userProfile', 'environment', 'aesthetic', 'safety'],
+      totalQuestions: 0
     };
+
+    // 计算总问题数
+    let totalQuestions = 0;
+    Object.values(questionBank).forEach(phase => {
+      if (phase.questions) {
+        totalQuestions += phase.questions.length;
+      }
+    });
+    this.dynamicQuestionnaire.totalQuestions = totalQuestions;
+
+    console.log('[initDynamicQuestionnaire] 总问题数:', totalQuestions);
 
     // 恢复之前的答案
     try {
@@ -130,6 +148,7 @@ Page({
       if (savedAnswers.dynamicAnswers) {
         this.dynamicQuestionnaire.answers = savedAnswers.dynamicAnswers;
         this.rebuildUserProfile();
+        console.log('[initDynamicQuestionnaire] 恢复答案:', savedAnswers.dynamicAnswers.length);
       }
     } catch (_) { /* ignore */ }
   },
@@ -160,6 +179,23 @@ Page({
     });
   },
 
+  // 处理动态问卷答案
+  processDynamicAnswer(questionId, answer) {
+    const dq = this.dynamicQuestionnaire;
+    if (!dq) return;
+
+    // 更新或添加答案
+    const existingIndex = dq.answers.findIndex(a => a.id === questionId);
+    if (existingIndex >= 0) {
+      dq.answers[existingIndex].value = answer;
+    } else {
+      dq.answers.push({ id: questionId, value: answer });
+    }
+
+    // 重新构建用户画像
+    this.rebuildUserProfile();
+  },
+
   // 查找问题
   findQuestion(questionId) {
     const dq = this.dynamicQuestionnaire;
@@ -177,28 +213,64 @@ Page({
   // 获取下一个问题
   getNextDynamicQuestion() {
     const dq = this.dynamicQuestionnaire;
-    if (!dq) return null;
+    if (!dq) {
+      console.log('[getNextDynamicQuestion] 动态问卷未初始化');
+      return null;
+    }
+
+    console.log('[getNextDynamicQuestion] 当前阶段:', dq.currentPhase, '问题索引:', dq.currentQuestionIndex);
+    console.log('[getNextDynamicQuestion] 用户画像:', dq.userProfile);
 
     const currentPhaseConfig = dq.questionBank[dq.currentPhase];
-    if (!currentPhaseConfig) return null;
+    if (!currentPhaseConfig) {
+      console.log('[getNextDynamicQuestion] 阶段配置不存在:', dq.currentPhase);
+      return null;
+    }
 
     // 检查当前阶段是否还有问题
-    if (dq.currentQuestionIndex < currentPhaseConfig.questions.length) {
+    while (dq.currentQuestionIndex < currentPhaseConfig.questions.length) {
       const question = currentPhaseConfig.questions[dq.currentQuestionIndex];
-      return {
-        ...question,
-        phase: dq.currentPhase,
-        phaseTitle: currentPhaseConfig.name,
-        phaseDescription: currentPhaseConfig.description,
-        questionIndex: dq.currentQuestionIndex,
-        totalInPhase: currentPhaseConfig.questions.length,
-        overallProgress: this.calculateOverallProgress()
-      };
+
+      // 检查问题级别的触发条件
+      if (this.shouldTriggerQuestion(question)) {
+        console.log('[getNextDynamicQuestion] 返回问题:', question.id);
+
+        return {
+          ...question,
+          phase: dq.currentPhase,
+          phaseTitle: currentPhaseConfig.name,
+          phaseDescription: currentPhaseConfig.description,
+          questionIndex: dq.currentQuestionIndex,
+          totalInPhase: currentPhaseConfig.questions.length,
+          overallProgress: this.calculateOverallProgress()
+        };
+      } else {
+        console.log('[getNextDynamicQuestion] 跳过问题:', question.id, '不满足触发条件');
+        dq.currentQuestionIndex++;
+      }
     }
 
     // 当前阶段完成，切换到下一阶段
+    console.log('[getNextDynamicQuestion] 当前阶段完成，切换到下一阶段');
     this.moveToNextPhase();
     return this.getNextDynamicQuestion();
+  },
+
+  // 判断是否应该触发某个问题
+  shouldTriggerQuestion(question) {
+    if (!question.triggerConditions) return true;
+
+    const dq = this.dynamicQuestionnaire;
+    const conditions = question.triggerConditions;
+
+    // 如果条件是 "all"，总是触发
+    if (conditions.includes('all')) return true;
+
+    // 检查用户画像是否匹配触发条件
+    const shouldTrigger = conditions.some(condition => dq.userProfile[condition]);
+    console.log('[shouldTriggerQuestion]', question.id, '触发条件:', conditions, '用户画像匹配:', shouldTrigger);
+
+    return shouldTrigger;
   },
 
   // 移动到下一阶段
@@ -232,7 +304,10 @@ Page({
     if (conditions.includes('all')) return true;
 
     // 检查用户画像是否匹配触发条件
-    return conditions.some(condition => dq.userProfile[condition]);
+    const shouldTrigger = conditions.some(condition => dq.userProfile[condition]);
+    console.log('[shouldTriggerPhase]', phase, '触发条件:', conditions, '用户画像匹配:', shouldTrigger);
+
+    return shouldTrigger;
   },
 
   // 计算整体进度
@@ -259,10 +334,16 @@ Page({
   },
 
   applyQuestion(){
-    if (this.data.supportsDynamicQuestionnaire) {
+    console.log('[applyQuestion] 开始应用问题');
+    console.log('[applyQuestion] 支持动态问卷:', this.data.supportsDynamicQuestionnaire);
+    console.log('[applyQuestion] 动态问卷实例:', !!this.dynamicQuestionnaire);
+
+    if (this.data.supportsDynamicQuestionnaire && this.dynamicQuestionnaire) {
       // 使用动态问卷
+      console.log('[applyQuestion] 使用动态问卷模式');
       const questionData = this.getNextDynamicQuestion();
       if (questionData) {
+        console.log('[applyQuestion] 设置问题数据:', questionData.id);
         this.setData({
           question: questionData,
           currentPhase: questionData.phase,
@@ -275,16 +356,19 @@ Page({
         });
       } else {
         // 问卷完成
+        console.log('[applyQuestion] 动态问卷完成');
         this.setData({ loading: false });
         this.completeDynamicQuestionnaire();
         return;
       }
     } else {
       // 使用传统问卷
+      console.log('[applyQuestion] 使用传统问卷模式');
       const qs = (this._cfg && this._cfg.questions) || [];
       const total = qs.length;
       const idx = this.data.idx;
       const q = qs[idx] || null;
+      console.log('[applyQuestion] 传统问卷问题:', q?.id, '索引:', idx, '总数:', total);
       this.setData({ total, question: q, loading: false });
     }
 
@@ -292,18 +376,163 @@ Page({
     try{
       const answers = tt.getStorageSync('quiz_answers') || {};
       const q = this.data.question;
-      if(q && answers[q.id]){ this.setData({ selected: answers[q.id] }); }
+      if(q && answers[q.id]){
+        this.setData({ selected: answers[q.id] });
+        console.log('[applyQuestion] 恢复选择:', answers[q.id]);
+      }
     }catch(_){/* ignore */}
+  },
+
+  // 完成动态问卷
+  completeDynamicQuestionnaire() {
+    const dq = this.dynamicQuestionnaire;
+    if (!dq) return;
+
+    // 保存最终答案
+    try {
+      tt.setStorageSync('quiz_answers', {
+        dynamicAnswers: dq.answers,
+        userProfile: dq.userProfile,
+        timestamp: Date.now()
+      });
+    } catch (_) { /* ignore */ }
+
+    // 跳转到提交页面
+    this.submitDynamicAnswers();
+  },
+
+  // 提交动态问卷答案
+  async submitDynamicAnswers() {
+    const dq = this.dynamicQuestionnaire;
+    if (!dq) return;
+
+    try {
+      const app = getApp();
+      let cloud = app.globalData && app.globalData.cloud;
+
+      if (!cloud) {
+        const { getConfig } = require('../../../config/config');
+        const { envID, serviceID } = getConfig();
+        cloud = tt.createCloud({ envID, serviceID });
+        if (app.globalData) { app.globalData.cloud = cloud; }
+      }
+
+      // 提交答案
+      const submitResult = await this.callContainerPromise(cloud, '/submitAnswers', {
+        method: 'POST',
+        header: { 'content-type': 'application/json' },
+        timeout: 30000
+      }, {
+        answers: dq.answers,
+        userProfile: dq.userProfile,
+        clientTs: Date.now()
+      });
+
+      console.log('[submitDynamicAnswers] success:', submitResult.statusCode);
+
+      // 获取推荐
+      const recommendResult = await this.callContainerPromise(cloud, '/recommendPlants', {
+        method: 'POST',
+        header: { 'content-type': 'application/json' },
+        timeout: 30000
+      }, {
+        answers: dq.answers,
+        topN: 10,
+        userProfile: dq.userProfile
+      });
+
+      console.log('[recommendPlants] success:', recommendResult.statusCode);
+
+      const recommendData = this.parseJson(recommendResult.data) || {};
+      if (recommendData.ok && recommendData.data) {
+        // 保存推荐结果到全局数据
+        if (app.globalData) {
+          app.globalData.tempRecommend = recommendData.data;
+          app.globalData.tempAnswers = dq.answers;
+          app.globalData.userProfile = dq.userProfile;
+          app.globalData.recommendAlgorithm = recommendData.algorithm || 'enhanced';
+        }
+
+        // 跳转到结果页
+        tt.redirectTo({ url: '/pages/result/index' });
+      } else {
+        throw new Error('推荐接口返回异常');
+      }
+
+    } catch (error) {
+      console.error('[submitDynamicAnswers] error:', error);
+      tt.showModal({
+        title: '提交失败',
+        content: error.message || '网络异常，请重试',
+        showCancel: false
+      });
+    }
+  },
+
+  // Promise 封装 callContainer
+  callContainerPromise(cloud, path, init, body) {
+    return new Promise((resolve, reject) => {
+      try {
+        cloud.callContainer({
+          path,
+          init: {
+            ...init,
+            body: body ? JSON.stringify(body) : undefined
+          },
+          success: ({ statusCode, data, header }) => resolve({ statusCode, data, header }),
+          fail: (err) => reject(err),
+        });
+      } catch (err) {
+        reject(err);
+      }
+    });
+  },
+
+  // JSON 解析辅助方法
+  parseJson(data) {
+    try {
+      if (typeof data === 'string') {
+        return JSON.parse(data);
+      }
+      return data;
+    } catch (_) {
+      return null;
+    }
   },
   onSelect(e){
     const value = e.currentTarget.dataset.value;
     this.setData({ selected: value });
+
     // 写入临时答案
     try{
       const q = this.data.question;
-      const answers = tt.getStorageSync('quiz_answers') || {};
-      if(q && q.id){ answers[q.id] = value; }
-      tt.setStorageSync('quiz_answers', answers);
+      if (this.data.supportsDynamicQuestionnaire && this.dynamicQuestionnaire) {
+        // 动态问卷模式：保存到动态问卷管理器
+        if (q && q.id) {
+          // 更新或添加答案
+          const existingIndex = this.dynamicQuestionnaire.answers.findIndex(a => a.id === q.id);
+          if (existingIndex >= 0) {
+            this.dynamicQuestionnaire.answers[existingIndex].value = value;
+          } else {
+            this.dynamicQuestionnaire.answers.push({ id: q.id, value });
+          }
+
+          // 更新用户画像
+          this.updateUserProfile(q.id, value);
+
+          // 保存到本地存储
+          tt.setStorageSync('quiz_answers', {
+            dynamicAnswers: this.dynamicQuestionnaire.answers,
+            userProfile: this.dynamicQuestionnaire.userProfile,
+            timestamp: Date.now()
+          });
+        }
+      } else {
+        // 传统问卷模式
+        const answers = tt.getStorageSync('quiz_answers') || {};
+        if(q && q.id){ answers[q.id] = value; }
+        tt.setStorageSync('quiz_answers', answers);
+      }
     }catch(_){/* ignore */}
   },
   goPrev(){
@@ -312,13 +541,47 @@ Page({
     tt.navigateBack({ delta: 1 });
   },
   async goNext(){
-    const { idx, total, selected, question } = this.data;
+    const { selected, question } = this.data;
     if(!selected){ return tt.showToast({ icon:'none', title:'请先选择' }); }
-    // 已保存于 storage，无需重复处理
-    if(idx < total - 1){
-      tt.navigateTo({ url: `/pages/quiz/step/index?idx=${idx+1}` });
+
+    if (this.data.supportsDynamicQuestionnaire && this.dynamicQuestionnaire) {
+      // 动态问卷模式
+      const dq = this.dynamicQuestionnaire;
+
+      // 处理当前答案
+      if (question && question.id) {
+        this.processDynamicAnswer(question.id, selected);
+      }
+
+      // 移动到下一个问题
+      dq.currentQuestionIndex++;
+
+      // 获取下一个问题
+      const nextQuestion = this.getNextDynamicQuestion();
+      if (nextQuestion) {
+        // 还有问题，更新页面
+        this.setData({
+          question: nextQuestion,
+          currentPhase: nextQuestion.phase,
+          phaseTitle: nextQuestion.phaseTitle,
+          phaseDescription: nextQuestion.phaseDescription,
+          questionIndex: nextQuestion.questionIndex,
+          totalInPhase: nextQuestion.totalInPhase,
+          overallProgress: nextQuestion.overallProgress,
+          selected: '' // 清空选择
+        });
+      } else {
+        // 问卷完成
+        this.completeDynamicQuestionnaire();
+      }
     } else {
-      await this.submitAll();
+      // 传统问卷模式
+      const { idx, total } = this.data;
+      if(idx < total - 1){
+        tt.navigateTo({ url: `/pages/quiz/step/index?idx=${idx+1}` });
+      } else {
+        await this.submitAll();
+      }
     }
   },
   async submitAll(){
