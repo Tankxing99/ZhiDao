@@ -5,6 +5,10 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { dySDK } from '@open-dy/node-server-sdk';
 
+// 导入增强版推荐算法（需要转换为ES模块兼容格式）
+// 注意：由于当前是ES模块环境，需要确保工具类也支持ES模块
+// 这里先用简化版本，后续可以完善模块导入
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -32,38 +36,107 @@ app.get('/healthz', (req, res) => {
   res.json({ ok: true, ts: Date.now() });
 });
 
-// GET /getQuestionConfig
-// resp: { ok: true, version: string, questions: Array }
+// GET /getQuestionConfig - 动态问卷配置
+// query: { phase?: string, userProfile?: string }
+// resp: { ok: true, version: string, questionBank?: Object, questions?: Array }
 app.get('/getQuestionConfig', (req, res) => {
+  const { phase, userProfile } = req.query;
+
+  // 尝试加载增强版题库
+  let enhancedBank = readJSON('enhanced_question_bank.json', null);
+  if (enhancedBank && enhancedBank.questionBank) {
+    // 返回完整的动态题库
+    res.json({
+      ok: true,
+      version: enhancedBank.version,
+      questionBank: enhancedBank.questionBank,
+      supportsDynamicQuestionnaire: true
+    });
+    return;
+  }
+
+  // 回退到原始配置
   const cfg = readJSON('question_config.json', { version: 'v0', questions: [] });
-  res.json({ ok: true, version: cfg.version, questions: cfg.questions });
+  res.json({
+    ok: true,
+    version: cfg.version,
+    questions: cfg.questions,
+    supportsDynamicQuestionnaire: false
+  });
 });
 
 // POST /getQuestionConfig (same as GET for gateway compatibility)
 app.post('/getQuestionConfig', (req, res) => {
+  const { phase, userProfile } = req.body || {};
+
+  // 尝试加载增强版题库
+  let enhancedBank = readJSON('enhanced_question_bank.json', null);
+  if (enhancedBank && enhancedBank.questionBank) {
+    // 返回完整的动态题库
+    res.json({
+      ok: true,
+      version: enhancedBank.version,
+      questionBank: enhancedBank.questionBank,
+      supportsDynamicQuestionnaire: true
+    });
+    return;
+  }
+
+  // 回退到原始配置
   const cfg = readJSON('question_config.json', { version: 'v0', questions: [] });
-  res.json({ ok: true, version: cfg.version, questions: cfg.questions });
+  res.json({
+    ok: true,
+    version: cfg.version,
+    questions: cfg.questions,
+    supportsDynamicQuestionnaire: false
+  });
 });
 
 
-// POST /listPlants
-// req: { page?: number, pageSize?: number, tags?: string[] }
+// POST /listPlants - 增强版植物列表
+// req: { page?: number, pageSize?: number, tags?: string[], userProfile?: Object }
 // resp: { ok: true, data: Plant[], total: number, page: number, pageSize: number }
 app.post('/listPlants', (req, res) => {
-  const { page = 1, pageSize = 10, tags = [] } = req.body || {};
+  const { page = 1, pageSize = 10, tags = [], userProfile = {} } = req.body || {};
   const p = Number(page);
   const ps = Number(pageSize);
   if (!Number.isFinite(p) || p < 1) return badRequest(res, 'page must be >=1');
   if (!Number.isFinite(ps) || ps < 1 || ps > 100) return badRequest(res, 'pageSize must be 1~100');
 
-  let plants = readJSON('plants.json', []);
+  // 尝试加载增强版植物数据
+  let plants = readJSON('enhanced_plants.json', null);
+  if (!plants) {
+    // 回退到原始数据
+    plants = readJSON('plants.json', []);
+  }
+
   // filter onShelf=true
   plants = plants.filter((x) => x && x.onShelf === true);
+
+  // 安全过滤（基于用户画像）
+  if (userProfile.hasPets) {
+    plants = plants.filter(plant => {
+      const safetyFlags = plant.safetyFlags || [];
+      return !safetyFlags.includes('pet_unsafe') &&
+             !safetyFlags.includes('toxic-to-cats') &&
+             !safetyFlags.includes('toxic-to-dogs');
+    });
+  }
+
+  if (userProfile.hasChildren) {
+    plants = plants.filter(plant => {
+      const safetyFlags = plant.safetyFlags || [];
+      return !safetyFlags.includes('child_unsafe') &&
+             !safetyFlags.includes('toxic-if-ingested') &&
+             !safetyFlags.includes('sharp-spines');
+    });
+  }
+
   // filter by tags (all included)
   if (Array.isArray(tags) && tags.length > 0) {
-    const set = new Set(tags);
-    plants = plants.filter((x) => (x.tags || []).every ? tags.every((t) => (x.tags || []).includes(t)) : true);
+    plants = plants.filter((x) => tags.every((t) => (x.tags || []).includes(t)));
   }
+
   // sort by updatedAt desc
   plants.sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
 
@@ -118,30 +191,197 @@ function scorePlant(answersMap, plant) {
   return score;
 }
 
-// POST /recommendPlants
-// req: { answers: Array<{id:string,value:string}>, topN?: number }
-// resp: { ok: true, data: Plant[] }
+// POST /recommendPlants - 增强版植物推荐
+// req: { answers: Array<{id:string,value:string}>, topN?: number, userProfile?: Object }
+// resp: { ok: true, data: Plant[], algorithm?: string }
 app.post('/recommendPlants', (req, res) => {
-  const { answers, topN = 10 } = req.body || {};
+  const { answers, topN = 10, userProfile = {} } = req.body || {};
   if (!Array.isArray(answers) || answers.length === 0) {
     return badRequest(res, 'answers required');
   }
+
   const answersMap = toAnswerMap(answers);
 
-  let plants = readJSON('plants.json', []);
-  // only onShelf
+  // 尝试加载增强版植物数据
+  let plants = readJSON('enhanced_plants.json', null);
+  let useEnhancedAlgorithm = false;
+
+  if (!plants) {
+    // 回退到原始数据和算法
+    plants = readJSON('plants.json', []);
+  } else {
+    useEnhancedAlgorithm = true;
+  }
+
+  // 过滤上架植物
   plants = plants.filter((x) => x && x.onShelf === true);
 
-  // score and sort
-  const scored = plants.map((p) => ({ ...p, score: scorePlant(answersMap, p) }));
+  // 构建用户画像（从答案中推断）
+  const inferredProfile = {
+    hasPets: answersMap['pets'] === 'yes' || answersMap['hasPets'] === 'cats' || answersMap['hasPets'] === 'dogs' || answersMap['hasPets'] === 'both',
+    hasChildren: answersMap['children'] === 'yes' || answersMap['livingStatus'] === 'family',
+    experienceLevel: answersMap['experienceLevel'] || answersMap['level'] || 'beginner',
+    isNewUser: (answersMap['experienceLevel'] || answersMap['level']) === 'beginner',
+    ...userProfile
+  };
+
+  let scored;
+
+  if (useEnhancedAlgorithm) {
+    // 使用增强版算法
+    scored = enhancedRecommendPlants(answers, plants, inferredProfile, topN);
+  } else {
+    // 使用原始算法（向后兼容）
+    scored = legacyRecommendPlants(answersMap, plants, inferredProfile, topN);
+  }
+
+  res.json({
+    ok: true,
+    data: scored,
+    algorithm: useEnhancedAlgorithm ? 'enhanced' : 'legacy',
+    userProfile: inferredProfile
+  });
+});
+
+// 增强版推荐算法（简化版，内联实现）
+function enhancedRecommendPlants(answers, plants, userProfile, topN) {
+  const answersMap = toAnswerMap(answers);
+
+  // 安全过滤
+  plants = plants.filter(plant => {
+    const safetyFlags = plant.safetyFlags || [];
+
+    if (userProfile.hasPets && safetyFlags.includes('pet_unsafe')) {
+      return false;
+    }
+
+    if (userProfile.hasChildren && safetyFlags.includes('child_unsafe')) {
+      return false;
+    }
+
+    return true;
+  });
+
+  // 增强版评分
+  const scored = plants.map(plant => {
+    let score = calculateEnhancedScore(answersMap, plant, userProfile);
+    return { ...plant, score };
+  });
+
+  // 排序
   scored.sort((a, b) => {
     if (b.score !== a.score) return b.score - a.score;
     return (b.updatedAt || 0) - (a.updatedAt || 0);
   });
 
-  const data = scored.slice(0, Number(topN) > 0 ? Number(topN) : 10);
-  res.json({ ok: true, data });
-});
+  return scored.slice(0, Number(topN) > 0 ? Number(topN) : 10);
+}
+
+// 原始推荐算法（向后兼容）
+function legacyRecommendPlants(answersMap, plants, userProfile, topN) {
+  // 安全过滤
+  const hasPets = userProfile.hasPets;
+  const hasChildren = userProfile.hasChildren;
+  const isUnsafeForPets = (p) => Array.isArray(p.safetyFlags) && p.safetyFlags.includes('pet_unsafe');
+  const isUnsafeForChildren = (p) => Array.isArray(p.safetyFlags) && (p.safetyFlags.includes('child_unsafe') || p.safetyFlags.includes('latex_sap_irritant'));
+
+  plants = plants.filter((p) => {
+    if (hasPets && isUnsafeForPets(p)) return false;
+    if (hasChildren && isUnsafeForChildren(p)) return false;
+    return true;
+  });
+
+  // 评分和排序
+  const scored = plants.map((p) => {
+    let s = scorePlant(answersMap, p);
+    if (!hasPets && isUnsafeForPets(p)) s -= 2;
+    if (!hasChildren && isUnsafeForChildren(p)) s -= 1;
+    return { ...p, score: s };
+  });
+
+  scored.sort((a, b) => {
+    if (b.score !== a.score) return b.score - a.score;
+    return (b.updatedAt || 0) - (a.updatedAt || 0);
+  });
+
+  return scored.slice(0, Number(topN) > 0 ? Number(topN) : 10);
+}
+
+// 增强版评分算法
+function calculateEnhancedScore(answersMap, plant, userProfile) {
+  const plantTags = plant.tags || [];
+
+  // 动态权重调整
+  let weights = {
+    environment: 0.4,
+    aesthetic: 0.3,
+    care: 0.2,
+    safety: 0.1
+  };
+
+  if (userProfile.isNewUser) {
+    weights.environment = 0.6;
+    weights.aesthetic = 0.2;
+    weights.care = 0.15;
+    weights.safety = 0.05;
+  }
+
+  if (userProfile.hasPets) {
+    weights.safety = 0.3;
+    weights.environment = 0.35;
+    weights.aesthetic = 0.2;
+    weights.care = 0.15;
+  }
+
+  let totalScore = 0;
+  const baseScore = 10;
+
+  // 环境适配度评分
+  let envScore = 0;
+  if (isMatch(answersMap.lightCondition || answersMap.light, plantTags, 'light')) {
+    envScore += baseScore * 0.5;
+  }
+  if (isMatch(answersMap.spaceType || answersMap.space, plantTags, 'space')) {
+    envScore += baseScore * 0.3;
+  }
+  totalScore += envScore * weights.environment;
+
+  // 养护能力评分
+  let careScore = 0;
+  if (isMatch(answersMap.experienceLevel || answersMap.level, plantTags, 'level')) {
+    careScore += baseScore * 0.7;
+  }
+  if (answersMap.timeCommitment && isMatchTimeCommitment(answersMap.timeCommitment, plantTags)) {
+    careScore += baseScore * 0.3;
+  }
+  totalScore += careScore * weights.care;
+
+  // 安全因素评分
+  let safetyScore = baseScore;
+  const safetyFlags = plant.safetyFlags || [];
+  if (userProfile.hasPets && safetyFlags.includes('pet_unsafe')) {
+    safetyScore = 0;
+  }
+  if (userProfile.hasChildren && safetyFlags.includes('child_unsafe')) {
+    safetyScore = 0;
+  }
+  totalScore += safetyScore * weights.safety;
+
+  return Math.round(totalScore * 100) / 100;
+}
+
+// 时间投入匹配
+function isMatchTimeCommitment(timeCommitment, plantTags) {
+  const timeTagMapping = {
+    'minimal': ['ultra-low-maintenance', 'drought-tolerant', 'neglect-tolerant'],
+    'light': ['low-maintenance', 'weekly-care', 'easy-care'],
+    'moderate': ['moderate-care', 'regular-attention'],
+    'intensive': ['high-maintenance', 'daily-care', 'detailed-care']
+  };
+
+  const expectedTags = timeTagMapping[timeCommitment] || [];
+  return expectedTags.some(tag => plantTags.includes(tag));
+}
 
 // POST /submitAnswers
 // req: { openId?: string, answers: Array<{id:string,value:any}>, clientTs?: number }

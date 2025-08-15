@@ -1,0 +1,470 @@
+{
+  "version": "v2.1",
+  "schema_version": "2.1.0",
+  "updatedAt": "2025-08-15T12:00:00Z",
+  "description": "动态问卷题库 - 支持分阶段条件触发的智能问卷系统",
+  "questionBank": {
+    "userProfile": {
+      "name": "用户画像调查类",
+      "priority": 1,
+      "description": "收集用户基本信息，建立用户画像",
+      "triggerConditions": ["all"],
+      "questions": [
+        {
+          "id": "livingStatus",
+          "type": "single",
+          "title": "您的居住状况？",
+          "description": "帮助我们了解您的生活环境",
+          "options": [
+            { 
+              "value": "single", 
+              "label": "独居", 
+              "tags": ["space-flexible", "time-flexible", "budget-conscious"],
+              "description": "有更多自由选择植物类型"
+            },
+            { 
+              "value": "couple", 
+              "label": "情侣/夫妻", 
+              "tags": ["space-medium", "aesthetic-important", "shared-care"],
+              "description": "注重美观和共同养护"
+            },
+            { 
+              "value": "family", 
+              "label": "三口之家", 
+              "tags": ["space-limited", "safety-priority", "child-safe-needed"],
+              "description": "安全性是首要考虑"
+            },
+            { 
+              "value": "elderly", 
+              "label": "老年人", 
+              "tags": ["low-maintenance", "health-benefit", "easy-care"],
+              "description": "偏好易养护的健康植物"
+            }
+          ]
+        },
+        {
+          "id": "experienceLevel",
+          "type": "single",
+          "title": "您的植物养护经验？",
+          "description": "帮助推荐适合您技能水平的植物",
+          "options": [
+            { 
+              "value": "beginner", 
+              "label": "完全新手（从未养过）", 
+              "tags": ["care-simple", "guidance-needed", "hardy-plants"],
+              "description": "推荐最容易养活的植物"
+            },
+            { 
+              "value": "novice", 
+              "label": "初学者（养死过几盆）", 
+              "tags": ["care-easy", "forgiving-plants", "learning-mode"],
+              "description": "推荐容错率高的植物"
+            },
+            { 
+              "value": "intermediate", 
+              "label": "有经验（能养活大部分）", 
+              "tags": ["care-moderate", "variety-seeking", "skill-building"],
+              "description": "可以尝试更多品种"
+            },
+            { 
+              "value": "expert", 
+              "label": "资深玩家（各种植物都试过）", 
+              "tags": ["care-advanced", "challenge-seeking", "rare-species"],
+              "description": "可以挑战稀有或高难度植物"
+            }
+          ]
+        },
+        {
+          "id": "timeCommitment",
+          "type": "single",
+          "title": "您每周能投入多少时间照料植物？",
+          "description": "帮助匹配合适的养护强度",
+          "options": [
+            { 
+              "value": "minimal", 
+              "label": "几乎没时间（<30分钟）", 
+              "tags": ["ultra-low-maintenance", "drought-tolerant"],
+              "description": "推荐几乎不需要照料的植物"
+            },
+            { 
+              "value": "light", 
+              "label": "偶尔关注（30分钟-1小时）", 
+              "tags": ["low-maintenance", "weekly-care"],
+              "description": "推荐每周简单照料的植物"
+            },
+            { 
+              "value": "moderate", 
+              "label": "定期照料（1-3小时）", 
+              "tags": ["moderate-care", "regular-attention"],
+              "description": "可以选择需要定期关注的植物"
+            },
+            { 
+              "value": "intensive", 
+              "label": "精心呵护（>3小时）", 
+              "tags": ["high-maintenance", "daily-care", "detailed-care"],
+              "description": "可以选择需要精心照料的植物"
+            }
+          ]
+        },
+        {
+          "id": "hasPets",
+          "type": "single",
+          "title": "家中是否养宠物？",
+          "description": "确保植物对宠物安全",
+          "options": [
+            { 
+              "value": "cats", 
+              "label": "有猫", 
+              "tags": ["safety-critical", "cat-safe-only", "hanging-preferred"],
+              "excludeTags": ["toxic-to-cats"],
+              "description": "将排除对猫有毒的植物"
+            },
+            { 
+              "value": "dogs", 
+              "label": "有狗", 
+              "tags": ["safety-critical", "dog-safe-only", "sturdy-plants"],
+              "excludeTags": ["toxic-to-dogs"],
+              "description": "将排除对狗有毒的植物"
+            },
+            { 
+              "value": "both", 
+              "label": "猫狗都有", 
+              "tags": ["safety-critical", "pet-safe-only", "extra-careful"],
+              "excludeTags": ["toxic-to-cats", "toxic-to-dogs"],
+              "description": "将排除对猫狗都有毒的植物"
+            },
+            { 
+              "value": "other", 
+              "label": "其他宠物（鸟/兔等）", 
+              "tags": ["safety-critical", "small-pet-safe"],
+              "excludeTags": ["toxic-to-small-pets"],
+              "description": "将排除对小宠物有毒的植物"
+            },
+            { 
+              "value": "none", 
+              "label": "没有宠物", 
+              "tags": ["safety-normal", "full-selection"],
+              "description": "可以选择所有植物类型"
+            }
+          ]
+        },
+        {
+          "id": "budget",
+          "type": "single",
+          "title": "您的预算范围？",
+          "description": "帮助推荐合适价位的植物",
+          "options": [
+            { 
+              "value": "low", 
+              "label": "经济实惠（<50元）", 
+              "tags": ["budget-friendly", "common-species", "propagation-friendly"],
+              "description": "推荐常见易得的植物品种"
+            },
+            { 
+              "value": "medium", 
+              "label": "中等价位（50-200元）", 
+              "tags": ["moderate-price", "quality-choice", "variety-available"],
+              "description": "有更多品种选择"
+            },
+            { 
+              "value": "high", 
+              "label": "不差钱（>200元）", 
+              "tags": ["premium-choice", "rare-species", "designer-plants"],
+              "description": "可以选择稀有或设计师推荐植物"
+            }
+          ]
+        }
+      ]
+    },
+    "environment": {
+      "name": "环境评估类",
+      "priority": 2,
+      "description": "评估您的居住环境条件",
+      "triggerConditions": ["all"],
+      "questions": [
+        {
+          "id": "lightCondition",
+          "type": "single",
+          "title": "您家主要摆放区域的光照条件？",
+          "description": "可参考：南向窗=强光，东西向=中光，北向/室内=弱光",
+          "options": [
+            { 
+              "value": "low", 
+              "label": "弱光（北向窗/室内深处）", 
+              "plantTags": ["shade-tolerant", "low-light"], 
+              "weight": { "environment": 1.5 },
+              "description": "推荐耐阴植物"
+            },
+            { 
+              "value": "medium", 
+              "label": "中等光照（东西向窗）", 
+              "plantTags": ["partial-sun", "adaptable"], 
+              "weight": { "environment": 1.2 },
+              "description": "大部分植物都适合"
+            },
+            { 
+              "value": "high", 
+              "label": "强光（南向窗/阳台）", 
+              "plantTags": ["full-sun", "sun-loving"], 
+              "weight": { "environment": 1.0 },
+              "description": "可以选择喜阳植物"
+            },
+            { 
+              "value": "artificial", 
+              "label": "主要靠人工补光", 
+              "plantTags": ["led-friendly", "artificial-light"], 
+              "weight": { "environment": 1.3 },
+              "description": "推荐适合人工光源的植物"
+            }
+          ]
+        },
+        {
+          "id": "spaceType",
+          "type": "multiple",
+          "title": "您打算在哪些位置摆放植物？（可多选）",
+          "description": "不同位置适合不同类型的植物",
+          "options": [
+            { 
+              "value": "windowsill", 
+              "label": "窗台", 
+              "plantTags": ["compact", "sun-tolerant"], 
+              "sizeLimit": "small",
+              "description": "适合小型耐晒植物"
+            },
+            { 
+              "value": "desk", 
+              "label": "办公桌/书桌", 
+              "plantTags": ["desktop", "air-purifying"], 
+              "sizeLimit": "small",
+              "description": "推荐净化空气的小型植物"
+            },
+            { 
+              "value": "floor", 
+              "label": "地面角落", 
+              "plantTags": ["floor-standing", "statement-piece"], 
+              "sizeLimit": "large",
+              "description": "可以选择大型观赏植物"
+            },
+            { 
+              "value": "hanging", 
+              "label": "悬挂空间", 
+              "plantTags": ["trailing", "hanging-basket"], 
+              "sizeLimit": "medium",
+              "description": "推荐垂吊类植物"
+            },
+            { 
+              "value": "bathroom", 
+              "label": "卫生间", 
+              "plantTags": ["humidity-loving", "low-light"], 
+              "sizeLimit": "small",
+              "description": "推荐喜湿耐阴植物"
+            },
+            { 
+              "value": "balcony", 
+              "label": "阳台", 
+              "plantTags": ["outdoor-tolerant", "wind-resistant"], 
+              "sizeLimit": "any",
+              "description": "可以选择耐候性强的植物"
+            }
+          ]
+        }
+      ]
+    },
+    "aesthetic": {
+      "name": "审美偏好类",
+      "priority": 3,
+      "description": "了解您的审美偏好和家居风格",
+      "triggerConditions": ["aesthetic-important", "variety-seeking", "challenge-seeking", "designer-plants"],
+      "questions": [
+        {
+          "id": "plantShape",
+          "type": "multiple",
+          "title": "您偏好的植物形态？（可多选）",
+          "description": "选择您喜欢的植物外形",
+          "options": [
+            {
+              "value": "upright",
+              "label": "直立型（发财树、橡皮树）",
+              "plantTags": ["upright-growth", "tree-like"],
+              "visualExample": "upright_plants.jpg",
+              "description": "挺拔向上的树形植物"
+            },
+            {
+              "value": "bushy",
+              "label": "丛生型（龟背竹、春羽）",
+              "plantTags": ["bushy-growth", "full-foliage"],
+              "visualExample": "bushy_plants.jpg",
+              "description": "枝叶茂密的丛状植物"
+            },
+            {
+              "value": "trailing",
+              "label": "垂吊型（绿萝、常春藤）",
+              "plantTags": ["trailing-growth", "cascading"],
+              "visualExample": "trailing_plants.jpg",
+              "description": "枝条下垂的悬挂植物"
+            },
+            {
+              "value": "rosette",
+              "label": "莲座型（多肉、凤梨）",
+              "plantTags": ["rosette-form", "compact"],
+              "visualExample": "rosette_plants.jpg",
+              "description": "叶片呈莲座状排列"
+            },
+            {
+              "value": "architectural",
+              "label": "造型型（琴叶榕、天堂鸟）",
+              "plantTags": ["sculptural", "statement-piece"],
+              "visualExample": "architectural_plants.jpg",
+              "description": "具有雕塑感的造型植物"
+            }
+          ]
+        },
+        {
+          "id": "colorPreference",
+          "type": "single",
+          "title": "您偏好的色彩风格？",
+          "description": "选择您喜欢的植物色彩类型",
+          "options": [
+            {
+              "value": "green",
+              "label": "纯绿色系（经典耐看）",
+              "plantTags": ["solid-green", "classic"],
+              "excludeTags": ["colorful", "flowering"],
+              "description": "经典的绿色叶片植物"
+            },
+            {
+              "value": "variegated",
+              "label": "花叶彩色（活泼有趣）",
+              "plantTags": ["variegated", "colorful", "patterned"],
+              "excludeTags": ["solid-green"],
+              "description": "叶片有彩色斑纹的植物"
+            },
+            {
+              "value": "flowering",
+              "label": "开花植物（浪漫美丽）",
+              "plantTags": ["flowering", "blooming", "seasonal-color"],
+              "excludeTags": ["foliage-only"],
+              "description": "能开花的观赏植物"
+            },
+            {
+              "value": "mixed",
+              "label": "都喜欢（多样搭配）",
+              "plantTags": ["variety-friendly"],
+              "excludeTags": [],
+              "description": "不限制色彩类型"
+            }
+          ]
+        }
+      ]
+    },
+    "safety": {
+      "name": "安全评估类",
+      "priority": 4,
+      "description": "确保植物选择的安全性",
+      "triggerConditions": ["safety-critical", "pet-safe-only", "child-safe-needed"],
+      "questions": [
+        {
+          "id": "petSafety",
+          "type": "multiple",
+          "title": "需要避免对以下宠物有毒的植物：",
+          "description": "我们将排除对您的宠物有害的植物",
+          "triggerConditions": ["safety-critical"],
+          "options": [
+            {
+              "value": "cats",
+              "label": "猫咪",
+              "excludeTags": ["toxic-to-cats", "lily-family", "philodendron-family"],
+              "description": "排除对猫有毒的植物"
+            },
+            {
+              "value": "dogs",
+              "label": "狗狗",
+              "excludeTags": ["toxic-to-dogs", "sago-palm", "azalea-family"],
+              "description": "排除对狗有毒的植物"
+            },
+            {
+              "value": "birds",
+              "label": "鸟类",
+              "excludeTags": ["toxic-to-birds", "avocado-family", "chocolate-plant"],
+              "description": "排除对鸟类有毒的植物"
+            },
+            {
+              "value": "rabbits",
+              "label": "兔子",
+              "excludeTags": ["toxic-to-rabbits", "bulb-plants", "nightshade-family"],
+              "description": "排除对兔子有毒的植物"
+            }
+          ]
+        },
+        {
+          "id": "childSafety",
+          "type": "single",
+          "title": "家中是否有小孩？",
+          "description": "确保植物对儿童安全",
+          "triggerConditions": ["child-safe-needed"],
+          "options": [
+            {
+              "value": "toddler",
+              "label": "有幼儿（0-3岁）",
+              "excludeTags": ["toxic-if-ingested", "sharp-spines", "small-parts"],
+              "plantTags": ["child-safe", "non-toxic"],
+              "description": "排除有毒和有尖刺的植物"
+            },
+            {
+              "value": "child",
+              "label": "有儿童（4-12岁）",
+              "excludeTags": ["highly-toxic", "sharp-thorns"],
+              "plantTags": ["child-friendly"],
+              "description": "排除高毒性植物"
+            },
+            {
+              "value": "none",
+              "label": "没有小孩",
+              "excludeTags": [],
+              "description": "不限制植物类型"
+            }
+          ]
+        },
+        {
+          "id": "allergies",
+          "type": "multiple",
+          "title": "家庭成员是否有以下过敏史？",
+          "description": "我们将避免推荐可能引起过敏的植物",
+          "options": [
+            {
+              "value": "pollen",
+              "label": "花粉过敏",
+              "excludeTags": ["high-pollen", "wind-pollinated", "flowering-heavy"],
+              "description": "排除高花粉植物"
+            },
+            {
+              "value": "fragrance",
+              "label": "香味敏感",
+              "excludeTags": ["strong-scent", "fragrant-flowers", "aromatic-leaves"],
+              "description": "排除强香味植物"
+            },
+            {
+              "value": "latex",
+              "label": "乳胶过敏",
+              "excludeTags": ["latex-producing", "ficus-family", "rubber-plants"],
+              "description": "排除产生乳胶的植物"
+            },
+            {
+              "value": "mold",
+              "label": "霉菌敏感",
+              "excludeTags": ["high-humidity-needs", "soil-heavy"],
+              "plantTags": ["low-maintenance", "clean-air"],
+              "description": "推荐净化空气的低维护植物"
+            },
+            {
+              "value": "none",
+              "label": "无过敏史",
+              "excludeTags": [],
+              "description": "不限制植物类型"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

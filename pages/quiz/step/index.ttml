@@ -10,7 +10,7 @@
       <text class="progress">{{idx+1}}/{{total}}</text>
     </view>
     <view class="banner">
-      <image class="illustration" src="/images/quiz-banner.png" mode="aspectFill"></image>
+      <image class="illustration" src="/images/p6.png" mode="aspectFill"></image>
     </view>
     <view class="qcard">
       <text class="qtitle">{{question.title}}</text>
@@ -26,4 +26,3 @@
     </view>
   </block>
 </view>
-

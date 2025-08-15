@@ -1,0 +1,173 @@
+{
+  "version": "v1.0",
+  "schema_version": "1.0.0",
+  "updatedAt": "2025-08-15T12:00:00Z",
+  "description": "植物安全数据库 - 毒性参考和安全评估",
+  "toxicityReference": {
+    "pets": {
+      "toxic-to-cats": {
+        "description": "对猫有毒的植物",
+        "plants": [
+          "绿萝", "百合", "杜鹃", "常春藤", "橡皮树", "虎皮兰",
+          "发财树", "吊兰", "芦荟", "仙人掌", "马蹄莲", "水仙",
+          "郁金香", "风信子", "一品红", "夹竹桃"
+        ],
+        "symptoms": ["呕吐", "腹泻", "口腔刺激", "流涎", "食欲不振"],
+        "severity": "mild to moderate"
+      },
+      "toxic-to-dogs": {
+        "description": "对狗有毒的植物",
+        "plants": [
+          "百合", "杜鹃", "夹竹桃", "马蹄莲", "水仙", "绿萝",
+          "虎皮兰", "芦荟", "一品红", "铁树", "万年青"
+        ],
+        "symptoms": ["呕吐", "腹泻", "嗜睡", "食欲不振", "呼吸困难"],
+        "severity": "mild to severe"
+      },
+      "toxic-to-birds": {
+        "description": "对鸟类有毒的植物",
+        "plants": [
+          "牛油果树", "夹竹桃", "杜鹃", "一品红", "铁树"
+        ],
+        "symptoms": ["呼吸困难", "心律不齐", "虚弱", "死亡"],
+        "severity": "moderate to severe"
+      },
+      "toxic-to-small-pets": {
+        "description": "对小宠物（兔子、仓鼠等）有毒的植物",
+        "plants": [
+          "球根植物", "茄科植物", "百合科", "夹竹桃科"
+        ],
+        "symptoms": ["消化不良", "神经症状", "呼吸困难"],
+        "severity": "moderate to severe"
+      }
+    },
+    "humans": {
+      "toxic-if-ingested": {
+        "description": "误食有毒的植物",
+        "plants": [
+          "滴水观音", "马蹄莲", "夹竹桃", "一品红", "铁树",
+          "万年青", "绿萝", "虎皮兰"
+        ],
+        "symptoms": ["口腔刺激", "恶心", "呕吐", "腹泻", "皮肤刺激"],
+        "severity": "mild to moderate"
+      },
+      "highly-toxic": {
+        "description": "高毒性植物",
+        "plants": [
+          "夹竹桃", "铁树", "曼陀罗", "蓖麻"
+        ],
+        "symptoms": ["严重中毒", "心律不齐", "呼吸困难", "昏迷"],
+        "severity": "severe"
+      },
+      "skin-irritant": {
+        "description": "接触性皮肤刺激",
+        "plants": [
+          "琴叶榕", "橡皮树", "一品红", "滴水观音"
+        ],
+        "symptoms": ["皮肤红肿", "瘙痒", "水泡", "过敏反应"],
+        "severity": "mild to moderate"
+      }
+    }
+  },
+  "allergenReference": {
+    "pollen": {
+      "high-pollen": {
+        "description": "高花粉植物",
+        "plants": [
+          "向日葵", "菊花", "雏菊", "金盏花", "万寿菊"
+        ],
+        "season": ["春季", "夏季", "秋季"],
+        "symptoms": ["打喷嚏", "流鼻涕", "眼睛发痒", "呼吸困难"]
+      },
+      "wind-pollinated": {
+        "description": "风媒花植物",
+        "plants": [
+          "桦树", "橡树", "松树", "柏树", "杨树"
+        ],
+        "season": ["春季"],
+        "symptoms": ["花粉症", "哮喘加重", "鼻塞"]
+      }
+    },
+    "fragrance": {
+      "strong-scent": {
+        "description": "强香味植物",
+        "plants": [
+          "茉莉", "栀子花", "夜来香", "薰衣草", "迷迭香"
+        ],
+        "symptoms": ["头痛", "恶心", "呼吸困难", "过敏反应"]
+      },
+      "fragrant-flowers": {
+        "description": "香花植物",
+        "plants": [
+          "玫瑰", "百合", "水仙", "风信子", "丁香"
+        ],
+        "symptoms": ["轻微头痛", "鼻塞", "打喷嚏"]
+      }
+    },
+    "latex": {
+      "latex-producing": {
+        "description": "产生乳胶的植物",
+        "plants": [
+          "琴叶榕", "橡皮树", "无花果", "榕树类"
+        ],
+        "symptoms": ["皮肤过敏", "呼吸困难", "严重过敏反应"]
+      },
+      "ficus-family": {
+        "description": "榕属植物",
+        "plants": [
+          "琴叶榕", "橡皮树", "垂叶榕", "印度榕"
+        ],
+        "symptoms": ["乳胶过敏", "接触性皮炎"]
+      }
+    }
+  },
+  "safetyLevels": {
+    "pet-safe": {
+      "description": "对宠物安全的植物",
+      "plants": [
+        "蜘蛛植物", "波士顿蕨", "竹棕", "猫草", "薄荷"
+      ],
+      "notes": "经过验证对猫狗安全"
+    },
+    "child-safe": {
+      "description": "对儿童安全的植物",
+      "plants": [
+        "蜘蛛植物", "波士顿蕨", "竹棕", "紫罗兰", "非洲紫罗兰"
+      ],
+      "notes": "无毒且无尖刺"
+    },
+    "allergy-friendly": {
+      "description": "低过敏性植物",
+      "plants": [
+        "蜘蛛植物", "波士顿蕨", "竹棕", "虎皮兰", "橡皮树"
+      ],
+      "notes": "低花粉、无强烈气味"
+    }
+  },
+  "emergencyInfo": {
+    "petPoisoning": {
+      "immediateActions": [
+        "立即移除植物残留物",
+        "不要催吐（除非兽医指示）",
+        "保存植物样本",
+        "立即联系兽医"
+      ],
+      "emergencyContacts": {
+        "中国": "宠物急救热线：400-xxx-xxxx",
+        "国际": "ASPCA动物毒物控制中心：(888) 426-4435"
+      }
+    },
+    "humanPoisoning": {
+      "immediateActions": [
+        "漱口清洁",
+        "不要催吐",
+        "保存植物样本",
+        "立即就医或联系毒物控制中心"
+      ],
+      "emergencyContacts": {
+        "中国": "中毒急救热线：120",
+        "国际": "毒物控制中心：根据当地情况"
+      }
+    }
+  }
+}

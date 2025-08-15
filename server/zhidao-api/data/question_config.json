@@ -31,6 +31,25 @@
         { "value": "expert", "label": "达人" }
       ]
     }
+,
+    {
+      "id": "pets",
+      "type": "single",
+      "title": "你家中是否有宠物？",
+      "options": [
+        { "value": "yes", "label": "有" },
+        { "value": "no", "label": "无" }
+      ]
+    },
+    {
+      "id": "children",
+      "type": "single",
+      "title": "你家中是否有儿童？",
+      "options": [
+        { "value": "yes", "label": "有" },
+        { "value": "no", "label": "无" }
+      ]
+    }
   ]
 }
 
