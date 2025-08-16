@@ -119,28 +119,49 @@ Page({
   // 初始化动态问卷系统
   initDynamicQuestionnaire(questionBank) {
     console.log('[initDynamicQuestionnaire] 初始化动态问卷系统');
+    console.log('[initDynamicQuestionnaire] questionBank类型:', typeof questionBank, Array.isArray(questionBank));
+
+    // 处理不同的questionBank格式
+    let processedQuestionBank;
+    let totalQuestions = 0;
+
+    if (Array.isArray(questionBank)) {
+      // 如果是数组格式，转换为简化的阶段格式
+      console.log('[initDynamicQuestionnaire] 检测到数组格式，转换为阶段格式');
+      processedQuestionBank = {
+        userProfile: {
+          name: '用户问卷',
+          questions: questionBank
+        }
+      };
+      totalQuestions = questionBank.length;
+    } else if (questionBank && typeof questionBank === 'object') {
+      // 如果是对象格式，按原逻辑处理
+      console.log('[initDynamicQuestionnaire] 检测到对象格式，使用原逻辑');
+      processedQuestionBank = questionBank;
+      Object.values(questionBank).forEach(phase => {
+        if (phase.questions) {
+          totalQuestions += phase.questions.length;
+        }
+      });
+    } else {
+      console.error('[initDynamicQuestionnaire] 无效的questionBank格式:', questionBank);
+      processedQuestionBank = {};
+    }
 
     // 简化版动态问卷管理器（内联实现）
     this.dynamicQuestionnaire = {
-      questionBank,
+      questionBank: processedQuestionBank,
       userProfile: {},
       answers: [],
       currentPhase: 'userProfile',
       currentQuestionIndex: 0,
       phaseOrder: ['userProfile', 'environment', 'aesthetic', 'safety'],
-      totalQuestions: 0
+      totalQuestions: totalQuestions
     };
 
-    // 计算总问题数
-    let totalQuestions = 0;
-    Object.values(questionBank).forEach(phase => {
-      if (phase.questions) {
-        totalQuestions += phase.questions.length;
-      }
-    });
-    this.dynamicQuestionnaire.totalQuestions = totalQuestions;
-
     console.log('[initDynamicQuestionnaire] 总问题数:', totalQuestions);
+    console.log('[initDynamicQuestionnaire] 处理后的questionBank:', processedQuestionBank);
 
     // 恢复之前的答案
     try {
