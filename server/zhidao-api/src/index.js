@@ -36,114 +36,212 @@ app.get('/healthz', (req, res) => {
   res.json({ ok: true, ts: Date.now() });
 });
 
-// GET /getQuestionConfig - 动态问卷配置
+// GET /getQuestionConfig - 问卷配置（使用数据库）
 // query: { phase?: string, userProfile?: string }
 // resp: { ok: true, version: string, questionBank?: Object, questions?: Array }
-app.get('/getQuestionConfig', (req, res) => {
+app.get('/getQuestionConfig', async (req, res) => {
   const { phase, userProfile } = req.query;
 
-  // 尝试加载增强版题库
-  let enhancedBank = readJSON('enhanced_question_bank.json', null);
-  if (enhancedBank && enhancedBank.questionBank) {
-    // 返回完整的动态题库
+  try {
+    const db = svc.database();
+
+    // 尝试从数据库获取动态题库配置
+    const result = await db.collection('question_config')
+      .where({ type: 'dynamic_questionnaire' })
+      .orderBy('updatedAt', 'desc')
+      .limit(1)
+      .get();
+
+    if (result.data && result.data.length > 0) {
+      const config = result.data[0];
+      res.json({
+        ok: true,
+        version: config.version || 'v2.1',
+        questionBank: config.questionBank,
+        supportsDynamicQuestionnaire: true
+      });
+      return;
+    }
+
+    // 回退到传统问卷配置
+    const fallbackResult = await db.collection('question_config')
+      .where({ type: { $ne: 'dynamic_questionnaire' } })
+      .orderBy('updatedAt', 'desc')
+      .limit(1)
+      .get();
+
+    if (fallbackResult.data && fallbackResult.data.length > 0) {
+      const config = fallbackResult.data[0];
+      res.json({
+        ok: true,
+        version: config.version || 'v1.0',
+        questions: config.questions || [],
+        supportsDynamicQuestionnaire: false
+      });
+      return;
+    }
+
+    // 最终回退到文件
+    const cfg = readJSON('question_config.json', { version: 'v0', questions: [] });
     res.json({
       ok: true,
-      version: enhancedBank.version,
-      questionBank: enhancedBank.questionBank,
-      supportsDynamicQuestionnaire: true
+      version: cfg.version,
+      questions: cfg.questions,
+      supportsDynamicQuestionnaire: false
     });
-    return;
-  }
 
-  // 回退到原始配置
-  const cfg = readJSON('question_config.json', { version: 'v0', questions: [] });
-  res.json({
-    ok: true,
-    version: cfg.version,
-    questions: cfg.questions,
-    supportsDynamicQuestionnaire: false
-  });
+  } catch (error) {
+    console.error('[getQuestionConfig] database error:', error);
+    // 回退到文件存储
+    const cfg = readJSON('question_config.json', { version: 'v0', questions: [] });
+    res.json({
+      ok: true,
+      version: cfg.version,
+      questions: cfg.questions,
+      supportsDynamicQuestionnaire: false
+    });
+  }
 });
 
 // POST /getQuestionConfig (same as GET for gateway compatibility)
-app.post('/getQuestionConfig', (req, res) => {
+app.post('/getQuestionConfig', async (req, res) => {
   const { phase, userProfile } = req.body || {};
 
-  // 尝试加载增强版题库
-  let enhancedBank = readJSON('enhanced_question_bank.json', null);
-  if (enhancedBank && enhancedBank.questionBank) {
-    // 返回完整的动态题库
+  try {
+    const db = svc.database();
+
+    // 尝试从数据库获取动态题库配置
+    const result = await db.collection('question_config')
+      .where({ type: 'dynamic_questionnaire' })
+      .orderBy('updatedAt', 'desc')
+      .limit(1)
+      .get();
+
+    if (result.data && result.data.length > 0) {
+      const config = result.data[0];
+      res.json({
+        ok: true,
+        version: config.version || 'v2.1',
+        questionBank: config.questionBank,
+        supportsDynamicQuestionnaire: true
+      });
+      return;
+    }
+
+    // 回退到传统问卷配置
+    const fallbackResult = await db.collection('question_config')
+      .where({ type: { $ne: 'dynamic_questionnaire' } })
+      .orderBy('updatedAt', 'desc')
+      .limit(1)
+      .get();
+
+    if (fallbackResult.data && fallbackResult.data.length > 0) {
+      const config = fallbackResult.data[0];
+      res.json({
+        ok: true,
+        version: config.version || 'v1.0',
+        questions: config.questions || [],
+        supportsDynamicQuestionnaire: false
+      });
+      return;
+    }
+
+    // 最终回退到文件
+    const cfg = readJSON('question_config.json', { version: 'v0', questions: [] });
     res.json({
       ok: true,
-      version: enhancedBank.version,
-      questionBank: enhancedBank.questionBank,
-      supportsDynamicQuestionnaire: true
+      version: cfg.version,
+      questions: cfg.questions,
+      supportsDynamicQuestionnaire: false
     });
-    return;
-  }
 
-  // 回退到原始配置
-  const cfg = readJSON('question_config.json', { version: 'v0', questions: [] });
-  res.json({
-    ok: true,
-    version: cfg.version,
-    questions: cfg.questions,
-    supportsDynamicQuestionnaire: false
-  });
+  } catch (error) {
+    console.error('[getQuestionConfig] database error:', error);
+    // 回退到文件存储
+    const cfg = readJSON('question_config.json', { version: 'v0', questions: [] });
+    res.json({
+      ok: true,
+      version: cfg.version,
+      questions: cfg.questions,
+      supportsDynamicQuestionnaire: false
+    });
+  }
 });
 
 
-// POST /listPlants - 增强版植物列表
+// POST /listPlants - 植物列表（使用数据库）
 // req: { page?: number, pageSize?: number, tags?: string[], userProfile?: Object }
 // resp: { ok: true, data: Plant[], total: number, page: number, pageSize: number }
-app.post('/listPlants', (req, res) => {
+app.post('/listPlants', async (req, res) => {
   const { page = 1, pageSize = 10, tags = [], userProfile = {} } = req.body || {};
   const p = Number(page);
   const ps = Number(pageSize);
   if (!Number.isFinite(p) || p < 1) return badRequest(res, 'page must be >=1');
   if (!Number.isFinite(ps) || ps < 1 || ps > 100) return badRequest(res, 'pageSize must be 1~100');
 
-  // 尝试加载增强版植物数据
-  let plants = readJSON('enhanced_plants.json', null);
-  if (!plants) {
-    // 回退到原始数据
-    plants = readJSON('plants.json', []);
+  try {
+    const db = svc.database();
+    let query = { onShelf: true };
+
+    // 安全过滤（基于用户画像）
+    if (userProfile.hasPets) {
+      // 排除对宠物有毒的植物
+      query.tags = { $not: { $in: ['pet_toxic', 'toxic-to-cats', 'toxic-to-dogs'] } };
+    }
+
+    if (userProfile.hasChildren) {
+      // 排除对儿童不安全的植物
+      if (!query.tags) query.tags = {};
+      query.tags = {
+        $and: [
+          query.tags,
+          { $not: { $in: ['child_unsafe', 'toxic-if-ingested', 'sharp-spines'] } }
+        ]
+      };
+    }
+
+    // filter by tags (all included)
+    if (Array.isArray(tags) && tags.length > 0) {
+      if (!query.tags) query.tags = {};
+      query.tags = {
+        $and: [
+          query.tags,
+          { $all: tags }
+        ]
+      };
+    }
+
+    // 获取总数
+    const totalResult = await db.collection('plants').where(query).count();
+    const total = totalResult.total || 0;
+
+    // 获取分页数据
+    const result = await db.collection('plants')
+      .where(query)
+      .orderBy('updatedAt', 'desc')
+      .skip((p - 1) * ps)
+      .limit(ps)
+      .get();
+
+    const data = result.data || [];
+    res.json({ ok: true, data, total, page: p, pageSize: ps });
+
+  } catch (error) {
+    console.error('[listPlants] database error:', error);
+    // 回退到文件存储
+    let plants = readJSON('plants.json', []);
+    plants = plants.filter((x) => x && x.onShelf === true);
+
+    if (Array.isArray(tags) && tags.length > 0) {
+      plants = plants.filter((x) => tags.every((t) => (x.tags || []).includes(t)));
+    }
+
+    plants.sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
+    const total = plants.length;
+    const start = (p - 1) * ps;
+    const data = plants.slice(start, start + ps);
+    res.json({ ok: true, data, total, page: p, pageSize: ps });
   }
-
-  // filter onShelf=true
-  plants = plants.filter((x) => x && x.onShelf === true);
-
-  // 安全过滤（基于用户画像）
-  if (userProfile.hasPets) {
-    plants = plants.filter(plant => {
-      const safetyFlags = plant.safetyFlags || [];
-      return !safetyFlags.includes('pet_unsafe') &&
-             !safetyFlags.includes('toxic-to-cats') &&
-             !safetyFlags.includes('toxic-to-dogs');
-    });
-  }
-
-  if (userProfile.hasChildren) {
-    plants = plants.filter(plant => {
-      const safetyFlags = plant.safetyFlags || [];
-      return !safetyFlags.includes('child_unsafe') &&
-             !safetyFlags.includes('toxic-if-ingested') &&
-             !safetyFlags.includes('sharp-spines');
-    });
-  }
-
-  // filter by tags (all included)
-  if (Array.isArray(tags) && tags.length > 0) {
-    plants = plants.filter((x) => tags.every((t) => (x.tags || []).includes(t)));
-  }
-
-  // sort by updatedAt desc
-  plants.sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
-
-  const total = plants.length;
-  const start = (p - 1) * ps;
-  const data = plants.slice(start, start + ps);
-  res.json({ ok: true, data, total, page: p, pageSize: ps });
 });
 
 
@@ -191,30 +289,16 @@ function scorePlant(answersMap, plant) {
   return score;
 }
 
-// POST /recommendPlants - 增强版植物推荐
+// POST /recommendPlants - 植物推荐（使用数据库）
 // req: { answers: Array<{id:string,value:string}>, topN?: number, userProfile?: Object }
 // resp: { ok: true, data: Plant[], algorithm?: string }
-app.post('/recommendPlants', (req, res) => {
+app.post('/recommendPlants', async (req, res) => {
   const { answers, topN = 10, userProfile = {} } = req.body || {};
   if (!Array.isArray(answers) || answers.length === 0) {
     return badRequest(res, 'answers required');
   }
 
   const answersMap = toAnswerMap(answers);
-
-  // 尝试加载增强版植物数据
-  let plants = readJSON('enhanced_plants.json', null);
-  let useEnhancedAlgorithm = false;
-
-  if (!plants) {
-    // 回退到原始数据和算法
-    plants = readJSON('plants.json', []);
-  } else {
-    useEnhancedAlgorithm = true;
-  }
-
-  // 过滤上架植物
-  plants = plants.filter((x) => x && x.onShelf === true);
 
   // 构建用户画像（从答案中推断）
   const inferredProfile = {
@@ -225,22 +309,80 @@ app.post('/recommendPlants', (req, res) => {
     ...userProfile
   };
 
-  let scored;
+  try {
+    const db = svc.database();
 
-  if (useEnhancedAlgorithm) {
-    // 使用增强版算法
-    scored = enhancedRecommendPlants(answers, plants, inferredProfile, topN);
-  } else {
-    // 使用原始算法（向后兼容）
-    scored = legacyRecommendPlants(answersMap, plants, inferredProfile, topN);
+    // 构建查询条件
+    let query = { onShelf: true };
+
+    // 安全过滤
+    if (inferredProfile.hasPets) {
+      query.tags = { $not: { $in: ['pet_toxic', 'toxic-to-cats', 'toxic-to-dogs'] } };
+    }
+
+    if (inferredProfile.hasChildren) {
+      if (!query.tags) query.tags = {};
+      query.tags = {
+        $and: [
+          query.tags,
+          { $not: { $in: ['child_unsafe', 'toxic-if-ingested', 'sharp-spines'] } }
+        ]
+      };
+    }
+
+    // 获取所有符合条件的植物
+    const result = await db.collection('plants')
+      .where(query)
+      .get();
+
+    let plants = result.data || [];
+
+    // 计算推荐分数
+    const scored = plants.map((plant) => {
+      let score = scorePlant(answersMap, plant);
+
+      // 安全降权（软惩罚）
+      if (!inferredProfile.hasPets && (plant.tags || []).includes('pet_toxic')) {
+        score -= 2;
+      }
+      if (!inferredProfile.hasChildren && (plant.tags || []).includes('child_unsafe')) {
+        score -= 1;
+      }
+
+      return { ...plant, score };
+    });
+
+    // 排序并返回TopN
+    scored.sort((a, b) => {
+      if (b.score !== a.score) return b.score - a.score;
+      return (b.updatedAt || 0) - (a.updatedAt || 0);
+    });
+
+    const data = scored.slice(0, Number(topN) > 0 ? Number(topN) : 10);
+
+    res.json({
+      ok: true,
+      data,
+      algorithm: 'database',
+      userProfile: inferredProfile
+    });
+
+  } catch (error) {
+    console.error('[recommendPlants] database error:', error);
+
+    // 回退到文件存储
+    let plants = readJSON('plants.json', []);
+    plants = plants.filter((x) => x && x.onShelf === true);
+
+    const scored = legacyRecommendPlants(answersMap, plants, inferredProfile, topN);
+
+    res.json({
+      ok: true,
+      data: scored,
+      algorithm: 'legacy_fallback',
+      userProfile: inferredProfile
+    });
   }
-
-  res.json({
-    ok: true,
-    data: scored,
-    algorithm: useEnhancedAlgorithm ? 'enhanced' : 'legacy',
-    userProfile: inferredProfile
-  });
 });
 
 // 增强版推荐算法（简化版，内联实现）
