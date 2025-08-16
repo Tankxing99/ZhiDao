@@ -564,6 +564,166 @@ app.post('/submitAnswers', async (req, res) => {
   res.json({ ok: true });
 });
 
+// POST /importData - 数据导入接口
+// req: { type?: 'plants' | 'questions' | 'all' }
+// resp: { ok: true, results: Object }
+app.post('/importData', async (req, res) => {
+  const { type = 'all' } = req.body || {};
+
+  try {
+    console.log('🚀 开始数据导入流程...');
+
+    const results = {
+      plants: null,
+      questionConfig: null,
+      timestamp: new Date().toISOString()
+    };
+
+    // 导入植物数据
+    if (type === 'all' || type === 'plants') {
+      try {
+        results.plants = await importPlantsToDatabase();
+      } catch (error) {
+        results.plants = { error: error.message };
+      }
+    }
+
+    // 导入题库配置
+    if (type === 'all' || type === 'questions') {
+      try {
+        results.questionConfig = await importQuestionConfigToDatabase();
+      } catch (error) {
+        results.questionConfig = { error: error.message };
+      }
+    }
+
+    console.log('📈 数据导入完成:', results);
+
+    res.json({
+      ok: true,
+      message: '数据导入完成',
+      results: results
+    });
+
+  } catch (error) {
+    console.error('数据导入失败:', error);
+
+    res.status(500).json({
+      ok: false,
+      error: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// 植物数据导入函数
+async function importPlantsToDatabase() {
+  try {
+    console.log('🌱 开始导入植物数据...');
+
+    // 读取植物数据
+    const plantsData = readJSON('enhanced_plants.json', []);
+    console.log(`📊 共找到 ${plantsData.length} 个植物数据`);
+
+    const db = dySDK.database();
+    const plantsCollection = db.collection('plants');
+
+    // 检查现有数据
+    console.log('🔍 检查现有植物数据...');
+    let existingCount = 0;
+    try {
+      const existingPlants = await plantsCollection.where({}).get();
+      existingCount = existingPlants.data.length;
+      console.log(`现有植物数量: ${existingCount}`);
+    } catch (error) {
+      console.log('集合可能不存在，将创建新集合');
+    }
+
+    // 导入植物数据
+    let successCount = 0;
+    let errorCount = 0;
+
+    for (const plant of plantsData) {
+      try {
+        // 转换数据格式
+        const plantDoc = {
+          id: plant.id,
+          name: plant.name,
+          scientific_name: plant.scientific_name,
+          common_names: plant.common_names,
+          characteristics: plant.characteristics,
+          environment: plant.environment,
+          care: plant.care,
+          toxicity: plant.toxicity,
+          questionnaire_tags: plant.questionnaire_tags,
+          tags: plant.tags,
+          safetyFlags: plant.safetyFlags,
+          onShelf: plant.onShelf,
+          cover: plant.cover,
+          updatedAt: plant.updatedAt || Date.now(),
+          score: plant.score || 0,
+          createdAt: Date.now()
+        };
+
+        await plantsCollection.add(plantDoc);
+        successCount++;
+        console.log(`✅ 导入植物: ${plant.name} (${plant.id})`);
+
+      } catch (error) {
+        errorCount++;
+        console.log(`❌ 导入失败: ${plant.name} - ${error.message}`);
+      }
+    }
+
+    console.log(`📊 植物数据导入完成: 成功 ${successCount}, 失败 ${errorCount}`);
+    return {
+      success: successCount,
+      error: errorCount,
+      total: plantsData.length,
+      existingCount: existingCount
+    };
+
+  } catch (error) {
+    console.error('植物数据导入失败:', error);
+    throw error;
+  }
+}
+
+// 题库配置导入函数
+async function importQuestionConfigToDatabase() {
+  try {
+    console.log('📝 开始导入题库配置...');
+
+    // 读取题库配置
+    const configData = readJSON('question_config.json', {});
+    console.log('📊 题库配置数据:', Object.keys(configData));
+
+    const db = dySDK.database();
+    const configCollection = db.collection('question_config');
+
+    // 导入配置数据
+    const configDoc = {
+      type: 'dynamic_questionnaire',
+      version: configData.version || '1.0',
+      config: configData,
+      questionBank: configData.questionBank,
+      questions: configData.questions,
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+      active: true
+    };
+
+    await configCollection.add(configDoc);
+    console.log('✅ 题库配置导入成功');
+
+    return { success: true, version: configDoc.version };
+
+  } catch (error) {
+    console.error('题库配置导入失败:', error);
+    throw error;
+  }
+}
+
 const port = process.env.PORT || 8000;
 app.listen(port, () => {
   console.log(`[zhidao-api] listening on ${port}`);
