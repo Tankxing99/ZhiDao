@@ -103,6 +103,31 @@ app.get('/getQuestionConfig', async (req, res) => {
   }
 });
 
+// Debug endpoint to check database content
+app.get('/debugQuestionConfig', async (req, res) => {
+  try {
+    const db = dySDK.database();
+
+    // 查询所有题库配置数据
+    const allConfigs = await db.collection('question_config').get();
+
+    res.json({
+      ok: true,
+      message: 'Debug info for question_config collection',
+      totalCount: allConfigs.data ? allConfigs.data.length : 0,
+      configs: allConfigs.data || [],
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('[debugQuestionConfig] error:', error);
+    res.json({
+      ok: false,
+      error: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
 // POST /getQuestionConfig (same as GET for gateway compatibility)
 app.post('/getQuestionConfig', async (req, res) => {
   const { phase, userProfile } = req.body || {};
