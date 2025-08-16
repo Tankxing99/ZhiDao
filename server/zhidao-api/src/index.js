@@ -181,49 +181,45 @@ app.post('/listPlants', async (req, res) => {
 
   try {
     const db = svc.database();
-    let query = { onShelf: true };
+
+    // 简化查询，先获取所有上架植物，然后在内存中过滤
+    const result = await db.collection('plants')
+      .where({ onShelf: true })
+      .orderBy('updatedAt', 'desc')
+      .get();
+
+    let plants = result.data || [];
 
     // 安全过滤（基于用户画像）
     if (userProfile.hasPets) {
       // 排除对宠物有毒的植物
-      query.tags = { $not: { $in: ['pet_toxic', 'toxic-to-cats', 'toxic-to-dogs'] } };
+      plants = plants.filter(plant => {
+        const plantTags = plant.tags || [];
+        return !plantTags.some(tag => ['pet_toxic', 'toxic-to-cats', 'toxic-to-dogs'].includes(tag));
+      });
     }
 
     if (userProfile.hasChildren) {
       // 排除对儿童不安全的植物
-      if (!query.tags) query.tags = {};
-      query.tags = {
-        $and: [
-          query.tags,
-          { $not: { $in: ['child_unsafe', 'toxic-if-ingested', 'sharp-spines'] } }
-        ]
-      };
+      plants = plants.filter(plant => {
+        const plantTags = plant.tags || [];
+        return !plantTags.some(tag => ['child_unsafe', 'toxic-if-ingested', 'sharp-spines'].includes(tag));
+      });
     }
 
     // filter by tags (all included)
     if (Array.isArray(tags) && tags.length > 0) {
-      if (!query.tags) query.tags = {};
-      query.tags = {
-        $and: [
-          query.tags,
-          { $all: tags }
-        ]
-      };
+      plants = plants.filter(plant => {
+        const plantTags = plant.tags || [];
+        return tags.every(tag => plantTags.includes(tag));
+      });
     }
 
-    // 获取总数
-    const totalResult = await db.collection('plants').where(query).count();
-    const total = totalResult.total || 0;
+    // 分页处理
+    const total = plants.length;
+    const start = (p - 1) * ps;
+    const data = plants.slice(start, start + ps);
 
-    // 获取分页数据
-    const result = await db.collection('plants')
-      .where(query)
-      .orderBy('updatedAt', 'desc')
-      .skip((p - 1) * ps)
-      .limit(ps)
-      .get();
-
-    const data = result.data || [];
     res.json({ ok: true, data, total, page: p, pageSize: ps });
 
   } catch (error) {
@@ -312,30 +308,27 @@ app.post('/recommendPlants', async (req, res) => {
   try {
     const db = svc.database();
 
-    // 构建查询条件
-    let query = { onShelf: true };
-
-    // 安全过滤
-    if (inferredProfile.hasPets) {
-      query.tags = { $not: { $in: ['pet_toxic', 'toxic-to-cats', 'toxic-to-dogs'] } };
-    }
-
-    if (inferredProfile.hasChildren) {
-      if (!query.tags) query.tags = {};
-      query.tags = {
-        $and: [
-          query.tags,
-          { $not: { $in: ['child_unsafe', 'toxic-if-ingested', 'sharp-spines'] } }
-        ]
-      };
-    }
-
-    // 获取所有符合条件的植物
+    // 简化查询，获取所有上架植物，然后在内存中过滤
     const result = await db.collection('plants')
-      .where(query)
+      .where({ onShelf: true })
       .get();
 
     let plants = result.data || [];
+
+    // 安全过滤（基于用户画像）
+    if (inferredProfile.hasPets) {
+      plants = plants.filter(plant => {
+        const plantTags = plant.tags || [];
+        return !plantTags.some(tag => ['pet_toxic', 'toxic-to-cats', 'toxic-to-dogs'].includes(tag));
+      });
+    }
+
+    if (inferredProfile.hasChildren) {
+      plants = plants.filter(plant => {
+        const plantTags = plant.tags || [];
+        return !plantTags.some(tag => ['child_unsafe', 'toxic-if-ingested', 'sharp-spines'].includes(tag));
+      });
+    }
 
     // 计算推荐分数
     const scored = plants.map((plant) => {
