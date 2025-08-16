@@ -43,7 +43,7 @@ app.get('/getQuestionConfig', async (req, res) => {
   const { phase, userProfile } = req.query;
 
   try {
-    const db = svc.database();
+    const db = dySDK.database();
 
     // 尝试从数据库获取动态题库配置
     const result = await db.collection('question_config')
@@ -108,7 +108,7 @@ app.post('/getQuestionConfig', async (req, res) => {
   const { phase, userProfile } = req.body || {};
 
   try {
-    const db = svc.database();
+    const db = dySDK.database();
 
     // 尝试从数据库获取动态题库配置
     const result = await db.collection('question_config')
@@ -180,7 +180,7 @@ app.post('/listPlants', async (req, res) => {
   if (!Number.isFinite(ps) || ps < 1 || ps > 100) return badRequest(res, 'pageSize must be 1~100');
 
   try {
-    const db = svc.database();
+    const db = dySDK.database();
 
     // 简化查询，先获取所有上架植物，然后在内存中过滤
     const result = await db.collection('plants')
@@ -306,7 +306,7 @@ app.post('/recommendPlants', async (req, res) => {
   };
 
   try {
-    const db = svc.database();
+    const db = dySDK.database();
 
     // 简化查询，获取所有上架植物，然后在内存中过滤
     const result = await db.collection('plants')
