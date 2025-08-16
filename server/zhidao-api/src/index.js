@@ -380,7 +380,23 @@ app.post('/recommendPlants', async (req, res) => {
       return (b.updatedAt || 0) - (a.updatedAt || 0);
     });
 
-    const data = scored.slice(0, Number(topN) > 0 ? Number(topN) : 10);
+    // 去重：根据植物ID去重，保留分数最高的记录
+    const uniquePlants = new Map();
+    scored.forEach(plant => {
+      const plantId = plant.id;
+      if (!uniquePlants.has(plantId) || uniquePlants.get(plantId).score < plant.score) {
+        uniquePlants.set(plantId, plant);
+      }
+    });
+
+    // 转换为数组并重新排序
+    const deduplicatedPlants = Array.from(uniquePlants.values());
+    deduplicatedPlants.sort((a, b) => {
+      if (b.score !== a.score) return b.score - a.score;
+      return (b.updatedAt || 0) - (a.updatedAt || 0);
+    });
+
+    const data = deduplicatedPlants.slice(0, Number(topN) > 0 ? Number(topN) : 10);
 
     res.json({
       ok: true,

@@ -121,20 +121,32 @@ Page({
     console.log('[initDynamicQuestionnaire] 初始化动态问卷系统');
     console.log('[initDynamicQuestionnaire] questionBank类型:', typeof questionBank, Array.isArray(questionBank));
 
-    // 处理不同的questionBank格式
+    // 处理不同的questionBank格式，实现真正的动态问卷
     let processedQuestionBank;
     let totalQuestions = 0;
 
     if (Array.isArray(questionBank)) {
-      // 如果是数组格式，转换为简化的阶段格式
-      console.log('[initDynamicQuestionnaire] 检测到数组格式，转换为阶段格式');
+      // 如果是数组格式，实现智能动态问卷逻辑
+      console.log('[initDynamicQuestionnaire] 检测到数组格式，实现动态问卷逻辑');
+
+      // 将题目按类型分类，实现动态选择
+      const allQuestions = questionBank;
       processedQuestionBank = {
-        userProfile: {
-          name: '用户问卷',
-          questions: questionBank
+        // 基础问题阶段（必问）
+        basic: {
+          name: '基础信息',
+          questions: allQuestions.filter(q => ['light', 'space', 'level'].includes(q.id))
+        },
+        // 安全问题阶段（条件触发）
+        safety: {
+          name: '安全考虑',
+          questions: allQuestions.filter(q => ['pets', 'children'].includes(q.id))
         }
       };
-      totalQuestions = questionBank.length;
+
+      // 预估总问题数（基础3题 + 可能的安全题）
+      totalQuestions = processedQuestionBank.basic.questions.length + 1; // 基础题 + 平均1个安全题
+
     } else if (questionBank && typeof questionBank === 'object') {
       // 如果是对象格式，按原逻辑处理
       console.log('[initDynamicQuestionnaire] 检测到对象格式，使用原逻辑');
@@ -154,10 +166,12 @@ Page({
       questionBank: processedQuestionBank,
       userProfile: {},
       answers: [],
-      currentPhase: 'userProfile',
+      currentPhase: 'basic',
       currentQuestionIndex: 0,
-      phaseOrder: ['userProfile', 'environment', 'aesthetic', 'safety'],
-      totalQuestions: totalQuestions
+      phaseOrder: ['basic', 'safety'], // 简化的阶段顺序
+      totalQuestions: totalQuestions,
+      completedPhases: new Set(), // 记录已完成的阶段
+      dynamicLogic: true // 标记启用动态逻辑
     };
 
     console.log('[initDynamicQuestionnaire] 总问题数:', totalQuestions);
@@ -279,19 +293,37 @@ Page({
 
   // 判断是否应该触发某个问题
   shouldTriggerQuestion(question) {
-    if (!question.triggerConditions) return true;
-
     const dq = this.dynamicQuestionnaire;
-    const conditions = question.triggerConditions;
 
-    // 如果条件是 "all"，总是触发
-    if (conditions.includes('all')) return true;
+    // 如果没有启用动态逻辑，所有问题都触发
+    if (!dq.dynamicLogic) return true;
 
-    // 检查用户画像是否匹配触发条件
-    const shouldTrigger = conditions.some(condition => dq.userProfile[condition]);
-    console.log('[shouldTriggerQuestion]', question.id, '触发条件:', conditions, '用户画像匹配:', shouldTrigger);
+    // 基础问题（light, space, level）总是触发
+    if (['light', 'space', 'level'].includes(question.id)) {
+      console.log('[shouldTriggerQuestion]', question.id, '基础问题，总是触发');
+      return true;
+    }
 
-    return shouldTrigger;
+    // 安全问题的动态触发逻辑
+    if (question.id === 'pets') {
+      // 如果用户是新手或选择了小空间，询问宠物情况
+      const isNewbie = dq.answers.some(a => a.id === 'level' && a.value === 'beginner');
+      const isSmallSpace = dq.answers.some(a => a.id === 'space' && a.value === 'small');
+      const shouldTrigger = isNewbie || isSmallSpace;
+      console.log('[shouldTriggerQuestion]', question.id, '新手或小空间触发:', shouldTrigger);
+      return shouldTrigger;
+    }
+
+    if (question.id === 'children') {
+      // 如果用户是新手，询问儿童情况
+      const isNewbie = dq.answers.some(a => a.id === 'level' && a.value === 'beginner');
+      console.log('[shouldTriggerQuestion]', question.id, '新手触发:', isNewbie);
+      return isNewbie;
+    }
+
+    // 默认不触发未知问题
+    console.log('[shouldTriggerQuestion]', question.id, '未知问题，不触发');
+    return false;
   },
 
   // 移动到下一阶段
@@ -299,36 +331,20 @@ Page({
     const dq = this.dynamicQuestionnaire;
     const currentIndex = dq.phaseOrder.indexOf(dq.currentPhase);
 
-    // 寻找下一个需要触发的阶段
-    for (let i = currentIndex + 1; i < dq.phaseOrder.length; i++) {
-      const nextPhase = dq.phaseOrder[i];
-      if (this.shouldTriggerPhase(nextPhase)) {
-        dq.currentPhase = nextPhase;
-        dq.currentQuestionIndex = 0;
-        return;
-      }
+    console.log('[moveToNextPhase] 当前阶段:', dq.currentPhase, '索引:', currentIndex);
+    dq.completedPhases.add(dq.currentPhase);
+
+    // 简化的阶段切换逻辑
+    if (currentIndex < dq.phaseOrder.length - 1) {
+      const nextPhase = dq.phaseOrder[currentIndex + 1];
+      dq.currentPhase = nextPhase;
+      dq.currentQuestionIndex = 0;
+      console.log('[moveToNextPhase] 切换到下一阶段:', nextPhase);
+    } else {
+      // 没有更多阶段，问卷结束
+      dq.currentPhase = 'completed';
+      console.log('[moveToNextPhase] 问卷完成');
     }
-
-    // 没有更多阶段，问卷结束
-    dq.currentPhase = 'completed';
-  },
-
-  // 判断是否应该触发某个阶段
-  shouldTriggerPhase(phase) {
-    const dq = this.dynamicQuestionnaire;
-    const phaseConfig = dq.questionBank[phase];
-    if (!phaseConfig || !phaseConfig.triggerConditions) return true;
-
-    const conditions = phaseConfig.triggerConditions;
-
-    // 如果条件是 "all"，总是触发
-    if (conditions.includes('all')) return true;
-
-    // 检查用户画像是否匹配触发条件
-    const shouldTrigger = conditions.some(condition => dq.userProfile[condition]);
-    console.log('[shouldTriggerPhase]', phase, '触发条件:', conditions, '用户画像匹配:', shouldTrigger);
-
-    return shouldTrigger;
   },
 
   // 计算整体进度
