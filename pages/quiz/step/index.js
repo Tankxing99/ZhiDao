@@ -353,15 +353,19 @@ Page({
     let totalQuestions = 0;
     let answeredQuestions = dq.answers.length;
 
-    // 计算需要回答的总问题数（基于触发条件）
-    dq.phaseOrder.forEach(phase => {
-      if (this.shouldTriggerPhase(phase)) {
+    // 简化的进度计算：使用预估的总问题数
+    if (dq.dynamicLogic) {
+      // 动态问卷：基础3题 + 可能的安全题
+      totalQuestions = dq.totalQuestions;
+    } else {
+      // 传统问卷：计算所有阶段的问题数
+      dq.phaseOrder.forEach(phase => {
         const phaseConfig = dq.questionBank[phase];
-        if (phaseConfig) {
+        if (phaseConfig && phaseConfig.questions) {
           totalQuestions += phaseConfig.questions.length;
         }
-      }
-    });
+      });
+    }
 
     return {
       current: answeredQuestions,
