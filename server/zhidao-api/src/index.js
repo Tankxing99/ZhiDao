@@ -54,10 +54,12 @@ app.get('/getQuestionConfig', async (req, res) => {
 
     if (result.data && result.data.length > 0) {
       const config = result.data[0];
+      // 动态问卷配置可能存储在 config.questions 或 questions 字段中
+      const questionBank = config.questionBank || config.config?.questions || config.questions;
       res.json({
         ok: true,
         version: config.version || 'v2.1',
-        questionBank: config.questionBank,
+        questionBank: questionBank,
         supportsDynamicQuestionnaire: true
       });
       return;
@@ -144,10 +146,12 @@ app.post('/getQuestionConfig', async (req, res) => {
 
     if (result.data && result.data.length > 0) {
       const config = result.data[0];
+      // 动态问卷配置可能存储在 config.questions 或 questions 字段中
+      const questionBank = config.questionBank || config.config?.questions || config.questions;
       res.json({
         ok: true,
         version: config.version || 'v2.1',
-        questionBank: config.questionBank,
+        questionBank: questionBank,
         supportsDynamicQuestionnaire: true
       });
       return;
