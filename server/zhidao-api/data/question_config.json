@@ -1,55 +1,35 @@
-{
-  "version": "v1",
-  "questions": [
-    {
-      "id": "light",
-      "type": "single",
-      "title": "你的居住环境光照？",
-      "options": [
-        { "value": "low", "label": "弱光" },
-        { "value": "medium", "label": "中等" },
-        { "value": "high", "label": "充足" }
-      ]
-    },
-    {
-      "id": "space",
-      "type": "single",
-      "title": "摆放空间大小？",
-      "options": [
-        { "value": "small", "label": "小" },
-        { "value": "medium", "label": "中" },
-        { "value": "large", "label": "大" }
-      ]
-    },
-    {
-      "id": "level",
-      "type": "single",
-      "title": "养护经验水平？",
-      "options": [
-        { "value": "beginner", "label": "新手" },
-        { "value": "intermediate", "label": "进阶" },
-        { "value": "expert", "label": "达人" }
-      ]
-    }
-,
-    {
-      "id": "pets",
-      "type": "single",
-      "title": "你家中是否有宠物？",
-      "options": [
-        { "value": "yes", "label": "有" },
-        { "value": "no", "label": "无" }
-      ]
-    },
-    {
-      "id": "children",
-      "type": "single",
-      "title": "你家中是否有儿童？",
-      "options": [
-        { "value": "yes", "label": "有" },
-        { "value": "no", "label": "无" }
-      ]
-    }
+{ "version": "v2.2",
+  "questions": [],
+  "questionBank": [
+    { "id":"light","type":"single","title":"你的居住环境光照？","options":[{"value":"low","label":"弱光"},{"value":"medium","label":"中等"},{"value":"high","label":"充足"}] },
+    { "id":"space","type":"single","title":"摆放空间大小？","options":[{"value":"small","label":"小"},{"value":"medium","label":"中"},{"value":"large","label":"大"}] },
+    { "id":"level","type":"single","title":"养护经验水平？","options":[{"value":"beginner","label":"新手"},{"value":"intermediate","label":"进阶"},{"value":"expert","label":"达人"}] },
+    { "id":"pets","type":"single","title":"你家中是否有宠物？","options":[{"value":"yes","label":"有"},{"value":"no","label":"无"}] },
+    { "id":"children","type":"single","title":"你家中是否有儿童？","options":[{"value":"yes","label":"有"},{"value":"no","label":"无"}] },
+
+    { "id":"ventilation","type":"single","title":"该空间的通风情况如何？","options":[{"value":"good","label":"通风良好"},{"value":"medium","label":"一般"},{"value":"poor","label":"差"}] },
+    { "id":"temperature","type":"single","title":"你所在的地区平均温度情况？","options":[{"value":"four_seasons","label":"四季分明"},{"value":"warm","label":"偏热/常年温暖"},{"value":"cold","label":"偏冷/冬天长时间低温"}] },
+    { "id":"homePresence","type":"single","title":"你平时在家的频率？","options":[{"value":"often_home","label":"经常在家"},{"value":"evening_home","label":"白天上班，晚上在家"},{"value":"traveling","label":"经常出差/不固定"}] },
+
+    { "id":"wateringHabit","type":"single","title":"你平时浇水的习惯？","options":[{"value":"regular","label":"有固定习惯"},{"value":"sometimes","label":"偶尔想起来"},{"value":"forgetful","label":"经常忘记"}] },
+    { "id":"repotting","type":"single","title":"你是否能接受换盆？","options":[{"value":"enjoy","label":"可以，觉得有乐趣"},{"value":"ok","label":"可以，但不宜太频繁"},{"value":"avoid","label":"不想换盆"}] },
+    { "id":"fertilization","type":"single","title":"你能接受施肥吗？","options":[{"value":"regular","label":"可以定期施肥"},{"value":"occasional","label":"偶尔可以"},{"value":"avoid","label":"不想施肥"}] },
+    { "id":"pestAttitude","type":"single","title":"你对植物病虫害的态度？","options":[{"value":"handle","label":"能接受，愿意处理"},{"value":"simple_only","label":"简单方法可接受"},{"value":"cannot","label":"完全不能接受"}] },
+    { "id":"travelFrequency","type":"single","title":"你的出差/旅行频率？","options":[{"value":"rare","label":"几乎不出差"},{"value":"monthly","label":"每月1–2次"},{"value":"often","label":"经常(>3次/月)"}] },
+
+    { "id":"plantType","type":"multiple","title":"你更喜欢的植物类型？（可多选）","options":[{"value":"foliage","label":"观叶"},{"value":"flower","label":"观花"},{"value":"functional","label":"功能型"},{"value":"succulent","label":"多肉/仙人掌"}] },
+    { "id":"stylePreference","type":"multiple","title":"你喜欢的绿植风格？（可多选）","options":[{"value":"minimal","label":"简约清新"},{"value":"natural","label":"茂盛自然"},{"value":"unique","label":"造型独特"},{"value":"mini","label":"小巧精致"}] },
+    { "id":"plantSize","type":"single","title":"你希望植物的大小？","options":[{"value":"small","label":"小型"},{"value":"medium","label":"中型"},{"value":"large","label":"大型"}] },
+    { "id":"leafShape","type":"multiple","title":"你更喜欢植物的叶片形态？（可多选）","options":[{"value":"broad","label":"宽大热带感"},{"value":"tall","label":"修长挺拔"},{"value":"hanging","label":"垂吊型"},{"value":"small","label":"小巧多变"}] },
+    { "id":"flowerExpectation","type":"single","title":"你对植物的花期有期待吗？","options":[{"value":"want","label":"希望有花期"},{"value":"nocare","label":"不在意花期"},{"value":"evergreen","label":"更偏好常绿"}] },
+
+    { "id":"functionFocus","type":"single","title":"你更看重植物的哪方面功能？","options":[{"value":"air_purify","label":"净化空气"},{"value":"formaldehyde","label":"吸甲醛等"},{"value":"mosquito","label":"驱虫/驱蚊"},{"value":"ambience","label":"增添氛围"}] },
+    { "id":"allergyConcerns","type":"multiple","title":"你是否有过敏或忌讳？（可多选）","options":[{"value":"pollen","label":"对花粉过敏"},{"value":"fragrance","label":"不喜欢香味"},{"value":"insects","label":"不喜欢招虫"},{"value":"none","label":"没有忌讳"}] },
+
+    { "id":"growthSpeed","type":"single","title":"你希望植物的生长速度？","options":[{"value":"fast","label":"快"},{"value":"medium","label":"中等"},{"value":"slow","label":"慢"}] },
+    { "id":"reproductionPreference","type":"single","title":"你是否希望植物可以繁殖/分株？","options":[{"value":"yes","label":"是"},{"value":"indifferent","label":"无所谓"},{"value":"no","label":"不需要"}] },
+    { "id":"budget","type":"single","title":"你的预算范围？","options":[{"value":"low","label":"经济实惠(<50元)"},{"value":"medium","label":"中等(50-200元)"},{"value":"high","label":"不差钱(>200元)"}] },
+    { "id":"challengeAcceptance","type":"single","title":"你是否介意植物有一定“挑战性”？","options":[{"value":"ok","label":"不介意"},{"value":"avoid","label":"介意，只想养容易活的"}] },
+    { "id":"landmarkPreference","type":"single","title":"你是否希望植物成为空间的“标志性摆设”？","options":[{"value":"yes","label":"是"},{"value":"no","label":"否"}] }
   ]
 }
-

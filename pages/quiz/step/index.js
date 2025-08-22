@@ -1,4 +1,5 @@
 const { parseJson, toastError } = require('../../../utils/index');
+const { logEvent } = require('../../../utils/analytics');
 
 Page({
   data: {
@@ -17,13 +18,17 @@ Page({
     totalInPhase: 0,
     userProfile: {},
     dynamicQuestionnaire: null,
+  onReady(){
+    try{ this._questionStartTs = Date.now(); this._stepStartTs = Date.now(); logEvent('start_question', { mode: 'adaptive' }); }catch(_){ }
+  },
+
   },
   async onLoad(options){
     const idx = Number(options?.idx || 0);
     this.setData({ idx });
 
     // 清除缓存以确保获取最新配置（调试用）
-    // tt.removeStorageSync('question_config_cache');
+    tt.removeStorageSync('question_config_cache');
 
     await this.ensureConfigLoaded();
     this.applyQuestion();
@@ -41,7 +46,7 @@ Page({
   async ensureConfigLoaded(){
     // 本地缓存优先
     let cfg = tt.getStorageSync('question_config_cache');
-    if(!cfg || !cfg.version || !Array.isArray(cfg.questions)){
+    if(!cfg || !cfg.version || (!Array.isArray(cfg.questions) && !Array.isArray(cfg.questionBank))){
       try{
         const app = getApp();
         let cloud = app.globalData && app.globalData.cloud;
@@ -171,7 +176,11 @@ Page({
       phaseOrder: ['basic', 'safety'], // 简化的阶段顺序
       totalQuestions: totalQuestions,
       completedPhases: new Set(), // 记录已完成的阶段
-      dynamicLogic: true // 标记启用动态逻辑
+      dynamicLogic: true, // 标记启用动态逻辑
+      mode: 'adaptive', // fast/adaptive/precision（预留）
+      extraCount: 0,
+      maxExtra: 3,
+      stabilityThresholds: { top1: 0.90, topN: 0.95 }
     };
 
     console.log('[initDynamicQuestionnaire] 总问题数:', totalQuestions);
@@ -256,6 +265,9 @@ Page({
     console.log('[getNextDynamicQuestion] 当前阶段:', dq.currentPhase, '问题索引:', dq.currentQuestionIndex);
     console.log('[getNextDynamicQuestion] 用户画像:', dq.userProfile);
 
+    // 计算稳定度（启发式MVP）
+    try { dq.stability = this.estimateStability(); } catch(_) {}
+
     const currentPhaseConfig = dq.questionBank[dq.currentPhase];
     if (!currentPhaseConfig) {
       console.log('[getNextDynamicQuestion] 阶段配置不存在:', dq.currentPhase);
@@ -289,6 +301,19 @@ Page({
     console.log('[getNextDynamicQuestion] 当前阶段完成，切换到下一阶段');
     this.moveToNextPhase();
     return this.getNextDynamicQuestion();
+  },
+
+  // 是否存在待触发且未作答的安全问题（pets/children）
+  hasPendingSafetyQuestions(){
+    const dq = this.dynamicQuestionnaire;
+    if(!dq || !dq.questionBank || !dq.questionBank.safety || !Array.isArray(dq.questionBank.safety.questions)) return false;
+    for(const q of dq.questionBank.safety.questions){
+      const answered = dq.answers.some(a=>a.id===q.id);
+      if(!answered && this.shouldTriggerQuestion(q)){
+        return true;
+      }
+    }
+    return false;
   },
 
   // 判断是否应该触发某个问题
@@ -374,6 +399,21 @@ Page({
     };
   },
 
+  // 稳定度估计（MVP启发式，常数近似，保留接口）
+  estimateStability(){
+    const t0 = Date.now();
+    const dq = this.dynamicQuestionnaire;
+    const ans = dq && dq.answers ? dq.answers : [];
+    // 简单启发式：回答越多，稳定度越高（仅作占位，后续替换为MC采样）
+    const count = ans.length;
+    const top1 = Math.min(0.6 + 0.1 * count, 0.95);
+    const topN = Math.min(0.7 + 0.1 * count, 0.98);
+    const dur = Date.now() - t0;
+    // 超时降级埋点（占位）
+    if (dur > 80) { try { logEvent('adaptive_degrade', { reason: 'est_stability_slow', dur }); } catch(_){} }
+    return { top1, topN };
+  },
+
   applyQuestion(){
     console.log('[applyQuestion] 开始应用问题');
     console.log('[applyQuestion] 支持动态问卷:', this.data.supportsDynamicQuestionnaire);
@@ -382,6 +422,7 @@ Page({
     if (this.data.supportsDynamicQuestionnaire && this.dynamicQuestionnaire) {
       // 使用动态问卷
       console.log('[applyQuestion] 使用动态问卷模式');
+      this._stepStartTs = Date.now();
       const questionData = this.getNextDynamicQuestion();
       if (questionData) {
         console.log('[applyQuestion] 设置问题数据:', questionData.id);
@@ -439,6 +480,7 @@ Page({
     } catch (_) { /* ignore */ }
 
     // 跳转到提交页面
+    try{ logEvent('adaptive_finish', { qcount: dq.answers.length, extra: dq.extraCount||0 }); }catch(_){ }
     this.submitDynamicAnswers();
   },
 
@@ -493,6 +535,9 @@ Page({
           app.globalData.userProfile = dq.userProfile;
           app.globalData.recommendAlgorithm = recommendData.algorithm || 'enhanced';
         }
+
+        // 成功后清理本地答案，避免下次进入自动复用导致过早结束
+        try { tt.removeStorageSync('quiz_answers'); } catch(_){}
 
         // 跳转到结果页
         tt.redirectTo({ url: '/pages/result/index' });
@@ -584,6 +629,7 @@ Page({
   async goNext(){
     const { selected, question } = this.data;
     if(!selected){ return tt.showToast({ icon:'none', title:'请先选择' }); }
+    try{ logEvent('question_next', { qid: question?.id }); }catch(_){ }
 
     if (this.data.supportsDynamicQuestionnaire && this.dynamicQuestionnaire) {
       // 动态问卷模式
@@ -594,13 +640,35 @@ Page({
         this.processDynamicAnswer(question.id, selected);
       }
 
-      // 移动到下一个问题
-      dq.currentQuestionIndex++;
+      // 自适应停止判断（MVP：基于启发式稳定度与追加题上限）
+      const st = this.estimateStability();
+      const needMore = !(st.top1 >= dq.stabilityThresholds.top1 && st.topN >= dq.stabilityThresholds.topN);
+
+      // 至少保证基础3题（light/space/level）全部作答后才允许结束
+      const basicAnswered = ['light','space','level'].every(id => dq.answers.some(a => a.id === id));
+
+      // 若有待触发的安全题未作答，则优先进入安全阶段，不提前结束
+      const hasPendingSafety = this.hasPendingSafetyQuestions();
+
+      if ((!basicAnswered) || hasPendingSafety || (needMore && dq.extraCount < dq.maxExtra)) {
+        // 进入下一题（基础题/安全题/追加题）
+        dq.currentQuestionIndex++;
+        if (basicAnswered) { dq.extraCount++; }
+        try{ logEvent('adaptive_extra', { extra: dq.extraCount, qid: question?.id, top1: st.top1, topN: st.topN, pendingSafety: hasPendingSafety }); }catch(_){ }
+      } else {
+        // 完成问卷
+        const dur = (Date.now() - (this._questionStartTs||Date.now())) || 0;
+        try{ logEvent('adaptive_finish', { qcount: dq.answers.length, extra: dq.extraCount||0, dur }); }catch(_){ }
+        return this.completeDynamicQuestionnaire();
+      }
 
       // 获取下一个问题
       const nextQuestion = this.getNextDynamicQuestion();
       if (nextQuestion) {
         // 还有问题，更新页面
+        const stepDur = (Date.now() - (this._stepStartTs||Date.now())) || 0;
+        try{ logEvent('question_next', { qid: nextQuestion.id, stepDur }); }catch(_){ }
+        this._stepStartTs = Date.now();
         this.setData({
           question: nextQuestion,
           currentPhase: nextQuestion.phase,
@@ -613,6 +681,8 @@ Page({
         });
       } else {
         // 问卷完成
+        const dur = (Date.now() - (this._questionStartTs||Date.now())) || 0;
+        try{ logEvent('adaptive_finish', { qcount: dq.answers.length, extra: dq.extraCount||0, dur }); }catch(_){ }
         this.completeDynamicQuestionnaire();
       }
     } else {

@@ -46,9 +46,17 @@ app.get('/getQuestionConfig', async (req, res) => {
     const db = dySDK.database();
 
     // 尝试从数据库获取动态题库配置
+    // 查找包含 questionBank、config.questions 或 active 字段的文档（动态问卷特征）
     const result = await db.collection('question_config')
-      .where({ type: 'dynamic_questionnaire' })
-      .orderBy('updatedAt', 'desc')
+      .where({
+        $or: [
+          { type: 'dynamic_questionnaire' },
+          { questionBank: { $exists: true } },
+          { 'config.questions': { $exists: true } },
+          { active: { $exists: true } }
+        ]
+      })
+      .orderBy('createdAt', 'desc')
       .limit(1)
       .get();
 
@@ -56,28 +64,47 @@ app.get('/getQuestionConfig', async (req, res) => {
       const config = result.data[0];
       // 动态问卷配置可能存储在 config.questions 或 questions 字段中
       const questionBank = config.questionBank || config.config?.questions || config.questions;
-      res.json({
-        ok: true,
-        version: config.version || 'v2.1',
-        questionBank: questionBank,
-        supportsDynamicQuestionnaire: true
-      });
-      return;
+
+      // 确保找到的是真正的动态问卷配置（有完整的问题结构）
+      if (questionBank && Array.isArray(questionBank) && questionBank.length > 0) {
+        res.json({
+          ok: true,
+          version: config.version || config.config?.version || 'v2.1',
+          questionBank: questionBank,
+          supportsDynamicQuestionnaire: true
+        });
+        return;
+      }
     }
 
     // 回退到传统问卷配置
+    // 查找传统格式的问题（不包含动态问卷特征字段）
     const fallbackResult = await db.collection('question_config')
-      .where({ type: { $ne: 'dynamic_questionnaire' } })
+      .where({
+        $and: [
+          { type: { $ne: 'dynamic_questionnaire' } },
+          { questionBank: { $exists: false } },
+          { 'config.questions': { $exists: false } },
+          { active: { $exists: false } },
+          { question: { $exists: true } } // 传统问卷有 question 字段
+        ]
+      })
       .orderBy('updatedAt', 'desc')
-      .limit(1)
+      .limit(5)
       .get();
 
     if (fallbackResult.data && fallbackResult.data.length > 0) {
-      const config = fallbackResult.data[0];
+      // 将多个传统问题文档组合成问题数组
+      const questions = fallbackResult.data.map(doc => ({
+        question: doc.question,
+        type: doc.type,
+        options: doc.options
+      }));
+
       res.json({
         ok: true,
-        version: config.version || 'v1.0',
-        questions: config.questions || [],
+        version: 'v1.0',
+        questions: questions,
         supportsDynamicQuestionnaire: false
       });
       return;
@@ -324,6 +351,7 @@ app.post('/recommendPlants', async (req, res) => {
   }
 
   const answersMap = toAnswerMap(answers);
+  const tStart = Date.now();
 
   // 构建用户画像（从答案中推断）
   const inferredProfile = {
@@ -359,8 +387,10 @@ app.post('/recommendPlants', async (req, res) => {
       });
     }
 
-    // 计算推荐分数
-    const scored = plants.map((plant) => {
+    const candidateTotal = plants.length;
+
+    // 计算基础推荐分数
+    const baseScored = plants.map((plant) => {
       let score = scorePlant(answersMap, plant);
 
       // 安全降权（软惩罚）
@@ -374,35 +404,131 @@ app.post('/recommendPlants', async (req, res) => {
       return { ...plant, score };
     });
 
-    // 排序并返回TopN
-    scored.sort((a, b) => {
-      if (b.score !== a.score) return b.score - a.score;
-      return (b.updatedAt || 0) - (a.updatedAt || 0);
-    });
-
     // 去重：根据植物ID去重，保留分数最高的记录
-    const uniquePlants = new Map();
-    scored.forEach(plant => {
+    const uniqueMap = new Map();
+    baseScored.forEach(plant => {
       const plantId = plant.id;
-      if (!uniquePlants.has(plantId) || uniquePlants.get(plantId).score < plant.score) {
-        uniquePlants.set(plantId, plant);
+      if (!uniqueMap.has(plantId) || uniqueMap.get(plantId).score < plant.score) {
+        uniqueMap.set(plantId, plant);
       }
     });
 
-    // 转换为数组并重新排序
-    const deduplicatedPlants = Array.from(uniquePlants.values());
-    deduplicatedPlants.sort((a, b) => {
+    let ranked = Array.from(uniqueMap.values());
+
+    // 基础排序
+    ranked.sort((a, b) => {
       if (b.score !== a.score) return b.score - a.score;
       return (b.updatedAt || 0) - (a.updatedAt || 0);
     });
 
-    const data = deduplicatedPlants.slice(0, Number(topN) > 0 ? Number(topN) : 10);
+    // 可选：A/B 分桶（按 openId/anonymousOpenid 进行一致性哈希）
+    let userIdForAb = '';
+    try {
+      const serviceCtx = dySDK.context({ headers: req.headers });
+      const ctx = serviceCtx.getContext();
+      userIdForAb = (ctx?.openId || ctx?.anonymousOpenid || '') + '';
+    } catch(_){}
+    const AB_MODE = (process.env.AB_MODE || '').toLowerCase(); // 'hash' 时启用哈希分桶
+
+    // 可选：贝叶斯不确定性惩罚（MVP 简化版）与 MMR 参数
+    const ENABLE_BAYES_UNC_ENV = (process.env.ENABLE_BAYES_UNC || '1') === '1';
+    const LAMBDA_UNC = Number(process.env.LAMBDA_UNC || 0.2);
+    const ENABLE_MMR_ENV = (process.env.ENABLE_MMR || '1') === '1';
+    const MMR_LAMBDA = Number(process.env.MMR_LAMBDA || 0.7);
+    const TOP_M_FOR_RERANK = Math.max(10, Number(process.env.TOP_M_FOR_RERANK || 50));
+
+    // 计算分桶并得到实际生效的开关
+    const ab = (AB_MODE === 'hash' && userIdForAb) ? abBucket(userIdForAb, 2) : { bucket: 'env', hash: null };
+    const ENABLE_BAYES_UNC = (AB_MODE === 'hash' && userIdForAb)
+      ? (ab.bucket === 'treatment')
+      : ENABLE_BAYES_UNC_ENV;
+    const ENABLE_MMR = (AB_MODE === 'hash' && userIdForAb)
+      ? (ab.bucket === 'treatment')
+      : ENABLE_MMR_ENV;
+
+    if (ENABLE_BAYES_UNC) {
+      ranked = ranked.map(p => {
+        const tags = p.tags || [];
+        const lightMatch = isMatch(answersMap.light, tags, 'light') ? 1 : 0;
+        const spaceMatch = isMatch(answersMap.space, tags, 'space') ? 1 : 0;
+        const levelMatch = isMatch(answersMap.level, tags, 'level') ? 1 : 0;
+        const matched = lightMatch + spaceMatch + levelMatch;
+        const uncertainty = 1 - (matched / 3); // 匹配越少，不确定性越高
+        const adjusted = p.score - LAMBDA_UNC * uncertainty;
+        return { ...p, score: adjusted };
+      });
+
+      // 重新排序
+      ranked.sort((a, b) => {
+        if (b.score !== a.score) return b.score - a.score;
+        return (b.updatedAt || 0) - (a.updatedAt || 0);
+      });
+    }
+
+    let finalList;
+    let mmrCostMs = 0;
+    if (ENABLE_MMR) {
+      const t0 = Date.now();
+      const topM = ranked.slice(0, Math.min(TOP_M_FOR_RERANK, ranked.length));
+      const R = [];
+      while (R.length < (Number(topN) > 0 ? Number(topN) : 10) && topM.length > 0) {
+        let bestIdx = 0;
+        let bestScore = -Infinity;
+        for (let i = 0; i < topM.length; i++) {
+          const cand = topM[i];
+          let maxSim = 0;
+          for (const r of R) {
+            const s = jaccardSim(cand.tags || [], r.tags || []);
+            if (s > maxSim) maxSim = s;
+          }
+          const mmrScore = MMR_LAMBDA * cand.score - (1 - MMR_LAMBDA) * maxSim;
+          if (mmrScore > bestScore) {
+            bestScore = mmrScore;
+            bestIdx = i;
+          }
+        }
+        R.push(topM[bestIdx]);
+        topM.splice(bestIdx, 1);
+      }
+      finalList = R;
+      mmrCostMs = Date.now() - t0;
+    } else {
+      finalList = ranked.slice(0, Number(topN) > 0 ? Number(topN) : 10);
+
+      // 调试埋点（如需，后续可接入日志收集）
+      console.log('[MMR] lambda=%s topM=%s costMs=%s', MMR_LAMBDA, Math.min(TOP_M_FOR_RERANK, ranked.length), mmrCostMs);
+
+    }
+
+    const elapsed = Date.now() - tStart;
+    const algorithmName = (ENABLE_MMR || ENABLE_BAYES_UNC) ? 'enhanced_bayes_mmr' : 'database';
+    const desiredTopN = (Number(topN) > 0 ? Number(topN) : 10);
+    const riskFlags = [];
+    if (mmrCostMs > 30) riskFlags.push('mmr_slow');
+    if (candidateTotal < 10) riskFlags.push('few_candidates');
+    if ((finalList || []).length < desiredTopN) riskFlags.push('short_result');
+    if (elapsed > 800) riskFlags.push('slow_endpoint');
 
     res.json({
       ok: true,
-      data,
-      algorithm: 'database',
-      userProfile: inferredProfile
+      data: finalList,
+      algorithm: algorithmName,
+      userProfile: inferredProfile,
+      debug: {
+        ENABLE_BAYES_UNC,
+        LAMBDA_UNC,
+        ENABLE_MMR,
+        MMR_LAMBDA,
+        TOP_M_FOR_RERANK,
+        mmrCostMs,
+        candidateTotal,
+        topMUsed: Math.min(TOP_M_FOR_RERANK, ranked.length),
+        ab: { mode: AB_MODE, userHashed: !!userIdForAb, userHash: ab?.hash || null, bucket: ab?.bucket || 'env' },
+        elapsed,
+        fallback: false,
+        algorithmName,
+        riskFlags
+      }
     });
 
   } catch (error) {
@@ -414,11 +540,13 @@ app.post('/recommendPlants', async (req, res) => {
 
     const scored = legacyRecommendPlants(answersMap, plants, inferredProfile, topN);
 
+    const elapsed = Date.now() - tStart;
     res.json({
       ok: true,
       data: scored,
       algorithm: 'legacy_fallback',
-      userProfile: inferredProfile
+      userProfile: inferredProfile,
+      debug: { fallback: true, elapsed }
     });
   }
 });
@@ -537,6 +665,22 @@ function calculateEnhancedScore(answersMap, plant, userProfile) {
   totalScore += careScore * weights.care;
 
   // 安全因素评分
+
+// 一致性哈希分桶（简单实现）：返回 { bucket: 'control'|'treatment', hash }
+function abBucket(userId, buckets = 2) {
+  try {
+    const str = String(userId || '');
+    let h = 0;
+    for (let i = 0; i < str.length; i++) {
+      h = (h * 31 + str.charCodeAt(i)) >>> 0;
+    }
+    const mod = h % buckets;
+    return { bucket: mod === 0 ? 'control' : 'treatment', hash: h };
+  } catch (_) {
+    return { bucket: 'control', hash: null };
+  }
+}
+
   let safetyScore = baseScore;
   const safetyFlags = plant.safetyFlags || [];
   if (userProfile.hasPets && safetyFlags.includes('pet_unsafe')) {
@@ -562,6 +706,21 @@ function isMatchTimeCommitment(timeCommitment, plantTags) {
   const expectedTags = timeTagMapping[timeCommitment] || [];
   return expectedTags.some(tag => plantTags.includes(tag));
 }
+
+// 简单的标签相似度（Jaccard）- 全局可用
+function jaccardSim(a = [], b = []) {
+  try {
+    const sa = new Set(Array.isArray(a) ? a : []);
+    const sb = new Set(Array.isArray(b) ? b : []);
+    let inter = 0;
+    sa.forEach((x) => { if (sb.has(x)) inter++; });
+    const union = sa.size + sb.size - inter;
+    return union > 0 ? inter / union : 0;
+  } catch (_) {
+    return 0;
+  }
+}
+
 
 // POST /submitAnswers
 // req: { openId?: string, answers: Array<{id:string,value:any}>, clientTs?: number }
@@ -770,6 +929,30 @@ async function importQuestionConfigToDatabase() {
 }
 
 const port = process.env.PORT || 8000;
+// 获取植物详情接口
+app.post('/getPlantDetail', (req, res) => {
+  const { plantId } = req.body;
+
+  if (!plantId) {
+    return res.status(400).json({ ok: false, message: '缺少植物ID' });
+  }
+
+  try {
+    // 从植物知识库读取详细信息
+    const knowledgeDb = readJSON('plant_knowledge_database.json', { plants: [] });
+    const plantDetail = knowledgeDb.plants.find(p => p.id === plantId);
+
+    if (!plantDetail) {
+      return res.json({ ok: false, message: '未找到植物详情' });
+    }
+
+    res.json({ ok: true, data: plantDetail });
+  } catch (error) {
+    console.error('[getPlantDetail] error:', error);
+    res.status(500).json({ ok: false, message: '服务器错误' });
+  }
+});
+
 app.listen(port, () => {
   console.log(`[zhidao-api] listening on ${port}`);
 });
