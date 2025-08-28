@@ -14,10 +14,20 @@
     </view>
     <view class="qcard">
       <text class="qtitle">{{question.title}}</text>
-      <view class="options">
+      <!-- 单选题：沿用按钮样式 -->
+      <view class="options" tt:if="{{question.type!=='multiple'}}">
         <block tt:for="{{question.options}}" tt:key="value" tt:for-item="opt">
           <button class="opt {{selected===opt.value?'active':''}}" data-value="{{opt.value}}" bindtap="onSelect">{{opt.label}}</button>
         </block>
+      </view>
+      <!-- 多选题：使用 checkbox-group -->
+      <view class="options" tt:elif="{{question.type==='multiple'}}">
+        <checkbox-group bindchange="onMultiChange">
+          <label class="opt checkbox" tt:for="{{question.options}}" tt:key="value" tt:for-item="opt">
+            <checkbox value="{{opt.value}}" checked="{{selectedMulti.indexOf(opt.value) >= 0}}"/>
+            <text class="checkbox-label">{{opt.label}}</text>
+          </label>
+        </checkbox-group>
       </view>
     </view>
     <view class="footer">

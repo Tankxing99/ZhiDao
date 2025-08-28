@@ -926,6 +926,49 @@ async function importQuestionConfigToDatabase() {
     console.error('题库配置导入失败:', error);
     throw error;
   }
+
+// 扁平化增强题库为数组
+function flattenEnhancedQuestionBank(configObj){
+  try{
+    const qb = (configObj && configObj.questionBank) || {};
+    const sections = Object.values(qb).filter(x=>x && Array.isArray(x.questions));
+    const arr = [];
+    sections.forEach(sec=>{
+      sec.questions.forEach(q=>{ if(q && q.id){ arr.push(q); } });
+    });
+    return arr;
+  }catch(_){ return []; }
+}
+
+// 管理端：导入增强题库（enhanced_question_bank.json）到数据库
+app.post('/admin/importEnhancedQuestionBank', async (req, res)=>{
+  try{
+    const enhanced = readJSON('enhanced_question_bank.json', null);
+    if(!enhanced){ return badRequest(res, 'enhanced_question_bank.json not found'); }
+    const questionsFlat = flattenEnhancedQuestionBank(enhanced);
+    if(!Array.isArray(questionsFlat) || questionsFlat.length===0){
+      return badRequest(res, 'no questions parsed from enhanced_question_bank.json');
+    }
+    const db = dySDK.database();
+    const coll = db.collection('question_config');
+    const doc = {
+      type: 'dynamic_questionnaire',
+      version: enhanced.version || 'v2.1',
+      active: true,
+      // 为GET /getQuestionConfig 的兼容：直接提供数组以触发 supportsDynamicQuestionnaire
+      questionBank: questionsFlat,
+      // 兼容保留原始结构
+      config: enhanced,
+      updatedAt: Date.now(),
+      createdAt: Date.now()
+    };
+    await coll.add(doc);
+    res.json({ ok:true, message:'imported', count: questionsFlat.length, version: doc.version });
+  }catch(e){
+    console.error('[admin/importEnhancedQuestionBank] error:', e);
+    res.status(500).json({ ok:false, message: e?.message || 'import failed' });
+  }
+});
 }
 
 const port = process.env.PORT || 8000;

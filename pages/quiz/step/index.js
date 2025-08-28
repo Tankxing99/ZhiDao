@@ -7,6 +7,7 @@ Page({
     total: 0,
     question: null,
     selected: '',
+    selectedMulti: [],
     loading: true,
     // 动态问卷相关
     supportsDynamicQuestionnaire: false,
@@ -39,7 +40,12 @@ Page({
       const answers = tt.getStorageSync('quiz_answers') || {};
       const q = this.data.question;
       if(q && answers[q.id]){
-        this.setData({ selected: answers[q.id] });
+        const val = answers[q.id];
+        if (Array.isArray(val)) {
+          this.setData({ selected: '', selectedMulti: val });
+        } else {
+          this.setData({ selected: val, selectedMulti: [] });
+        }
       }
     }catch(_){/* ignore */}
   },
@@ -146,11 +152,17 @@ Page({
         safety: {
           name: '安全考虑',
           questions: allQuestions.filter(q => ['pets', 'children'].includes(q.id))
+        },
+        // 偏好问题阶段（包含多选题）
+        preferences: {
+          name: '偏好选择',
+          questions: allQuestions.filter(q => q && q.type === 'multiple')
         }
       };
 
-      // 预估总问题数（基础3题 + 可能的安全题）
-      totalQuestions = processedQuestionBank.basic.questions.length + 1; // 基础题 + 平均1个安全题
+      // 预估总问题数（基础+安全+偏好），偏好阶段数量做上限约束（MVP: 最多显示2道）
+      const prefCount = Math.min(processedQuestionBank.preferences.questions.length, 2);
+      totalQuestions = processedQuestionBank.basic.questions.length + processedQuestionBank.safety.questions.length + prefCount;
 
     } else if (questionBank && typeof questionBank === 'object') {
       // 如果是对象格式，按原逻辑处理
@@ -173,7 +185,7 @@ Page({
       answers: [],
       currentPhase: 'basic',
       currentQuestionIndex: 0,
-      phaseOrder: ['basic', 'safety'], // 简化的阶段顺序
+      phaseOrder: ['basic', 'safety', 'preferences'], // 简化的阶段顺序，包含偏好阶段（多选）
       totalQuestions: totalQuestions,
       completedPhases: new Set(), // 记录已完成的阶段
       dynamicLogic: true, // 标记启用动态逻辑
@@ -329,6 +341,12 @@ Page({
       return true;
     }
 
+    // 偏好阶段的多选题：默认触发
+    if (question.type === 'multiple') {
+      console.log('[shouldTriggerQuestion]', question.id, '偏好多选题，默认触发');
+      return true;
+    }
+
     // 安全问题的动态触发逻辑
     if (question.id === 'pets') {
       // 如果用户是新手或选择了小空间，询问宠物情况
@@ -459,8 +477,16 @@ Page({
       const answers = tt.getStorageSync('quiz_answers') || {};
       const q = this.data.question;
       if(q && answers[q.id]){
-        this.setData({ selected: answers[q.id] });
-        console.log('[applyQuestion] 恢复选择:', answers[q.id]);
+        const val = answers[q.id];
+        if (Array.isArray(val)) {
+          this.setData({ selected: '', selectedMulti: val });
+          console.log('[applyQuestion] 恢复多选:', val);
+        } else {
+          this.setData({ selected: val, selectedMulti: [] });
+          console.log('[applyQuestion] 恢复单选:', val);
+        }
+      } else {
+        this.setData({ selected: '', selectedMulti: [] });
       }
     }catch(_){/* ignore */}
   },
@@ -603,8 +629,12 @@ Page({
             this.dynamicQuestionnaire.answers.push({ id: q.id, value });
           }
 
-          // 更新用户画像
-          this.updateUserProfile(q.id, value);
+          // 更新用户画像（兼容无 updateUserProfile 的实现）
+          if (typeof this.updateUserProfile === 'function') {
+            this.updateUserProfile(q.id, value);
+          } else {
+            this.rebuildUserProfile();
+          }
 
           // 保存到本地存储
           tt.setStorageSync('quiz_answers', {
@@ -613,6 +643,40 @@ Page({
             timestamp: Date.now()
           });
         }
+  },
+  // 多选变更
+  onMultiChange(e){
+    const values = Array.isArray(e?.detail?.value) ? e.detail.value : [];
+    this.setData({ selectedMulti: values, selected: '' });
+    try{
+      const q = this.data.question;
+      if (this.data.supportsDynamicQuestionnaire && this.dynamicQuestionnaire) {
+        if (q && q.id) {
+          const idx = this.dynamicQuestionnaire.answers.findIndex(a => a.id === q.id);
+          if (idx >= 0) {
+            this.dynamicQuestionnaire.answers[idx].value = values;
+          } else {
+            this.dynamicQuestionnaire.answers.push({ id: q.id, value: values });
+          }
+          // 更新画像
+          if (typeof this.updateUserProfile === 'function') {
+            this.updateUserProfile(q.id, values);
+          } else {
+            this.rebuildUserProfile();
+          }
+          tt.setStorageSync('quiz_answers', {
+            dynamicAnswers: this.dynamicQuestionnaire.answers,
+            userProfile: this.dynamicQuestionnaire.userProfile,
+            timestamp: Date.now()
+          });
+        }
+      } else {
+        const answers = tt.getStorageSync('quiz_answers') || {};
+        if(q && q.id){ answers[q.id] = values; }
+        tt.setStorageSync('quiz_answers', answers);
+      }
+    }catch(_){/* ignore */}
+  },
       } else {
         // 传统问卷模式
         const answers = tt.getStorageSync('quiz_answers') || {};
@@ -627,8 +691,11 @@ Page({
     tt.navigateBack({ delta: 1 });
   },
   async goNext(){
-    const { selected, question } = this.data;
-    if(!selected){ return tt.showToast({ icon:'none', title:'请先选择' }); }
+    const { selected, selectedMulti, question } = this.data;
+    const isMultiple = question && question.type === 'multiple';
+    if((!isMultiple && !selected) || (isMultiple && (!Array.isArray(selectedMulti) || selectedMulti.length===0))){
+      return tt.showToast({ icon:'none', title:'请先选择' });
+    }
     try{ logEvent('question_next', { qid: question?.id }); }catch(_){ }
 
     if (this.data.supportsDynamicQuestionnaire && this.dynamicQuestionnaire) {
@@ -637,7 +704,9 @@ Page({
 
       // 处理当前答案
       if (question && question.id) {
-        this.processDynamicAnswer(question.id, selected);
+        const isMultiple = question.type === 'multiple';
+        const val = isMultiple ? (Array.isArray(selectedMulti)?selectedMulti:[]) : selected;
+        this.processDynamicAnswer(question.id, val);
       }
 
       // 自适应停止判断（MVP：基于启发式稳定度与追加题上限）
