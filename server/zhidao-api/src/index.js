@@ -927,6 +927,8 @@ async function importQuestionConfigToDatabase() {
     throw error;
   }
 
+}
+
 // 扁平化增强题库为数组
 function flattenEnhancedQuestionBank(configObj){
   try{
