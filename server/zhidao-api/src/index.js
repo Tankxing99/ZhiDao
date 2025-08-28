@@ -940,8 +940,8 @@ function flattenEnhancedQuestionBank(configObj){
   }catch(_){ return []; }
 }
 
-// 管理端：导入增强题库（enhanced_question_bank.json）到数据库
-app.post('/admin/importEnhancedQuestionBank', async (req, res)=>{
+// 管理端：导入增强题库（enhanced_question_bank.json）到数据库（提供多路径别名，便于接口调试）
+async function importEnhancedQuestionBankHandler(req, res){
   try{
     const enhanced = readJSON('enhanced_question_bank.json', null);
     if(!enhanced){ return badRequest(res, 'enhanced_question_bank.json not found'); }
@@ -968,8 +968,11 @@ app.post('/admin/importEnhancedQuestionBank', async (req, res)=>{
     console.error('[admin/importEnhancedQuestionBank] error:', e);
     res.status(500).json({ ok:false, message: e?.message || 'import failed' });
   }
-});
 }
+app.post('/admin/importEnhancedQuestionBank', importEnhancedQuestionBankHandler);
+app.post('/admin/import-enhanced-question-bank', importEnhancedQuestionBankHandler);
+app.post('/importEnhancedQuestionBank', importEnhancedQuestionBankHandler);
+app.get('/admin/importEnhancedQuestionBank', importEnhancedQuestionBankHandler);
 
 const port = process.env.PORT || 8000;
 // 获取植物详情接口
