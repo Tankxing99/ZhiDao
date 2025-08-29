@@ -114,9 +114,6 @@ Page({
               questionBank: resp.questionBank,
               supportsDynamicQuestionnaire: true
 
-	      // 如果不支持动态问卷，则视为降级模式
-	      if (!resp.supportsDynamicQuestionnaire) { try { logEvent('adaptive_degrade', { reason: 'no_dynamic_support' }); } catch(_){} }
-
             };
             this.setData({ supportsDynamicQuestionnaire: true });
             this.initDynamicQuestionnaire(resp.questionBank);
@@ -124,6 +121,8 @@ Page({
             // 使用传统问卷
             const questions = resp.questions || (resp.data && resp.data.questions) || [];
             cfg = { version, questions, supportsDynamicQuestionnaire: false };
+            try{ logEvent('adaptive_degrade', { reason: 'no_dynamic_support' }); }catch(_){}
+
           }
 
           tt.setStorageSync('question_config_cache', cfg);
