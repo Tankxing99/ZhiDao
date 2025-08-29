@@ -192,14 +192,21 @@ Page({
       processedQuestionBank = {};
     }
 
+    // 获取实际的阶段顺序
+    const actualPhases = Object.keys(processedQuestionBank);
+    const firstPhase = actualPhases[0] || 'userProfile';
+
+    console.log('[initDynamicQuestionnaire] 实际阶段:', actualPhases);
+    console.log('[initDynamicQuestionnaire] 第一个阶段:', firstPhase);
+
     // 简化版动态问卷管理器（内联实现）
     this.dynamicQuestionnaire = {
       questionBank: processedQuestionBank,
       userProfile: {},
       answers: [],
-      currentPhase: 'basic',
+      currentPhase: firstPhase, // 使用实际的第一个阶段
       currentQuestionIndex: 0,
-      phaseOrder: ['basic', 'safety', 'preferences'], // 简化的阶段顺序，包含偏好阶段（多选）
+      phaseOrder: actualPhases, // 使用实际的阶段顺序
       totalQuestions: totalQuestions,
       completedPhases: new Set(), // 记录已完成的阶段
       dynamicLogic: true, // 标记启用动态逻辑
