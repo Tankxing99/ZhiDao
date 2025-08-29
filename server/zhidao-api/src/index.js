@@ -571,7 +571,7 @@ app.post('/recommendPlants', async (req, res) => {
       data: scored,
       algorithm: 'legacy_fallback',
       userProfile: inferredProfile,
-      debug: { fallback: true, elapsed }
+      debug: { fallback: true, elapsed, mmrCostMs: 0, reason: (error && (error.message||String(error))).slice(0,200) }
     });
   }
 });
