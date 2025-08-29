@@ -32,6 +32,27 @@ function badRequest(res, message) {
 }
 
 
+// --- 简易性能统计（内存级，仅dev观测用，生产可换为持久化） ---
+const perfStats = {
+  listPlants: [],
+  recommendPlants: [],
+  push(name, ms, fallback=false){
+    const arr = this[name]; if(!arr) return;
+    arr.push({ ms, fallback, ts: Date.now() });
+    if(arr.length>500) arr.shift();
+  },
+  percentiles(name){
+    const arr = (this[name]||[]).map(x=>x.ms).slice().sort((a,b)=>a-b);
+    const pick = (p)=> arr.length? arr[Math.min(arr.length-1, Math.floor((p/100)*arr.length))]:0;
+    return { p50: pick(50), p95: pick(95), count: arr.length };
+  },
+  fallbackRate(name){
+    const arr = this[name]||[]; if(arr.length===0) return 0;
+    const n = arr.filter(x=>x.fallback).length; return Math.round((n/arr.length)*100)/100;
+  }
+};
+
+
 // 统一查询函数：获取题库配置（优先动态问卷，随后传统问卷，最后文件回退）
 async function fetchQuestionConfig(db){
   // 1) 动态问卷：支持多字段路径
@@ -118,26 +139,6 @@ app.get('/debugQuestionConfig', async (req, res) => {
       timestamp: new Date().toISOString()
     });
   } catch (error) {
-
-// --- 简易性能统计（内存级，仅dev观测用，生产可换为持久化） ---
-const perfStats = {
-  listPlants: [],
-  recommendPlants: [],
-  push(name, ms, fallback=false){
-    const arr = this[name]; if(!arr) return;
-    arr.push({ ms, fallback, ts: Date.now() });
-    if(arr.length>500) arr.shift();
-  },
-  percentiles(name){
-    const arr = (this[name]||[]).map(x=>x.ms).slice().sort((a,b)=>a-b);
-    const pick = (p)=> arr.length? arr[Math.min(arr.length-1, Math.floor((p/100)*arr.length))]:0;
-    return { p50: pick(50), p95: pick(95), count: arr.length };
-  },
-  fallbackRate(name){
-    const arr = this[name]||[]; if(arr.length===0) return 0;
-    const n = arr.filter(x=>x.fallback).length; return Math.round((n/arr.length)*100)/100;
-  }
-};
 
     console.error('[debugQuestionConfig] error:', error);
     res.json({
