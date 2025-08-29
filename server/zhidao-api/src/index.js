@@ -283,6 +283,14 @@ app.post('/listPlants', async (req, res) => {
     const total = plants.length;
     const start = (p - 1) * ps;
     const data = plants.slice(start, start + ps);
+    const elapsed = Date.now() - t0;
+    try{
+      usedFallback = true;
+      perfStats.push('listPlants', elapsed, usedFallback);
+      const psnap = perfStats.percentiles('listPlants');
+      const frate = perfStats.fallbackRate('listPlants');
+      console.warn('[listPlants][fallback][perf]', { elapsed, p50: psnap.p50, p95: psnap.p95, count: psnap.count, fallbackRate: frate });
+    }catch(_){ }
     res.json({ ok: true, data, total, page: p, pageSize: ps });
   }
 });
