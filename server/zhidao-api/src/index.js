@@ -296,15 +296,6 @@ app.post('/listPlants', async (req, res) => {
 });
 
 
-	    const elapsed = Date.now() - t0;
-	    try{
-	      usedFallback = true;
-	      perfStats.push('listPlants', elapsed, usedFallback);
-	      const psnap = perfStats.percentiles('listPlants');
-	      const frate = perfStats.fallbackRate('listPlants');
-	      console.warn('[listPlants][fallback][perf]', { elapsed, p50: psnap.p50, p95: psnap.p95, count: psnap.count, fallbackRate: frate });
-	    }catch(_){ }
-
 // --- 简易百分位计算 ---
 function percentile(arr, p){
   if(!Array.isArray(arr) || arr.length===0) return 0;
