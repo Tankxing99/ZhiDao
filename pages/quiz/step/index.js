@@ -18,6 +18,14 @@ Page({
     questionIndex: 0,
     totalInPhase: 0,
     userProfile: {},
+
+	  onShow(){
+	    try{
+	      // 进入页面或返回页面时，重新记录step开始时间
+	      this._stepStartTs = Date.now();
+	    }catch(_){ }
+	  },
+
     dynamicQuestionnaire: null,
   onReady(){
     try{ this._questionStartTs = Date.now(); this._stepStartTs = Date.now(); logEvent('start_question', { mode: 'adaptive' }); }catch(_){ }
@@ -105,6 +113,10 @@ Page({
               version,
               questionBank: resp.questionBank,
               supportsDynamicQuestionnaire: true
+
+	      // 如果不支持动态问卷，则视为降级模式
+	      if (!resp.supportsDynamicQuestionnaire) { try { logEvent('adaptive_degrade', { reason: 'no_dynamic_support' }); } catch(_){} }
+
             };
             this.setData({ supportsDynamicQuestionnaire: true });
             this.initDynamicQuestionnaire(resp.questionBank);
@@ -696,7 +708,7 @@ Page({
     if((!isMultiple && !selected) || (isMultiple && (!Array.isArray(selectedMulti) || selectedMulti.length===0))){
       return tt.showToast({ icon:'none', title:'请先选择' });
     }
-    try{ logEvent('question_next', { qid: question?.id }); }catch(_){ }
+    try{ const stepDur = (Date.now() - (this._stepStartTs||Date.now())) || 0; logEvent('question_next', { qid: question?.id, stepDur }); }catch(_){ }
 
     if (this.data.supportsDynamicQuestionnaire && this.dynamicQuestionnaire) {
       // 动态问卷模式
@@ -724,6 +736,7 @@ Page({
         dq.currentQuestionIndex++;
         if (basicAnswered) { dq.extraCount++; }
         try{ logEvent('adaptive_extra', { extra: dq.extraCount, qid: question?.id, top1: st.top1, topN: st.topN, pendingSafety: hasPendingSafety }); }catch(_){ }
+        if (dq.extraCount >= dq.maxExtra) { try{ logEvent('adaptive_degrade', { reason:'max_extra_reached', extra:dq.extraCount }); }catch(_){ } }
       } else {
         // 完成问卷
         const dur = (Date.now() - (this._questionStartTs||Date.now())) || 0;
@@ -737,6 +750,7 @@ Page({
         // 还有问题，更新页面
         const stepDur = (Date.now() - (this._stepStartTs||Date.now())) || 0;
         try{ logEvent('question_next', { qid: nextQuestion.id, stepDur }); }catch(_){ }
+        try{ logEvent('question_enter', { qid: nextQuestion.id, phase: nextQuestion.phase }); }catch(_){ }
         this._stepStartTs = Date.now();
         this.setData({
           question: nextQuestion,

@@ -118,6 +118,27 @@ app.get('/debugQuestionConfig', async (req, res) => {
       timestamp: new Date().toISOString()
     });
   } catch (error) {
+
+// --- 简易性能统计（内存级，仅dev观测用，生产可换为持久化） ---
+const perfStats = {
+  listPlants: [],
+  recommendPlants: [],
+  push(name, ms, fallback=false){
+    const arr = this[name]; if(!arr) return;
+    arr.push({ ms, fallback, ts: Date.now() });
+    if(arr.length>500) arr.shift();
+  },
+  percentiles(name){
+    const arr = (this[name]||[]).map(x=>x.ms).slice().sort((a,b)=>a-b);
+    const pick = (p)=> arr.length? arr[Math.min(arr.length-1, Math.floor((p/100)*arr.length))]:0;
+    return { p50: pick(50), p95: pick(95), count: arr.length };
+  },
+  fallbackRate(name){
+    const arr = this[name]||[]; if(arr.length===0) return 0;
+    const n = arr.filter(x=>x.fallback).length; return Math.round((n/arr.length)*100)/100;
+  }
+};
+
     console.error('[debugQuestionConfig] error:', error);
     res.json({
       ok: false,
@@ -130,6 +151,10 @@ app.get('/debugQuestionConfig', async (req, res) => {
 // POST /getQuestionConfig (same as GET for gateway compatibility)
 app.post('/getQuestionConfig', async (req, res) => {
   try {
+
+	  const tStart = Date.now();
+	  let usedFallback = false;
+
     const db = dySDK.database();
     const payload = await fetchQuestionConfig(db);
     return res.json(payload);
@@ -232,8 +257,20 @@ app.post('/listPlants', async (req, res) => {
 
     res.json({ ok: true, data, total, page: p, pageSize: ps });
 
+	    const elapsed = Date.now() - tStart;
+	    try{
+	      perfStats.push('listPlants', elapsed, usedFallback);
+	      const psnap = perfStats.percentiles('listPlants');
+	      const frate = perfStats.fallbackRate('listPlants');
+	      console.log('[listPlants][perf]', { elapsed, p50: psnap.p50, p95: psnap.p95, count: psnap.count, fallbackRate: frate });
+	    }catch(_){ }
+
+
   } catch (error) {
     console.error('[listPlants] database error:', error);
+
+	    const t0 = Date.now();
+
     // 回退到文件存储
     let plants = readJSON('plants.json', []);
     plants = plants.filter((x) => x && x.onShelf === true);
@@ -249,6 +286,25 @@ app.post('/listPlants', async (req, res) => {
     res.json({ ok: true, data, total, page: p, pageSize: ps });
   }
 });
+
+
+	    const elapsed = Date.now() - t0;
+	    try{
+	      usedFallback = true;
+	      perfStats.push('listPlants', elapsed, usedFallback);
+	      const psnap = perfStats.percentiles('listPlants');
+	      const frate = perfStats.fallbackRate('listPlants');
+	      console.warn('[listPlants][fallback][perf]', { elapsed, p50: psnap.p50, p95: psnap.p95, count: psnap.count, fallbackRate: frate });
+	    }catch(_){ }
+
+// --- 简易百分位计算 ---
+function percentile(arr, p){
+  if(!Array.isArray(arr) || arr.length===0) return 0;
+  const s = arr.slice().sort((a,b)=>a-b);
+  const idx = Math.min(s.length-1, Math.floor((p/100)*s.length));
+  return s[idx];
+}
+
 
 
 // helpers for recommendation
@@ -461,6 +517,15 @@ app.post('/recommendPlants', async (req, res) => {
     }
 
     const elapsed = Date.now() - tStart;
+
+	    // 记录性能统计
+	    try{
+	      perfStats.push('recommendPlants', elapsed, false);
+	      const psnap = perfStats.percentiles('recommendPlants');
+	      const frate = perfStats.fallbackRate('recommendPlants');
+	      console.log('[recommendPlants][perf]', { elapsed, p50: psnap.p50, p95: psnap.p95, count: psnap.count, fallbackRate: frate, mmrCostMs });
+	    }catch(_){ }
+
     const algorithmName = (ENABLE_MMR || ENABLE_BAYES_UNC) ? 'enhanced_bayes_mmr' : 'database';
     const desiredTopN = (Number(topN) > 0 ? Number(topN) : 10);
     const riskFlags = [];
@@ -485,6 +550,7 @@ app.post('/recommendPlants', async (req, res) => {
         topMUsed: Math.min(TOP_M_FOR_RERANK, ranked.length),
         ab: { mode: AB_MODE, userHashed: !!userIdForAb, userHash: ab?.hash || null, bucket: ab?.bucket || 'env' },
         elapsed,
+        perf: { rec: perfStats.percentiles('recommendPlants') },
         fallback: false,
         algorithmName,
         riskFlags
