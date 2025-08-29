@@ -85,7 +85,21 @@ async function fetchQuestionConfig(db){
     .get();
   if(dyn && dyn.data && dyn.data.length>0){
     const config = dyn.data[0];
-    const questionBank = config.questionBank || (config.config && config.config.questions) || config.questions;
+
+    // 支持多种questionBank格式
+    let questionBank = config.questionBank || (config.config && config.config.questionBank) || config.questions;
+
+    // 如果questionBank是对象格式（正确的动态问卷格式）
+    if(questionBank && typeof questionBank === 'object' && !Array.isArray(questionBank)){
+      return {
+        ok:true,
+        version: config.version || (config.config && config.config.version) || 'v2.1',
+        questionBank,
+        supportsDynamicQuestionnaire: true
+      };
+    }
+
+    // 如果questionBank是数组格式（兼容旧格式）
     if(Array.isArray(questionBank) && questionBank.length>0){
       return {
         ok:true,
@@ -958,27 +972,36 @@ async function importQuestionConfigToDatabase() {
   try {
     console.log('📝 开始导入题库配置...');
 
-    // 读取题库配置
-    const configData = readJSON('question_config.json', {});
-    console.log('📊 题库配置数据:', Object.keys(configData));
+    // 读取增强版动态题库配置
+    const enhancedConfig = readJSON('enhanced_question_bank.json', {});
+    console.log('📊 增强版题库配置数据:', Object.keys(enhancedConfig));
 
     const db = dySDK.database();
     const configCollection = db.collection('question_config');
 
-    // 导入配置数据
+    // 清理现有的动态问卷配置
+    try {
+      await configCollection.where({ type: 'dynamic_questionnaire' }).remove();
+      console.log('🗑️ 清理了现有的动态问卷配置');
+    } catch (e) {
+      console.log('清理配置时出错（可能是集合不存在）:', e.message);
+    }
+
+    // 导入正确格式的配置数据
     const configDoc = {
       type: 'dynamic_questionnaire',
-      version: configData.version || '1.0',
-      config: configData,
-      questionBank: configData.questionBank,
-      questions: configData.questions,
+      version: enhancedConfig.version || 'v2.1',
+      questionBank: enhancedConfig.questionBank, // 这是对象格式，不是数组
+      config: enhancedConfig, // 保留完整配置作为备份
       createdAt: Date.now(),
       updatedAt: Date.now(),
       active: true
     };
 
     await configCollection.add(configDoc);
-    console.log('✅ 题库配置导入成功');
+    console.log('✅ 增强版题库配置导入成功');
+    console.log('questionBank类型:', typeof configDoc.questionBank);
+    console.log('questionBank键:', Object.keys(configDoc.questionBank || {}));
 
     return { success: true, version: configDoc.version };
 
