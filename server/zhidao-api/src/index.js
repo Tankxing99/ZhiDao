@@ -154,43 +154,81 @@ app.post('/listPlants', async (req, res) => {
   try {
     const db = dySDK.database();
 
-    // 简化查询，先获取所有上架植物，然后在内存中过滤
-    const result = await db.collection('plants')
-      .where({ onShelf: true })
-      .orderBy('updatedAt', 'desc')
-      .get();
+    // 基础条件：仅返回上架商品
+    const baseWhere = { onShelf: true };
 
-    let plants = result.data || [];
+    // 按是否有 tags 条件决定查询策略
+    let data = [];
+    let total = 0;
 
-    // 安全过滤（基于用户画像）
+    if (Array.isArray(tags) && tags.length > 0) {
+      // 策略A：尝试在DB侧进行标签过滤（如不支持$all则会抛错，进入fallback）
+      try {
+        const tagQuery = { ...baseWhere, tags: { $all: tags } };
+        const listRes = await db.collection('plants')
+          .where(tagQuery)
+          .orderBy('updatedAt', 'desc')
+          .skip((p - 1) * ps)
+          .limit(ps)
+          .get();
+        data = listRes.data || [];
+        // total 估算：再查一遍仅取count（若不支持count，fallback到内存计数）
+        try {
+          const allRes = await db.collection('plants')
+            .where(tagQuery)
+            .get();
+          total = (allRes && allRes.data) ? allRes.data.length : data.length;
+        } catch (_) {
+          total = data.length;
+        }
+      } catch (e) {
+        // Fallback：全量上架后内存过滤（兼容不支持$all的环境）
+        const result = await db.collection('plants')
+          .where(baseWhere)
+          .orderBy('updatedAt', 'desc')
+          .get();
+        let plants = result.data || [];
+        plants = plants.filter(plant => {
+          const plantTags = plant.tags || [];
+          return tags.every(tag => plantTags.includes(tag));
+        });
+        total = plants.length;
+        const start = (p - 1) * ps;
+        data = plants.slice(start, start + ps);
+      }
+    } else {
+      // 策略B：无标签筛选，走纯DB分页
+      const listRes = await db.collection('plants')
+        .where(baseWhere)
+        .orderBy('updatedAt', 'desc')
+        .skip((p - 1) * ps)
+        .limit(ps)
+        .get();
+      data = listRes.data || [];
+      // 估算总数（如无count，做一次轻量获取全部后取length；若数据量大可后续优化为服务端count接口）
+      try {
+        const allRes = await db.collection('plants')
+          .where(baseWhere)
+          .get();
+        total = (allRes && allRes.data) ? allRes.data.length : data.length;
+      } catch (_) {
+        total = data.length;
+      }
+    }
+
+    // 安全过滤（仍在内存中基于画像做软硬过滤）
     if (userProfile.hasPets) {
-      // 排除对宠物有毒的植物
-      plants = plants.filter(plant => {
+      data = data.filter(plant => {
         const plantTags = plant.tags || [];
         return !plantTags.some(tag => ['pet_toxic', 'toxic-to-cats', 'toxic-to-dogs'].includes(tag));
       });
     }
-
     if (userProfile.hasChildren) {
-      // 排除对儿童不安全的植物
-      plants = plants.filter(plant => {
+      data = data.filter(plant => {
         const plantTags = plant.tags || [];
         return !plantTags.some(tag => ['child_unsafe', 'toxic-if-ingested', 'sharp-spines'].includes(tag));
       });
     }
-
-    // filter by tags (all included)
-    if (Array.isArray(tags) && tags.length > 0) {
-      plants = plants.filter(plant => {
-        const plantTags = plant.tags || [];
-        return tags.every(tag => plantTags.includes(tag));
-      });
-    }
-
-    // 分页处理
-    const total = plants.length;
-    const start = (p - 1) * ps;
-    const data = plants.slice(start, start + ps);
 
     res.json({ ok: true, data, total, page: p, pageSize: ps });
 
@@ -281,12 +319,18 @@ app.post('/recommendPlants', async (req, res) => {
   try {
     const db = dySDK.database();
 
-    // 简化查询，获取所有上架植物，然后在内存中过滤
-    const result = await db.collection('plants')
-      .where({ onShelf: true })
-      .get();
-
-    let plants = result.data || [];
+    // DB侧获取候选（按上架与更新时间排序），尽量减少传输量（初期先取较大页，后续可迭代）
+    let plants = [];
+    try {
+      const result = await db.collection('plants')
+        .where({ onShelf: true })
+        .orderBy('updatedAt', 'desc')
+        .limit(500)
+        .get();
+      plants = result.data || [];
+    } catch(_) {
+      plants = [];
+    }
 
     // 安全过滤（基于用户画像）
     if (inferredProfile.hasPets) {
