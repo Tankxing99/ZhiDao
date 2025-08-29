@@ -5,6 +5,21 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { dySDK } from '@open-dy/node-server-sdk';
 
+// 一致性哈希分桶（简单实现）：返回 { bucket: 'control'|'treatment', hash }
+function abBucket(userId, buckets = 2) {
+  try {
+    const str = String(userId || '');
+    let h = 0;
+    for (let i = 0; i < str.length; i++) {
+      h = (h * 31 + str.charCodeAt(i)) >>> 0;
+    }
+    const mod = h % buckets;
+    return { bucket: mod === 0 ? 'control' : 'treatment', hash: h };
+  } catch (_) {
+    return { bucket: 'control', hash: null };
+  }
+}
+
 // 导入增强版推荐算法（需要转换为ES模块兼容格式）
 // 注意：由于当前是ES模块环境，需要确保工具类也支持ES模块
 // 这里先用简化版本，后续可以完善模块导入
@@ -724,20 +739,7 @@ function calculateEnhancedScore(answersMap, plant, userProfile) {
 
   // 安全因素评分
 
-// 一致性哈希分桶（简单实现）：返回 { bucket: 'control'|'treatment', hash }
-function abBucket(userId, buckets = 2) {
-  try {
-    const str = String(userId || '');
-    let h = 0;
-    for (let i = 0; i < str.length; i++) {
-      h = (h * 31 + str.charCodeAt(i)) >>> 0;
-    }
-    const mod = h % buckets;
-    return { bucket: mod === 0 ? 'control' : 'treatment', hash: h };
-  } catch (_) {
-    return { bucket: 'control', hash: null };
-  }
-}
+
 
   let safetyScore = baseScore;
   const safetyFlags = plant.safetyFlags || [];
