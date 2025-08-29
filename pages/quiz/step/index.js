@@ -356,38 +356,53 @@ Page({
     // 如果没有启用动态逻辑，所有问题都触发
     if (!dq.dynamicLogic) return true;
 
-    // 基础问题（light, space, level）总是触发
-    if (['light', 'space', 'level'].includes(question.id)) {
-      console.log('[shouldTriggerQuestion]', question.id, '基础问题，总是触发');
+    // 用户画像阶段的问题：总是触发
+    if (['livingStatus', 'experienceLevel'].includes(question.id)) {
+      console.log('[shouldTriggerQuestion]', question.id, '用户画像问题，总是触发');
       return true;
     }
 
-    // 偏好阶段的多选题：默认触发
-    if (question.type === 'multiple') {
-      console.log('[shouldTriggerQuestion]', question.id, '偏好多选题，默认触发');
+    // 环境评估阶段的问题：总是触发
+    if (['lightCondition', 'spaceType'].includes(question.id)) {
+      console.log('[shouldTriggerQuestion]', question.id, '环境评估问题，总是触发');
       return true;
     }
 
-    // 安全问题的动态触发逻辑
-    if (question.id === 'pets') {
-      // 如果用户是新手或选择了小空间，询问宠物情况
-      const isNewbie = dq.answers.some(a => a.id === 'level' && a.value === 'beginner');
-      const isSmallSpace = dq.answers.some(a => a.id === 'space' && a.value === 'small');
+    // 审美偏好阶段的问题：总是触发
+    if (['stylePreference', 'colorPreference'].includes(question.id)) {
+      console.log('[shouldTriggerQuestion]', question.id, '审美偏好问题，总是触发');
+      return true;
+    }
+
+    // 安全评估阶段的动态触发逻辑
+    if (question.id === 'petSafety') {
+      // 如果用户是新手或选择了小空间，询问宠物安全
+      const isNewbie = dq.answers.some(a => a.id === 'experienceLevel' && a.value === 'beginner');
+      const isSmallSpace = dq.answers.some(a => a.id === 'spaceType' && a.value === 'small');
       const shouldTrigger = isNewbie || isSmallSpace;
       console.log('[shouldTriggerQuestion]', question.id, '新手或小空间触发:', shouldTrigger);
       return shouldTrigger;
     }
 
-    if (question.id === 'children') {
-      // 如果用户是新手，询问儿童情况
-      const isNewbie = dq.answers.some(a => a.id === 'level' && a.value === 'beginner');
-      console.log('[shouldTriggerQuestion]', question.id, '新手触发:', isNewbie);
-      return isNewbie;
+    if (question.id === 'childSafety') {
+      // 如果用户选择了家庭居住状况，询问儿童安全
+      const hasFamily = dq.answers.some(a => a.id === 'livingStatus' && ['family', 'couple'].includes(a.value));
+      console.log('[shouldTriggerQuestion]', question.id, '家庭用户触发:', hasFamily);
+      return hasFamily;
     }
 
-    // 默认不触发未知问题
-    console.log('[shouldTriggerQuestion]', question.id, '未知问题，不触发');
-    return false;
+    if (question.id === 'allergySafety') {
+      // 如果用户是新手或老年人，询问过敏安全
+      const isNewbie = dq.answers.some(a => a.id === 'experienceLevel' && a.value === 'beginner');
+      const isElderly = dq.answers.some(a => a.id === 'livingStatus' && a.value === 'elderly');
+      const shouldTrigger = isNewbie || isElderly;
+      console.log('[shouldTriggerQuestion]', question.id, '新手或老年人触发:', shouldTrigger);
+      return shouldTrigger;
+    }
+
+    // 默认触发所有其他问题（简化逻辑）
+    console.log('[shouldTriggerQuestion]', question.id, '默认触发');
+    return true;
   },
 
   // 移动到下一阶段

@@ -401,14 +401,33 @@ function isMatch(userValue, tags, dimension) {
 }
 
 function scorePlant(answersMap, plant) {
+  // 更新权重和维度映射以匹配新的问题ID
+  const dimensionMapping = {
+    'lightCondition': 'light',
+    'spaceType': 'space',
+    'experienceLevel': 'level'
+  };
+
   const weights = { light: 1.2, space: 1.0, level: 1.1 };
   const base = 10;
   let score = 0;
-  ['light','space','level'].forEach((dim) => {
-    if (isMatch(answersMap[dim], plant.tags || [], dim)) {
-      score += base * (weights[dim] || 1);
+
+  // 使用新的问题ID进行评分
+  Object.entries(dimensionMapping).forEach(([questionId, dimension]) => {
+    const userValue = answersMap[questionId];
+    if (userValue && isMatch(userValue, plant.tags || [], dimension)) {
+      score += base * (weights[dimension] || 1);
     }
   });
+
+  // 添加其他问题的评分逻辑
+  if (answersMap['livingStatus']) {
+    const livingStatus = answersMap['livingStatus'];
+    if (livingStatus === 'single' && plant.tags?.includes('space-flexible')) score += 5;
+    if (livingStatus === 'family' && plant.tags?.includes('child-safe-needed')) score += 8;
+    if (livingStatus === 'elderly' && plant.tags?.includes('low-maintenance')) score += 6;
+  }
+
   return score;
 }
 
