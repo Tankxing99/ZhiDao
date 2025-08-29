@@ -108,6 +108,8 @@ app.get('/healthz', (req, res) => {
   res.json({ ok: true, ts: Date.now() });
 });
 
+
+
 // GET /getQuestionConfig - 问卷配置（使用数据库）
 // query: { phase?: string, userProfile?: string }
 // resp: { ok: true, version: string, questionBank?: Object, questions?: Array }
@@ -141,6 +143,36 @@ app.get('/debugQuestionConfig', async (req, res) => {
   } catch (error) {
 
     console.error('[debugQuestionConfig] error:', error);
+    res.json({
+      ok: false,
+      error: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
+// Debug endpoint to check plants database content
+app.get('/debugPlants', async (req, res) => {
+  try {
+    const db = dySDK.database();
+
+    // 查询所有植物数据
+    const allPlants = await db.collection('plants').get();
+
+    res.json({
+      ok: true,
+      message: 'Debug info for plants collection',
+      totalCount: allPlants.data ? allPlants.data.length : 0,
+      plants: allPlants.data ? allPlants.data.map(p => ({
+        id: p.id,
+        name: p.name,
+        onShelf: p.onShelf,
+        tags: p.tags?.slice(0, 5) // Show first 5 tags only
+      })) : [],
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('[debugPlants] error:', error);
     res.json({
       ok: false,
       error: error.message,

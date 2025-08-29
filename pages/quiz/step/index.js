@@ -36,8 +36,11 @@ Page({
     const idx = Number(options?.idx || 0);
     this.setData({ idx });
 
-    // 清除缓存以确保获取最新配置（调试用）
+    // 强制清除所有相关缓存，确保获取最新配置
     tt.removeStorageSync('question_config_cache');
+    tt.removeStorageSync('user_profile_cache');
+    tt.removeStorageSync('quiz_state_cache');
+    console.log('已清除所有缓存，强制刷新配置');
 
     await this.ensureConfigLoaded();
     this.applyQuestion();
