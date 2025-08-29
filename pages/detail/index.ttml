@@ -3,5 +3,119 @@
   <view class="section">
     <view class="title">{{plant.name}}</view>
     <view class="subtitle">{{plant.tags && plant.tags.join(' / ')}}</view>
+
+    <!-- 植物基本信息 -->
+    <block tt:if="{{plantDetail.common_names}}">
+      <view class="info-section">
+        <view class="section-title">基本信息</view>
+        <view class="info-item">
+          <text class="label">中文名：</text>
+          <text class="value">{{plantDetail.common_names.zh && plantDetail.common_names.zh.join('、')}}</text>
+        </view>
+        <view class="info-item">
+          <text class="label">学名：</text>
+          <text class="value">{{plantDetail.scientific_name}}</text>
+        </view>
+        <block tt:if="{{plantDetail.characteristics}}">
+          <view class="info-item">
+            <text class="label">类型：</text>
+            <text class="value">{{plantDetail.characteristics.type}}</text>
+          </view>
+          <block tt:if="{{plantDetail.characteristics.max_height_cm}}">
+            <view class="info-item">
+              <text class="label">最大高度：</text>
+              <text class="value">{{plantDetail.characteristics.max_height_cm}}cm</text>
+            </view>
+          </block>
+        </block>
+      </view>
+    </block>
+
+    <!-- 环境需求 -->
+    <block tt:if="{{plantDetail.environment}}">
+      <view class="info-section">
+        <view class="section-title">环境需求</view>
+        <block tt:if="{{plantDetail.environment.light_preference}}">
+          <view class="info-item">
+            <text class="label">光照需求：</text>
+            <text class="value">{{plantDetail.environment.light_preference === 'low' ? '低光照' : plantDetail.environment.light_preference === 'medium' ? '中等光照' : '高光照'}}</text>
+          </view>
+        </block>
+        <block tt:if="{{plantDetail.environment.humidity}}">
+          <view class="info-item">
+            <text class="label">湿度要求：</text>
+            <text class="value">{{plantDetail.environment.humidity}}</text>
+          </view>
+        </block>
+        <block tt:if="{{plantDetail.environment.temperature_c}}">
+          <view class="info-item">
+            <text class="label">适宜温度：</text>
+            <text class="value">{{plantDetail.environment.temperature_c.min}}°C - {{plantDetail.environment.temperature_c.max}}°C</text>
+          </view>
+        </block>
+        <block tt:if="{{plantDetail.environment.space}}">
+          <view class="info-item">
+            <text class="label">空间需求：</text>
+            <text class="value">{{plantDetail.environment.space === 'small' ? '小空间' : plantDetail.environment.space === 'medium' ? '中等空间' : '大空间'}}</text>
+          </view>
+        </block>
+      </view>
+    </block>
+
+    <!-- 养护方式 -->
+    <block tt:if="{{plantDetail.care}}">
+      <view class="info-section">
+        <view class="section-title">养护方式</view>
+        <block tt:if="{{plantDetail.care.watering}}">
+          <view class="info-item">
+            <text class="label">浇水：</text>
+            <text class="value">{{plantDetail.care.watering}}</text>
+          </view>
+        </block>
+        <block tt:if="{{plantDetail.care.soil}}">
+          <view class="info-item">
+            <text class="label">土壤：</text>
+            <text class="value">{{plantDetail.care.soil}}</text>
+          </view>
+        </block>
+        <block tt:if="{{plantDetail.care.fertilization}}">
+          <view class="info-item">
+            <text class="label">施肥：</text>
+            <text class="value">{{plantDetail.care.fertilization}}</text>
+          </view>
+        </block>
+        <block tt:if="{{plantDetail.care.difficulty}}">
+          <view class="info-item">
+            <text class="label">养护难度：</text>
+            <text class="value">{{plantDetail.care.difficulty === 'beginner' ? '新手友好' : plantDetail.care.difficulty === 'intermediate' ? '中等难度' : '需要经验'}}</text>
+          </view>
+        </block>
+        <block tt:if="{{plantDetail.care.propagation && plantDetail.care.propagation.length > 0}}">
+          <view class="info-item">
+            <text class="label">繁殖方式：</text>
+            <text class="value">{{plantDetail.care.propagation.join('、')}}</text>
+          </view>
+        </block>
+      </view>
+    </block>
+
+    <!-- 安全提示 -->
+    <block tt:if="{{plantDetail.toxicity}}">
+      <view class="info-section warning">
+        <view class="section-title">安全提示</view>
+        <block tt:if="{{plantDetail.toxicity.pets}}">
+          <view class="info-item">
+            <text class="label">宠物安全：</text>
+            <text class="value">{{plantDetail.toxicity.pets}}</text>
+          </view>
+        </block>
+        <block tt:if="{{plantDetail.toxicity.humans}}">
+          <view class="info-item">
+            <text class="label">人体安全：</text>
+            <text class="value">{{plantDetail.toxicity.humans}}</text>
+          </view>
+        </block>
+      </view>
+    </block>
   </view>
 </view>

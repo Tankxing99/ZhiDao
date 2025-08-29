@@ -643,6 +643,13 @@ Page({
             timestamp: Date.now()
           });
         }
+      } else {
+        // 传统问卷模式
+        const answers = tt.getStorageSync('quiz_answers') || {};
+        if(q && q.id){ answers[q.id] = value; }
+        tt.setStorageSync('quiz_answers', answers);
+      }
+    }catch(_){/* ignore */}
   },
   // 多选变更
   onMultiChange(e){
@@ -677,14 +684,7 @@ Page({
       }
     }catch(_){/* ignore */}
   },
-      } else {
-        // 传统问卷模式
-        const answers = tt.getStorageSync('quiz_answers') || {};
-        if(q && q.id){ answers[q.id] = value; }
-        tt.setStorageSync('quiz_answers', answers);
-      }
-    }catch(_){/* ignore */}
-  },
+
   goPrev(){
     const { idx } = this.data;
     if(idx<=0){ return; }
@@ -746,7 +746,8 @@ Page({
           questionIndex: nextQuestion.questionIndex,
           totalInPhase: nextQuestion.totalInPhase,
           overallProgress: nextQuestion.overallProgress,
-          selected: '' // 清空选择
+          selected: '', // 清空选择（单选）
+          selectedMulti: [] // 清空多选
         });
       } else {
         // 问卷完成

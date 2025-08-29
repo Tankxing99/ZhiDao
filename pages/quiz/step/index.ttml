@@ -7,7 +7,7 @@
   </block>
   <block tt:else>
     <view class="header">
-      <text class="progress">{{idx+1}}/{{total}}</text>
+      <!-- 隐藏进度显示 -->
     </view>
     <view class="banner">
       <image class="illustration" src="/images/p6.png" mode="aspectFill"></image>

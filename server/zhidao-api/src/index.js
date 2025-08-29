@@ -31,6 +31,57 @@ function badRequest(res, message) {
   return res.status(400).json({ ok: false, code: 'BAD_REQUEST', message });
 }
 
+
+// 统一查询函数：获取题库配置（优先动态问卷，随后传统问卷，最后文件回退）
+async function fetchQuestionConfig(db){
+  // 1) 动态问卷：支持多字段路径
+  const dyn = await db.collection('question_config')
+    .where({
+      $or: [
+        { type: 'dynamic_questionnaire' },
+        { questionBank: { $exists: true } },
+        { 'config.questions': { $exists: true } },
+        { active: { $exists: true } }
+      ]
+    })
+    .orderBy('updatedAt', 'desc')
+    .limit(1)
+    .get();
+  if(dyn && dyn.data && dyn.data.length>0){
+    const config = dyn.data[0];
+    const questionBank = config.questionBank || (config.config && config.config.questions) || config.questions;
+    if(Array.isArray(questionBank) && questionBank.length>0){
+      return {
+        ok:true,
+        version: config.version || (config.config && config.config.version) || 'v2.1',
+        questionBank,
+        supportsDynamicQuestionnaire: true
+      };
+    }
+  }
+  // 2) 传统问卷：组合为数组
+  const fb = await db.collection('question_config')
+    .where({
+      $and: [
+        { type: { $ne: 'dynamic_questionnaire' } },
+        { questionBank: { $exists: false } },
+        { 'config.questions': { $exists: false } },
+        { active: { $exists: false } },
+        { question: { $exists: true } }
+      ]
+    })
+    .orderBy('updatedAt', 'desc')
+    .limit(5)
+    .get();
+  if(fb && fb.data && fb.data.length>0){
+    const questions = fb.data.map(doc=>({ question: doc.question, type: doc.type, options: doc.options }));
+    return { ok:true, version:'v1.0', questions, supportsDynamicQuestionnaire:false };
+  }
+  // 3) 文件回退
+  const cfg = readJSON('question_config.json', { version:'v0', questions: [] });
+  return { ok:true, version: cfg.version, questions: cfg.questions, supportsDynamicQuestionnaire:false };
+}
+
 // health check
 app.get('/healthz', (req, res) => {
   res.json({ ok: true, ts: Date.now() });
@@ -40,95 +91,14 @@ app.get('/healthz', (req, res) => {
 // query: { phase?: string, userProfile?: string }
 // resp: { ok: true, version: string, questionBank?: Object, questions?: Array }
 app.get('/getQuestionConfig', async (req, res) => {
-  const { phase, userProfile } = req.query;
-
   try {
     const db = dySDK.database();
-
-    // 尝试从数据库获取动态题库配置
-    // 查找包含 questionBank、config.questions 或 active 字段的文档（动态问卷特征）
-    const result = await db.collection('question_config')
-      .where({
-        $or: [
-          { type: 'dynamic_questionnaire' },
-          { questionBank: { $exists: true } },
-          { 'config.questions': { $exists: true } },
-          { active: { $exists: true } }
-        ]
-      })
-      .orderBy('createdAt', 'desc')
-      .limit(1)
-      .get();
-
-    if (result.data && result.data.length > 0) {
-      const config = result.data[0];
-      // 动态问卷配置可能存储在 config.questions 或 questions 字段中
-      const questionBank = config.questionBank || config.config?.questions || config.questions;
-
-      // 确保找到的是真正的动态问卷配置（有完整的问题结构）
-      if (questionBank && Array.isArray(questionBank) && questionBank.length > 0) {
-        res.json({
-          ok: true,
-          version: config.version || config.config?.version || 'v2.1',
-          questionBank: questionBank,
-          supportsDynamicQuestionnaire: true
-        });
-        return;
-      }
-    }
-
-    // 回退到传统问卷配置
-    // 查找传统格式的问题（不包含动态问卷特征字段）
-    const fallbackResult = await db.collection('question_config')
-      .where({
-        $and: [
-          { type: { $ne: 'dynamic_questionnaire' } },
-          { questionBank: { $exists: false } },
-          { 'config.questions': { $exists: false } },
-          { active: { $exists: false } },
-          { question: { $exists: true } } // 传统问卷有 question 字段
-        ]
-      })
-      .orderBy('updatedAt', 'desc')
-      .limit(5)
-      .get();
-
-    if (fallbackResult.data && fallbackResult.data.length > 0) {
-      // 将多个传统问题文档组合成问题数组
-      const questions = fallbackResult.data.map(doc => ({
-        question: doc.question,
-        type: doc.type,
-        options: doc.options
-      }));
-
-      res.json({
-        ok: true,
-        version: 'v1.0',
-        questions: questions,
-        supportsDynamicQuestionnaire: false
-      });
-      return;
-    }
-
-    // 最终回退到文件
-    const cfg = readJSON('question_config.json', { version: 'v0', questions: [] });
-    res.json({
-      ok: true,
-      version: cfg.version,
-      questions: cfg.questions,
-      supportsDynamicQuestionnaire: false
-    });
-
+    const payload = await fetchQuestionConfig(db);
+    return res.json(payload);
   } catch (error) {
-    console.error('[getQuestionConfig] database error:', error);
-    // 回退到文件存储
+    console.error('[getQuestionConfig][GET] error:', error);
     const cfg = readJSON('question_config.json', { version: 'v0', questions: [] });
-    res.json({
-      ok: true,
-      version: cfg.version,
-      questions: cfg.questions,
-      supportsDynamicQuestionnaire: false
-    });
+    return res.json({ ok:true, version: cfg.version, questions: cfg.questions, supportsDynamicQuestionnaire:false });
   }
 });
 
@@ -159,68 +129,14 @@ app.get('/debugQuestionConfig', async (req, res) => {
 
 // POST /getQuestionConfig (same as GET for gateway compatibility)
 app.post('/getQuestionConfig', async (req, res) => {
-  const { phase, userProfile } = req.body || {};
-
   try {
     const db = dySDK.database();
-
-    // 尝试从数据库获取动态题库配置
-    const result = await db.collection('question_config')
-      .where({ type: 'dynamic_questionnaire' })
-      .orderBy('updatedAt', 'desc')
-      .limit(1)
-      .get();
-
-    if (result.data && result.data.length > 0) {
-      const config = result.data[0];
-      // 动态问卷配置可能存储在 config.questions 或 questions 字段中
-      const questionBank = config.questionBank || config.config?.questions || config.questions;
-      res.json({
-        ok: true,
-        version: config.version || 'v2.1',
-        questionBank: questionBank,
-        supportsDynamicQuestionnaire: true
-      });
-      return;
-    }
-
-    // 回退到传统问卷配置
-    const fallbackResult = await db.collection('question_config')
-      .where({ type: { $ne: 'dynamic_questionnaire' } })
-      .orderBy('updatedAt', 'desc')
-      .limit(1)
-      .get();
-
-    if (fallbackResult.data && fallbackResult.data.length > 0) {
-      const config = fallbackResult.data[0];
-      res.json({
-        ok: true,
-        version: config.version || 'v1.0',
-        questions: config.questions || [],
-        supportsDynamicQuestionnaire: false
-      });
-      return;
-    }
-
-    // 最终回退到文件
-    const cfg = readJSON('question_config.json', { version: 'v0', questions: [] });
-    res.json({
-      ok: true,
-      version: cfg.version,
-      questions: cfg.questions,
-      supportsDynamicQuestionnaire: false
-    });
-
+    const payload = await fetchQuestionConfig(db);
+    return res.json(payload);
   } catch (error) {
-    console.error('[getQuestionConfig] database error:', error);
-    // 回退到文件存储
+    console.error('[getQuestionConfig][POST] error:', error);
     const cfg = readJSON('question_config.json', { version: 'v0', questions: [] });
-    res.json({
-      ok: true,
-      version: cfg.version,
-      questions: cfg.questions,
-      supportsDynamicQuestionnaire: false
-    });
+    return res.json({ ok:true, version: cfg.version, questions: cfg.questions, supportsDynamicQuestionnaire:false });
   }
 });
 
