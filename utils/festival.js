@@ -1,6 +1,7 @@
 // 节日计算与本地兜底
 // 支持固定日期与规则型节日（母亲节：5月第二个周日；父亲节：6月第三个周日）
 // 其余如中秋/春节等农历节日，依赖后端配置；本地仅做占位映射
+const { buildImageURL } = require('./image-config');
 
 function pad(n) { return n < 10 ? '0' + n : '' + n; }
 
@@ -148,12 +149,20 @@ const FESTIVAL_NAME_TO_KEY = {
   '教师节': 'teachers_day',
 };
 
-// 根据 festivalKey 或 name 返回本地图片路径（images/festivals/*）
+// 针对个别资源的临时缓存版本号（用于强制刷新 CDN/小程序缓存）
+const FESTIVAL_IMAGE_VERSION_MAP = {
+  // 已移除端午节临时 cache-buster（CDN 已刷新），恢复干净 URL
+};
+
+// 根据 festivalKey 或 name 返回云端图片URL（CDN_BASE/festivals/*），若未配置CDN则回退到本地 /images
 function getFestivalImagePath(f){
   if (!f) return '';
   const key = (f.festivalKey || '').trim() || FESTIVAL_NAME_TO_KEY[(f.name || '').trim()] || '';
   const filename = FESTIVAL_IMAGE_FILENAME_MAP[key];
-  return filename ? `/images/festivals/${filename}` : '';
+  if (!filename) return '';
+  const base = buildImageURL(`festivals/${filename}`);
+  const ver = FESTIVAL_IMAGE_VERSION_MAP[key];
+  return ver ? `${base}?v=${ver}` : base;
 }
 
 module.exports = {
