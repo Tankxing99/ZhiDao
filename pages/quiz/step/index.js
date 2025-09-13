@@ -39,7 +39,7 @@ Page({
     const idx = Number(options?.idx || 0);
     // 顶部插画统一使用 CDN 路径
     try{
-      const illu = buildImageURL('p6.png');
+      const illu = buildImageURL('p6.jpg');
       this.setData({ bannerIllu: illu });
     }catch(_){/* ignore */}
     this.setData({ idx });
