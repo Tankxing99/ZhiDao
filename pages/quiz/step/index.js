@@ -1,5 +1,6 @@
 const { parseJson, toastError } = require('../../../utils/index');
 const { logEvent } = require('../../../utils/analytics');
+const { buildImageURL } = require('../../../utils/image-config');
 
 Page({
   data: {
@@ -18,6 +19,8 @@ Page({
     questionIndex: 0,
     totalInPhase: 0,
     userProfile: {},
+    // 问卷顶部插画（走 CDN）
+    bannerIllu: '',
 
 	  onShow(){
 	    try{
@@ -34,6 +37,11 @@ Page({
   },
   async onLoad(options){
     const idx = Number(options?.idx || 0);
+    // 顶部插画统一使用 CDN 路径
+    try{
+      const illu = buildImageURL('p6.png');
+      this.setData({ bannerIllu: illu });
+    }catch(_){/* ignore */}
     this.setData({ idx });
 
     // 强制清除所有相关缓存，确保获取最新配置
@@ -58,6 +66,12 @@ Page({
           this.setData({ selected: val, selectedMulti: [] });
         }
       }
+    }catch(_){/* ignore */}
+  },
+  onBannerError(){
+    try{
+      const url = buildImageURL('plant-placeholder.png');
+      this.setData({ bannerIllu: url });
     }catch(_){/* ignore */}
   },
   async ensureConfigLoaded(){

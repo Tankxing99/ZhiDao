@@ -10,7 +10,7 @@
       <!-- 隐藏进度显示 -->
     </view>
     <view class="banner">
-      <image class="illustration" src="/images/p6.png" mode="aspectFill"></image>
+      <image class="illustration" src="{{bannerIllu}}" mode="aspectFill" lazy-load="{{true}}" binderror="onBannerError"></image>
     </view>
     <view class="qcard">
       <text class="qtitle">{{question.title}}</text>
