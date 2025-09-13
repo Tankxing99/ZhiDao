@@ -70,7 +70,7 @@ Page({
   },
   onBannerError(){
     try{
-      const url = buildImageURL('plant-placeholder.png');
+      const url = buildImageURL('placeholder-plant.png');
       this.setData({ bannerIllu: url });
     }catch(_){/* ignore */}
   },
