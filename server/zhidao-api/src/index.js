@@ -4,6 +4,9 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { dySDK } from '@open-dy/node-server-sdk';
+import { queryActiveOrUpcomingFestival, buildFestivalResponse } from './festivals.js';
+
+import { registerShopPaymentRoutes } from './shop/payments.routes.js';
 
 // 一致性哈希分桶（简单实现）：返回 { bucket: 'control'|'treatment', hash }
 function abBucket(userId, buckets = 2) {
@@ -151,6 +154,33 @@ app.get('/getQuestionConfig', async (req, res) => {
     console.error('[getQuestionConfig][GET] error:', error);
     const cfg = readJSON('question_config.json', { version: 'v0', questions: [] });
     return res.json({ ok:true, version: cfg.version, questions: cfg.questions, supportsDynamicQuestionnaire:false });
+  }
+});
+
+
+// GET /getFestivalRecommendation - 节日推荐（当前或即将到来）
+app.get('/getFestivalRecommendation', async (req, res) => {
+  try {
+    const doc = await queryActiveOrUpcomingFestival(14);
+    if (!doc) return res.json({ ok: true, data: null });
+
+    // 轻量拉取植物名称/封面以丰富展示
+    let plantsLite = [];
+    try {
+      const db = dySDK.database();
+      const ids = (doc.recommendations || []).map(r => r.plantId).filter(Boolean);
+      if (ids.length > 0) {
+        const all = await db.collection('plants').get();
+        const arr = all.data || [];
+        plantsLite = arr.filter(p => ids.includes(p.id)).map(p => ({ id: p.id, name: p.name, cover: p.cover }));
+      }
+    } catch(_) {}
+
+    const payload = buildFestivalResponse(doc, plantsLite);
+    return res.json(payload);
+  } catch (error) {
+    console.error('[getFestivalRecommendation] error:', error);
+    return res.json({ ok: true, data: null });
   }
 });
 
@@ -1076,6 +1106,9 @@ async function importEnhancedQuestionBankHandler(req, res){
 app.post('/admin/importEnhancedQuestionBank', importEnhancedQuestionBankHandler);
 app.post('/admin/import-enhanced-question-bank', importEnhancedQuestionBankHandler);
 app.post('/importEnhancedQuestionBank', importEnhancedQuestionBankHandler);
+// 注册商城支付回调路由（最小闭环：记录原始通知并快速ACK）
+registerShopPaymentRoutes(app);
+
 app.get('/admin/importEnhancedQuestionBank', importEnhancedQuestionBankHandler);
 
 const port = process.env.PORT || 8000;
