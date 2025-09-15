@@ -32,7 +32,8 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 app.use(cors());
-app.use(express.json());
+// Capture raw JSON body for signature verification (e.g., Douyin payment callbacks)
+app.use(express.json({ verify: (req, res, buf) => { try { req.rawBody = buf.toString('utf8'); } catch(_) { /* ignore */ } } }));
 
 function readJSON(relPath, fallback) {
   try {

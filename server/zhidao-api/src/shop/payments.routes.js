@@ -14,7 +14,7 @@ export function registerShopPaymentRoutes(app){
     const body = req.body || {};
 
     // 验签（占位/可禁用）
-    const verify = verifyPaymentNotify({ headers, body });
+    const verify = verifyPaymentNotify({ headers, body, rawBody: req.rawBody });
     if (!verify.ok) {
       warn('verifyPaymentNotify failed:', verify);
     }
@@ -46,7 +46,7 @@ export function registerShopPaymentRoutes(app){
   app.post('/api/shop/refunds/notify', async (req, res) => {
     const headers = req.headers || {};
     const body = req.body || {};
-    const verify = verifyRefundNotify({ headers, body });
+    const verify = verifyRefundNotify({ headers, body, rawBody: req.rawBody });
     if (!verify.ok) {
       warn('verifyRefundNotify failed:', verify);
     }
