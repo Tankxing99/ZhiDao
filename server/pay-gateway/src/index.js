@@ -161,7 +161,7 @@ app.post('/preorder', async (req, res) => {
 
   // Direct-to-担保支付
   const cfg = {
-    appId: appId || process.env.DY_PAY_APP_ID,
+    appId: appId || process.env.DY_PAY_APP_ID || 'tt226e54d3bd581bf801', // 默认使用已知的app_id
     partnerId: process.env.DY_MCH_PARTNER_ID,
     // 某些资料要求使用 salt（支付密钥）进行 MD5 签名
     paySalt: process.env.DY_PAY_SALT,
