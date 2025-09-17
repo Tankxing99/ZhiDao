@@ -11,6 +11,49 @@ app.get('/healthz', (req, res) => {
   res.json({ ok: true, ts: Date.now(), service: 'pay-gateway' });
 });
 
+// 调试端点：测试签名算法
+app.post('/debug-signature', (req, res) => {
+  try {
+    const { orderNo, amount, ctxInfo, notifyUrl, appId } = req.body;
+    const subject = ctxInfo?.subject || 'ZhiDao-Order';
+    const body = ctxInfo?.body || 'ZhiDao-Pay';
+
+    const cfg = {
+      appId: process.env.DY_APP_ID || appId,
+      paySalt: process.env.DY_PAY_SALT,
+      preorderUrl: process.env.DY_ECPAY_PRECREATE_URL,
+    };
+
+    const payload = {
+      app_id: cfg.appId,
+      out_order_no: String(orderNo),
+      total_amount: Number(amount),
+      subject: subject,
+      body: body,
+      valid_time: 1800,
+      notify_url: notifyUrl || process.env.PAY_NOTIFY_URL,
+    };
+
+    const signature = signWithSaltMD5(payload, cfg.paySalt);
+
+    res.json({
+      ok: true,
+      debug: {
+        payload,
+        salt: cfg.paySalt ? '***' + cfg.paySalt.slice(-4) : 'NOT_SET',
+        signature,
+        preorderUrl: cfg.preorderUrl
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      ok: false,
+      error: error.message,
+      stack: error.stack
+    });
+  }
+});
+
 // Minimal auth guard using PREORDER_AUTH_TOKEN
 function verifyAuth(req) {
   const token = process.env.PREORDER_AUTH_TOKEN;
