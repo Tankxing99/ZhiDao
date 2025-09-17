@@ -27,26 +27,46 @@ function buildPayParams({ orderInfo, service }) {
   return { orderInfo, service: svc };
 }
 
-// MD5 sign for ecpay (严格按照PHP官方示例): exclude sign/app_id/thirdparty_id, sort values, append salt, md5
+// MD5 sign for ecpay (基于yansongda/pay库的正确实现)
 function signWithSaltMD5(body, salt) {
-  const filtered = [];
-  for (const [k, v] of Object.entries(body || {})) {
-    // 严格按照PHP示例：只排除这3个字段
-    if (k === 'sign' || k === 'app_id' || k === 'thirdparty_id') continue;
+  const signData = [];
 
-    let val = String(v ?? '').trim();
-
-    // 处理引号（匹配PHP逻辑）
-    if (val.length > 1 && val.startsWith('"') && val.endsWith('"')) {
-      val = val.slice(1, -1).trim();
+  for (const [key, value] of Object.entries(body || {})) {
+    // 排除字段：other_settle_params, app_id, sign, thirdparty_id
+    if (['other_settle_params', 'app_id', 'sign', 'thirdparty_id'].includes(key)) {
+      continue;
     }
 
-    if (!val || val === 'null') continue;
-    filtered.push(val);
+    let val = value;
+
+    // 字符串处理：trim
+    if (typeof val === 'string') {
+      val = val.trim();
+    }
+
+    // 跳过空值和'null'字符串
+    if (!val || val === 'null' || val === '') {
+      continue;
+    }
+
+    // 数组处理（如果需要的话，这里简化处理）
+    if (Array.isArray(val)) {
+      val = JSON.stringify(val);
+    } else if (typeof val === 'object') {
+      val = JSON.stringify(val);
+    }
+
+    signData.push(String(val));
   }
-  filtered.push(String(salt).trim());
-  filtered.sort(); // SORT_STRING equivalent
-  const raw = filtered.join('&');
+
+  // 添加salt
+  signData.push(String(salt));
+
+  // 按字符串排序
+  signData.sort();
+
+  // 用&连接并MD5
+  const raw = signData.join('&');
   return crypto.createHash('md5').update(raw, 'utf8').digest('hex');
 }
 
@@ -106,10 +126,9 @@ app.post('/preorder', async (req, res) => {
       body: body || 'ZhiDao-Pay',
       valid_time: 1800, // 30分钟
       notify_url: notifyUrl || process.env.PAY_NOTIFY_URL,
-      // 严格按照PHP示例，不添加额外字段
     };
 
-    // 计算签名（严格按照PHP官方示例：排除 sign/app_id/thirdparty_id，取值追加 salt，字典序排序，& 连接，md5）
+    // 计算签名（基于yansongda/pay库的正确实现）
     payload.sign = signWithSaltMD5(payload, cfg.paySalt);
 
     const resp = await fetch(cfg.preorderUrl, {
