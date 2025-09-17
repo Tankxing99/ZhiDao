@@ -34,15 +34,18 @@ app.post('/debug-signature', (req, res) => {
       notify_url: notifyUrl || process.env.PAY_NOTIFY_URL,
     };
 
-    const signature = signWithSaltMD5(payload, cfg.paySalt);
+    const debugResult = signWithSaltMD5(payload, cfg.paySalt, true);
 
     res.json({
       ok: true,
       debug: {
         payload,
         salt: cfg.paySalt ? '***' + cfg.paySalt.slice(-4) : 'NOT_SET',
-        signature,
-        preorderUrl: cfg.preorderUrl
+        signature: debugResult.signature,
+        preorderUrl: cfg.preorderUrl,
+        signData: debugResult.signData,
+        rawString: debugResult.raw,
+        debugLog: debugResult.debugLog
       }
     });
   } catch (error) {
@@ -71,17 +74,18 @@ function buildPayParams({ orderInfo, service }) {
 }
 
 // MD5 sign for ecpay (严格按照yansongda/pay库实现)
-function signWithSaltMD5(body, salt) {
+function signWithSaltMD5(body, salt, returnDebugInfo = false) {
   const signData = [];
+  const debugLog = [];
 
-  console.log('[DEBUG] signWithSaltMD5 input:', { body, salt });
+  debugLog.push(`[DEBUG] signWithSaltMD5 input: body=${JSON.stringify(body)}, salt=${salt ? '***' + salt.slice(-4) : 'NOT_SET'}`);
 
   for (const [key, value] of Object.entries(body || {})) {
-    console.log(`[DEBUG] Processing field: ${key} = ${value} (type: ${typeof value})`);
+    debugLog.push(`[DEBUG] Processing field: ${key} = ${value} (type: ${typeof value})`);
 
     // 排除字段：other_settle_params, app_id, sign, thirdparty_id
     if (['other_settle_params', 'app_id', 'sign', 'thirdparty_id'].includes(key)) {
-      console.log(`[DEBUG] Excluding field: ${key}`);
+      debugLog.push(`[DEBUG] Excluding field: ${key}`);
       continue;
     }
 
@@ -94,7 +98,7 @@ function signWithSaltMD5(body, salt) {
 
     // 跳过空值和'null'字符串 (严格按照PHP逻辑)
     if (!val || val === 'null' || val === '') {
-      console.log(`[DEBUG] Skipping empty/null field: ${key} = ${val}`);
+      debugLog.push(`[DEBUG] Skipping empty/null field: ${key} = ${val}`);
       continue;
     }
 
@@ -106,25 +110,32 @@ function signWithSaltMD5(body, salt) {
     }
 
     const finalVal = String(val);
-    console.log(`[DEBUG] Adding to signData: ${finalVal}`);
+    debugLog.push(`[DEBUG] Adding to signData: ${finalVal}`);
     signData.push(finalVal);
   }
 
   // 添加salt
   const saltStr = String(salt);
-  console.log(`[DEBUG] Adding salt: ${saltStr}`);
+  debugLog.push(`[DEBUG] Adding salt: ${saltStr ? '***' + saltStr.slice(-4) : 'NOT_SET'}`);
   signData.push(saltStr);
 
   // 按字符串排序 (SORT_STRING)
   signData.sort();
-  console.log(`[DEBUG] Sorted signData:`, signData);
+  debugLog.push(`[DEBUG] Sorted signData: [${signData.map(s => `"${s}"`).join(', ')}]`);
 
   // 用&连接并MD5
   const raw = signData.join('&');
-  console.log(`[DEBUG] Raw string for MD5: ${raw}`);
+  debugLog.push(`[DEBUG] Raw string for MD5: ${raw}`);
 
   const signature = crypto.createHash('md5').update(raw, 'utf8').digest('hex');
-  console.log(`[DEBUG] Final signature: ${signature}`);
+  debugLog.push(`[DEBUG] Final signature: ${signature}`);
+
+  if (returnDebugInfo) {
+    return { signature, debugLog, signData, raw };
+  }
+
+  // 输出到控制台（用于服务器日志）
+  debugLog.forEach(log => console.log(log));
 
   return signature;
 }
