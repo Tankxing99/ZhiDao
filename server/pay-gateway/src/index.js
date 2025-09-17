@@ -35,8 +35,17 @@ app.post('/debug-signature', (req, res) => {
     };
 
     const ysd = signWithVariant(payload, cfg.paySalt, 'ysd', true);
+    const ysdApp = signWithVariant(payload, cfg.paySalt, 'ysd_appid', true);
     const saltEnd = signWithVariant(payload, cfg.paySalt, 'salt_end', true);
+    const saltEndApp = signWithVariant(payload, cfg.paySalt, 'salt_end_appid', true);
     const saltEndNa = signWithVariant(payload, cfg.paySalt, 'salt_end_na', true);
+    const saltEndNaApp = signWithVariant(payload, cfg.paySalt, 'salt_end_na_appid', true);
+    const kvYsd = signWithVariant(payload, cfg.paySalt, 'kv_ysd', true);
+    const kvYsdApp = signWithVariant(payload, cfg.paySalt, 'kv_ysd_appid', true);
+    const kvSaltEnd = signWithVariant(payload, cfg.paySalt, 'kv_salt_end', true);
+    const kvSaltEndApp = signWithVariant(payload, cfg.paySalt, 'kv_salt_end_appid', true);
+    const kvSaltEndNa = signWithVariant(payload, cfg.paySalt, 'kv_salt_end_na', true);
+    const kvSaltEndNaApp = signWithVariant(payload, cfg.paySalt, 'kv_salt_end_na_appid', true);
 
     res.json({
       ok: true,
@@ -46,8 +55,17 @@ app.post('/debug-signature', (req, res) => {
         preorderUrl: cfg.preorderUrl,
         variants: {
           ysd,
+          ysd_appid: ysdApp,
           salt_end: saltEnd,
-          salt_end_na: saltEndNa
+          salt_end_appid: saltEndApp,
+          salt_end_na: saltEndNa,
+          salt_end_na_appid: saltEndNaApp,
+          kv_ysd: kvYsd,
+          kv_ysd_appid: kvYsdApp,
+          kv_salt_end: kvSaltEnd,
+          kv_salt_end_appid: kvSaltEndApp,
+          kv_salt_end_na: kvSaltEndNa,
+          kv_salt_end_na_appid: kvSaltEndNaApp
         }
       }
     });
@@ -144,10 +162,11 @@ function signWithSaltMD5(body, salt, returnDebugInfo = false) {
 }
 
 // Helper: collect values for signing (excludes fields per spec)
-function collectSignValues(body) {
+function collectSignValues(body, { includeAppId = false } = {}) {
   const vals = [];
   for (const [key, value] of Object.entries(body || {})) {
-    if (['other_settle_params', 'app_id', 'sign', 'thirdparty_id'].includes(key)) continue;
+    if (['other_settle_params', 'sign', 'thirdparty_id'].includes(key)) continue;
+    if (!includeAppId && key === 'app_id') continue;
     let v = value;
     if (typeof v === 'string') v = v.trim();
     if (!v || v === 'null' || v === '') continue;
@@ -158,29 +177,54 @@ function collectSignValues(body) {
   return vals;
 }
 
-// Variant signer: ysd (salt participates sorting), salt_end (& + salt), salt_end_na (& then no ampersand before salt)
+// Helper: collect key=value pairs for signing (sorted by key)
+function collectSignPairs(body, { includeAppId = false } = {}) {
+  const pairs = [];
+  const entries = Object.entries(body || {}).filter(([k]) => {
+    if (['other_settle_params', 'sign', 'thirdparty_id'].includes(k)) return false;
+    if (!includeAppId && k === 'app_id') return false;
+    return true;
+  });
+  entries.sort(([a], [b]) => a.localeCompare(b));
+  for (const [key, value] of entries) {
+    let v = value;
+    if (typeof v === 'string') v = v.trim();
+    if (!v || v === 'null' || v === '') continue;
+    if (Array.isArray(v)) v = JSON.stringify(v);
+    else if (typeof v === 'object' && v !== null) v = JSON.stringify(v);
+    pairs.push(`${key}=${String(v)}`);
+  }
+  return pairs;
+}
+
+// Variant signer: supports value-only and key=value modes; includeAppId via suffix `_appid`
 function signWithVariant(body, salt, variant = 'ysd', returnDebug = false) {
-  const values = collectSignValues(body);
   const saltStr = String(salt ?? '');
+  const includeAppId = /_appid$/.test(variant);
+  const isKV = variant.startsWith('kv_');
+  const coreVariant = variant.replace(/^kv_/, '').replace(/_appid$/, '');
+
+  const base = isKV ? collectSignPairs(body, { includeAppId }) : collectSignValues(body, { includeAppId });
+
   let raw;
   let signData;
 
-  switch (variant) {
+  switch (coreVariant) {
     case 'salt_end': {
-      const sorted = values.slice().sort();
+      const sorted = isKV ? base.slice() : base.slice().sort();
       raw = sorted.join('&') + '&' + saltStr;
       signData = sorted.concat([`& + SALT`]);
       break;
     }
     case 'salt_end_na': {
-      const sorted = values.slice().sort();
+      const sorted = isKV ? base.slice() : base.slice().sort();
       raw = sorted.join('&') + saltStr;
       signData = sorted.concat([`+SALT(no-&)`]);
       break;
     }
     case 'ysd':
     default: {
-      const arr = values.slice();
+      const arr = base.slice();
       arr.push(saltStr);
       arr.sort();
       signData = arr;
