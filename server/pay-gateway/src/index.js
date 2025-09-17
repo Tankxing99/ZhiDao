@@ -19,7 +19,7 @@ app.post('/debug-signature', (req, res) => {
     const body = ctxInfo?.body || 'ZhiDao-Pay';
 
     const cfg = {
-      appId: process.env.DY_APP_ID || appId,
+      appId: process.env.DY_PAY_APP_ID || appId,
       paySalt: process.env.DY_PAY_SALT,
       preorderUrl: process.env.DY_ECPAY_PRECREATE_URL,
     };
@@ -34,18 +34,21 @@ app.post('/debug-signature', (req, res) => {
       notify_url: notifyUrl || process.env.PAY_NOTIFY_URL,
     };
 
-    const debugResult = signWithSaltMD5(payload, cfg.paySalt, true);
+    const ysd = signWithVariant(payload, cfg.paySalt, 'ysd', true);
+    const saltEnd = signWithVariant(payload, cfg.paySalt, 'salt_end', true);
+    const saltEndNa = signWithVariant(payload, cfg.paySalt, 'salt_end_na', true);
 
     res.json({
       ok: true,
       debug: {
         payload,
         salt: cfg.paySalt ? '***' + cfg.paySalt.slice(-4) : 'NOT_SET',
-        signature: debugResult.signature,
         preorderUrl: cfg.preorderUrl,
-        signData: debugResult.signData,
-        rawString: debugResult.raw,
-        debugLog: debugResult.debugLog
+        variants: {
+          ysd,
+          salt_end: saltEnd,
+          salt_end_na: saltEndNa
+        }
       }
     });
   } catch (error) {
@@ -140,6 +143,58 @@ function signWithSaltMD5(body, salt, returnDebugInfo = false) {
   return signature;
 }
 
+// Helper: collect values for signing (excludes fields per spec)
+function collectSignValues(body) {
+  const vals = [];
+  for (const [key, value] of Object.entries(body || {})) {
+    if (['other_settle_params', 'app_id', 'sign', 'thirdparty_id'].includes(key)) continue;
+    let v = value;
+    if (typeof v === 'string') v = v.trim();
+    if (!v || v === 'null' || v === '') continue;
+    if (Array.isArray(v)) v = JSON.stringify(v);
+    else if (typeof v === 'object' && v !== null) v = JSON.stringify(v);
+    vals.push(String(v));
+  }
+  return vals;
+}
+
+// Variant signer: ysd (salt participates sorting), salt_end (& + salt), salt_end_na (& then no ampersand before salt)
+function signWithVariant(body, salt, variant = 'ysd', returnDebug = false) {
+  const values = collectSignValues(body);
+  const saltStr = String(salt ?? '');
+  let raw;
+  let signData;
+
+  switch (variant) {
+    case 'salt_end': {
+      const sorted = values.slice().sort();
+      raw = sorted.join('&') + '&' + saltStr;
+      signData = sorted.concat([`& + SALT`]);
+      break;
+    }
+    case 'salt_end_na': {
+      const sorted = values.slice().sort();
+      raw = sorted.join('&') + saltStr;
+      signData = sorted.concat([`+SALT(no-&)`]);
+      break;
+    }
+    case 'ysd':
+    default: {
+      const arr = values.slice();
+      arr.push(saltStr);
+      arr.sort();
+      signData = arr;
+      raw = arr.join('&');
+      break;
+    }
+  }
+
+  const signature = crypto.createHash('md5').update(raw, 'utf8').digest('hex');
+  if (returnDebug) return { signature, raw, signData, variant };
+  return signature;
+}
+
+
 app.post('/preorder', async (req, res) => {
   if (!verifyAuth(req)) return res.status(401).json({ ok: false, message: 'unauthorized' });
 
@@ -198,8 +253,9 @@ app.post('/preorder', async (req, res) => {
       notify_url: notifyUrl || process.env.PAY_NOTIFY_URL,
     };
 
-    // 计算签名（基于yansongda/pay库的正确实现）
-    payload.sign = signWithSaltMD5(payload, cfg.paySalt);
+    // 计算签名（支持多签名变体，便于一次性排查上线切换）
+    const variant = String(req.query.variant || (req.body && req.body.variant) || process.env.DY_PAY_SIGN_VARIANT || 'ysd');
+    payload.sign = signWithVariant(payload, cfg.paySalt, variant);
 
     const resp = await fetch(cfg.preorderUrl, {
       method: 'POST',
