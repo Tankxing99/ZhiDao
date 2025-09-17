@@ -27,13 +27,18 @@ function buildPayParams({ orderInfo, service }) {
   return { orderInfo, service: svc };
 }
 
-// MD5 sign for ecpay (基于yansongda/pay库的正确实现)
+// MD5 sign for ecpay (严格按照yansongda/pay库实现)
 function signWithSaltMD5(body, salt) {
   const signData = [];
 
+  console.log('[DEBUG] signWithSaltMD5 input:', { body, salt });
+
   for (const [key, value] of Object.entries(body || {})) {
+    console.log(`[DEBUG] Processing field: ${key} = ${value} (type: ${typeof value})`);
+
     // 排除字段：other_settle_params, app_id, sign, thirdparty_id
     if (['other_settle_params', 'app_id', 'sign', 'thirdparty_id'].includes(key)) {
+      console.log(`[DEBUG] Excluding field: ${key}`);
       continue;
     }
 
@@ -44,30 +49,41 @@ function signWithSaltMD5(body, salt) {
       val = val.trim();
     }
 
-    // 跳过空值和'null'字符串
+    // 跳过空值和'null'字符串 (严格按照PHP逻辑)
     if (!val || val === 'null' || val === '') {
+      console.log(`[DEBUG] Skipping empty/null field: ${key} = ${val}`);
       continue;
     }
 
-    // 数组处理（如果需要的话，这里简化处理）
+    // 数组处理（简化版，PHP中有复杂的arrayToString方法）
     if (Array.isArray(val)) {
       val = JSON.stringify(val);
-    } else if (typeof val === 'object') {
+    } else if (typeof val === 'object' && val !== null) {
       val = JSON.stringify(val);
     }
 
-    signData.push(String(val));
+    const finalVal = String(val);
+    console.log(`[DEBUG] Adding to signData: ${finalVal}`);
+    signData.push(finalVal);
   }
 
   // 添加salt
-  signData.push(String(salt));
+  const saltStr = String(salt);
+  console.log(`[DEBUG] Adding salt: ${saltStr}`);
+  signData.push(saltStr);
 
-  // 按字符串排序
+  // 按字符串排序 (SORT_STRING)
   signData.sort();
+  console.log(`[DEBUG] Sorted signData:`, signData);
 
   // 用&连接并MD5
   const raw = signData.join('&');
-  return crypto.createHash('md5').update(raw, 'utf8').digest('hex');
+  console.log(`[DEBUG] Raw string for MD5: ${raw}`);
+
+  const signature = crypto.createHash('md5').update(raw, 'utf8').digest('hex');
+  console.log(`[DEBUG] Final signature: ${signature}`);
+
+  return signature;
 }
 
 app.post('/preorder', async (req, res) => {
