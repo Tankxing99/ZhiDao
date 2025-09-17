@@ -100,6 +100,7 @@ app.post('/preorder', async (req, res) => {
       notify_url: notifyUrl || process.env.PAY_NOTIFY_URL,
       disable_msg: 1,
       sign_type: 'MD5',
+      timestamp: Math.floor(Date.now() / 1000),
       // 可选：cp_extra、thirdparty_id、msg_page、store_uid
     };
 
