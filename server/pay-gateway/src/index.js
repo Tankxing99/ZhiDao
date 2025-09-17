@@ -27,18 +27,26 @@ function buildPayParams({ orderInfo, service }) {
   return { orderInfo, service: svc };
 }
 
-// MD5 sign for ecpay (legacy spec): exclude sign/app_id/thirdparty_id/sign_type/other_settle_params, sort values, append salt, md5
+// MD5 sign for ecpay (严格按照PHP官方示例): exclude sign/app_id/thirdparty_id, sort values, append salt, md5
 function signWithSaltMD5(body, salt) {
   const filtered = [];
   for (const [k, v] of Object.entries(body || {})) {
-    if (k === 'sign' || k === 'sign_type' || k === 'app_id' || k === 'thirdparty_id' || k === 'other_settle_params') continue;
-    const val = String(v ?? '').trim();
+    // 严格按照PHP示例：只排除这3个字段
+    if (k === 'sign' || k === 'app_id' || k === 'thirdparty_id') continue;
+
+    let val = String(v ?? '').trim();
+
+    // 处理引号（匹配PHP逻辑）
+    if (val.length > 1 && val.startsWith('"') && val.endsWith('"')) {
+      val = val.slice(1, -1).trim();
+    }
+
     if (!val || val === 'null') continue;
     filtered.push(val);
   }
   filtered.push(String(salt).trim());
-  filtered.sort(); // lexicographic
-  const raw = filtered.join('&').trim();
+  filtered.sort(); // SORT_STRING equivalent
+  const raw = filtered.join('&');
   return crypto.createHash('md5').update(raw, 'utf8').digest('hex');
 }
 
@@ -96,15 +104,12 @@ app.post('/preorder', async (req, res) => {
       total_amount: Number(amount), // 分
       subject: subject || 'ZhiDao-Order',
       body: body || 'ZhiDao-Pay',
-      valid_time: 1800, // 30分钟，符合官方最小15分钟限制
+      valid_time: 1800, // 30分钟
       notify_url: notifyUrl || process.env.PAY_NOTIFY_URL,
-      disable_msg: 1,
-      sign_type: 'MD5',
-      timestamp: Math.floor(Date.now() / 1000),
-      // 可选：cp_extra、thirdparty_id、msg_page、store_uid
+      // 严格按照PHP示例，不添加额外字段
     };
 
-    // 计算签名（MD5+salt，按常见实现：剔除 sign/app_id/thirdparty_id/sign_type/other_settle_params，取值追加 salt，字典序排序，& 连接，md5）
+    // 计算签名（严格按照PHP官方示例：排除 sign/app_id/thirdparty_id，取值追加 salt，字典序排序，& 连接，md5）
     payload.sign = signWithSaltMD5(payload, cfg.paySalt);
 
     const resp = await fetch(cfg.preorderUrl, {
