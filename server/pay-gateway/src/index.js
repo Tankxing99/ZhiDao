@@ -98,10 +98,12 @@ app.post('/preorder', async (req, res) => {
       body: body || 'ZhiDao-Pay',
       valid_time: 1800, // 30分钟，符合官方最小15分钟限制
       notify_url: notifyUrl || process.env.PAY_NOTIFY_URL,
-      // 可选：cp_extra、thirdparty_id、disable_msg、msg_page、store_uid
+      disable_msg: 1,
+      sign_type: 'MD5',
+      // 可选：cp_extra、thirdparty_id、msg_page、store_uid
     };
 
-    // 计算签名（MD5+salt，按常见实现：剔除 sign/app_id/thirdparty_id，取值，追加 salt，字典序排序，& 连接，md5）
+    // 计算签名（MD5+salt，按常见实现：剔除 sign/app_id/thirdparty_id/sign_type/other_settle_params，取值追加 salt，字典序排序，& 连接，md5）
     payload.sign = signWithSaltMD5(payload, cfg.paySalt);
 
     const resp = await fetch(cfg.preorderUrl, {
