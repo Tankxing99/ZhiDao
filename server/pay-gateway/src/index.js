@@ -1,4 +1,5 @@
 import express from 'express';
+import crypto from 'crypto';
 
 const app = express();
 const PORT = process.env.PORT || 8000;
@@ -26,6 +27,19 @@ function buildPayParams({ orderInfo, service }) {
   return { orderInfo, service: svc };
 }
 
+// MD5 sign for ecpay (legacy spec): exclude sign/app_id/thirdparty_id, sort values, append salt, md5
+function signWithSaltMD5(body, salt) {
+  const filtered = [];
+  for (const [k, v] of Object.entries(body || {})) {
+    if (k === 'sign' || k === 'app_id' || k === 'thirdparty_id') continue;
+    filtered.push(typeof v === 'string' ? v.trim() : v);
+  }
+  filtered.push(String(salt).trim());
+  filtered.sort();
+  const raw = filtered.join('&').trim();
+  return crypto.createHash('md5').update(raw, 'utf8').digest('hex');
+}
+
 app.post('/preorder', async (req, res) => {
   if (!verifyAuth(req)) return res.status(401).json({ ok: false, message: 'unauthorized' });
 
@@ -45,59 +59,72 @@ app.post('/preorder', async (req, res) => {
     return res.json({ ok: true, payParams: buildPayParams({ orderInfo: JSON.stringify(fake), service: 5 }) });
   }
 
-  // Direct-to-担保支付（待配置正式商户参数）
+  // Direct-to-担保支付
   const cfg = {
     appId: appId || process.env.DY_PAY_APP_ID,
     partnerId: process.env.DY_MCH_PARTNER_ID,
-    mchPrivateKey: process.env.DY_MCH_PRIVATE_KEY, // PEM
-    platformPublicKey: process.env.DY_PLATFORM_PUBLIC_KEY, // PEM
-    preorderUrl: process.env.DY_ECPAY_PRECREATE_URL, // 强烈建议通过环境变量提供官方预下单URL
+    // 某些资料要求使用 salt（支付密钥）进行 MD5 签名
+    paySalt: process.env.DY_PAY_SALT,
+    preorderUrl: process.env.DY_ECPAY_PRECREATE_URL, // 官方预下单URL（生产/沙盒）
   };
 
   const missing = Object.entries({
     DY_PAY_APP_ID: cfg.appId,
     DY_MCH_PARTNER_ID: cfg.partnerId,
-    DY_MCH_PRIVATE_KEY: cfg.mchPrivateKey,
-    DY_PLATFORM_PUBLIC_KEY: cfg.platformPublicKey,
     DY_ECPAY_PRECREATE_URL: cfg.preorderUrl,
   }).filter(([, v]) => !v).map(([k]) => k);
+
+  if (!cfg.paySalt) missing.push('DY_PAY_SALT');
 
   if (missing.length) {
     return res.status(400).json({
       ok: false,
       message: 'missing merchant config',
       missing,
-      hint: '请在 pay-gateway 服务的环境变量中配置以上缺失项；配置完成后即可直连担保支付预下单。',
+      hint: '请在 pay-gateway 服务的环境变量中配置以上缺失项（尤其 DY_PAY_SALT 与 DY_ECPAY_PRECREATE_URL）。',
     });
   }
 
   try {
-    // 说明：此处为直连担保支付“预下单”调用的骨架。具体签名体与字段需严格参考官方文档。
-    // 为避免错误实现，这里保留请求骨架与透传结构，待你提供正式文档链接/签名体制后再补充实现。
-
+    // 依据“担保支付 create_order”常见参数构造请求体（以官方文档为准）
+    // 注意：amount 我方上游按“分”传递，接口 total_amount 也要求“分”，故不再 *100
     const payload = {
-      // 常见字段示例（以官方文档为准）：
-      // app_id: cfg.appId,
-      // out_order_no: orderNo,
-      // total_amount: amount,
-      // subject: subject || 'ZhiDao-Order',
-      // body: body || 'ZhiDao-Test-Pay',
-      // valid_time: 300,
-      // notify_url: notifyUrl || process.env.PAY_NOTIFY_URL,
-      // sign, sign_type, timestamp, etc...
+      app_id: cfg.appId,
+      out_order_no: String(orderNo),
+      total_amount: Number(amount), // 分
+      subject: subject || 'ZhiDao-Order',
+      body: body || 'ZhiDao-Pay',
+      valid_time: 300, // 5分钟有效，可按需调整
+      notify_url: notifyUrl || process.env.PAY_NOTIFY_URL,
+      // 可选：cp_extra、thirdparty_id、disable_msg、msg_page、store_uid
     };
 
-    // TODO: 构造签名与HTTP请求（RSA-SHA256 等），并解析返回 { orderInfo, service }
-    // const resp = await fetch(cfg.preorderUrl, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(payload) });
-    // const data = await resp.json();
-    // 示例：根据返回结构提取 orderInfo
-    // const orderInfo = data?.orderInfo || data?.data?.orderInfo || data?.payParams?.orderInfo;
+    // 计算签名（MD5+salt，按常见实现：剔除 sign/app_id/thirdparty_id，取值，追加 salt，字典序排序，& 连接，md5）
+    payload.sign = signWithSaltMD5(payload, cfg.paySalt);
 
-    return res.status(501).json({
-      ok: false,
-      message: 'direct ecpay preorder not implemented yet in scaffold',
-      next: '请提供担保支付预下单官方文档链接与签名字段明细；我将补齐签名与请求实现并上线',
+    const resp = await fetch(cfg.preorderUrl, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(payload),
     });
+
+    const data = await resp.json().catch(() => ({}));
+
+    if (!resp.ok) {
+      return res.status(502).json({ ok: false, message: 'precreate request failed', status: resp.status, data });
+    }
+
+    // 兼容不同返回结构，提取 order_id / order_token
+    const maybe = data || {};
+    const order_id = maybe.order_id || maybe.data?.order_id || maybe.order?.order_id || maybe.result?.order_id;
+    const order_token = maybe.order_token || maybe.data?.order_token || maybe.order?.order_token || maybe.result?.order_token;
+
+    if (!order_id || !order_token) {
+      return res.status(500).json({ ok: false, message: 'missing order_id/order_token in response', data });
+    }
+
+    const orderInfo = JSON.stringify({ order_id, order_token });
+    return res.json({ ok: true, payParams: buildPayParams({ orderInfo, service: 5 }), raw: { order_id } });
   } catch (err) {
     console.error('[preorder] error', err);
     return res.status(500).json({ ok: false, message: 'internal error', error: String(err?.message || err) });
@@ -107,4 +134,3 @@ app.post('/preorder', async (req, res) => {
 app.listen(PORT, () => {
   console.log(`[pay-gateway] listening on :${PORT}`);
 });
-
