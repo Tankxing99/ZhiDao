@@ -27,15 +27,17 @@ function buildPayParams({ orderInfo, service }) {
   return { orderInfo, service: svc };
 }
 
-// MD5 sign for ecpay (legacy spec): exclude sign/app_id/thirdparty_id, sort values, append salt, md5
+// MD5 sign for ecpay (legacy spec): exclude sign/app_id/thirdparty_id/sign_type/other_settle_params, sort values, append salt, md5
 function signWithSaltMD5(body, salt) {
   const filtered = [];
   for (const [k, v] of Object.entries(body || {})) {
-    if (k === 'sign' || k === 'app_id' || k === 'thirdparty_id') continue;
-    filtered.push(typeof v === 'string' ? v.trim() : v);
+    if (k === 'sign' || k === 'sign_type' || k === 'app_id' || k === 'thirdparty_id' || k === 'other_settle_params') continue;
+    const val = String(v ?? '').trim();
+    if (!val || val === 'null') continue;
+    filtered.push(val);
   }
   filtered.push(String(salt).trim());
-  filtered.sort();
+  filtered.sort(); // lexicographic
   const raw = filtered.join('&').trim();
   return crypto.createHash('md5').update(raw, 'utf8').digest('hex');
 }
@@ -94,7 +96,7 @@ app.post('/preorder', async (req, res) => {
       total_amount: Number(amount), // 分
       subject: subject || 'ZhiDao-Order',
       body: body || 'ZhiDao-Pay',
-      valid_time: 300, // 5分钟有效，可按需调整
+      valid_time: 1800, // 30分钟，符合官方最小15分钟限制
       notify_url: notifyUrl || process.env.PAY_NOTIFY_URL,
       // 可选：cp_extra、thirdparty_id、disable_msg、msg_page、store_uid
     };
