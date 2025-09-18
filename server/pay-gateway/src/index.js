@@ -47,6 +47,20 @@ app.post('/debug-signature', (req, res) => {
     const kvSaltEndNa = signWithVariant(payload, cfg.paySalt, 'kv_salt_end_na', true);
     const kvSaltEndNaApp = signWithVariant(payload, cfg.paySalt, 'kv_salt_end_na_appid', true);
 
+    // Additional variants: nosort + token (KV-only)
+    const ysdNo = signWithVariant(payload, cfg.paySalt, 'ysd_nosort', true);
+    const ysdAppNo = signWithVariant(payload, cfg.paySalt, 'ysd_appid_nosort', true);
+
+    const kvYsdNo = signWithVariant(payload, cfg.paySalt, 'kv_ysd_nosort', true);
+    const kvSaltEndNo = signWithVariant(payload, cfg.paySalt, 'kv_salt_end_nosort', true);
+
+    const kvYsdToken = signWithVariant(payload, cfg.paySalt, 'kv_ysd_token', true);
+    const kvYsdAppToken = signWithVariant(payload, cfg.paySalt, 'kv_ysd_appid_token', true);
+    const kvSaltEndToken = signWithVariant(payload, cfg.paySalt, 'kv_salt_end_token', true);
+    const kvSaltEndAppToken = signWithVariant(payload, cfg.paySalt, 'kv_salt_end_appid_token', true);
+    const kvSaltEndNaToken = signWithVariant(payload, cfg.paySalt, 'kv_salt_end_na_token', true);
+    const kvSaltEndNaAppToken = signWithVariant(payload, cfg.paySalt, 'kv_salt_end_na_appid_token', true);
+
     res.json({
       ok: true,
       debug: {
@@ -65,7 +79,19 @@ app.post('/debug-signature', (req, res) => {
           kv_salt_end: kvSaltEnd,
           kv_salt_end_appid: kvSaltEndApp,
           kv_salt_end_na: kvSaltEndNa,
-          kv_salt_end_na_appid: kvSaltEndNaApp
+          kv_salt_end_na_appid: kvSaltEndNaApp,
+          // nosort variants
+          ysd_nosort: ysdNo,
+          ysd_appid_nosort: ysdAppNo,
+          kv_ysd_nosort: kvYsdNo,
+          kv_salt_end_nosort: kvSaltEndNo,
+          // token variants (KV only)
+          kv_ysd_token: kvYsdToken,
+          kv_ysd_appid_token: kvYsdAppToken,
+          kv_salt_end_token: kvSaltEndToken,
+          kv_salt_end_appid_token: kvSaltEndAppToken,
+          kv_salt_end_na_token: kvSaltEndNaToken,
+          kv_salt_end_na_appid_token: kvSaltEndNaAppToken
         }
       }
     });
@@ -177,15 +203,15 @@ function collectSignValues(body, { includeAppId = false } = {}) {
   return vals;
 }
 
-// Helper: collect key=value pairs for signing (sorted by key)
-function collectSignPairs(body, { includeAppId = false } = {}) {
+// Helper: collect key=value pairs for signing (optionally sorted by key)
+function collectSignPairs(body, { includeAppId = false, sortByKey = true } = {}) {
   const pairs = [];
   const entries = Object.entries(body || {}).filter(([k]) => {
     if (['other_settle_params', 'sign', 'thirdparty_id'].includes(k)) return false;
     if (!includeAppId && k === 'app_id') return false;
     return true;
   });
-  entries.sort(([a], [b]) => a.localeCompare(b));
+  if (sortByKey) entries.sort(([a], [b]) => a.localeCompare(b));
   for (const [key, value] of entries) {
     let v = value;
     if (typeof v === 'string') v = v.trim();
@@ -197,38 +223,65 @@ function collectSignPairs(body, { includeAppId = false } = {}) {
   return pairs;
 }
 
-// Variant signer: supports value-only and key=value modes; includeAppId via suffix `_appid`
+// Variant signer: supports value-only and key=value modes; includeAppId via suffix `_appid`; `_nosort` to keep order; `_token` to append &token=salt (KV only)
 function signWithVariant(body, salt, variant = 'ysd', returnDebug = false) {
   const saltStr = String(salt ?? '');
   const includeAppId = /_appid$/.test(variant);
+  const noSort = /_nosort/.test(variant);
+  const tokenMode = /_token/.test(variant);
   const isKV = variant.startsWith('kv_');
-  const coreVariant = variant.replace(/^kv_/, '').replace(/_appid$/, '');
+  const coreVariant = variant
+    .replace(/^kv_/, '')
+    .replace(/_appid$/, '')
+    .replace(/_nosort$/, '')
+    .replace(/_token$/, '');
 
-  const base = isKV ? collectSignPairs(body, { includeAppId }) : collectSignValues(body, { includeAppId });
+  const base = isKV
+    ? collectSignPairs(body, { includeAppId, sortByKey: !noSort })
+    : collectSignValues(body, { includeAppId });
 
   let raw;
   let signData;
 
   switch (coreVariant) {
     case 'salt_end': {
-      const sorted = isKV ? base.slice() : base.slice().sort();
-      raw = sorted.join('&') + '&' + saltStr;
-      signData = sorted.concat([`& + SALT`]);
+      const arr = base.slice();
+      if (!isKV && !noSort) arr.sort();
+      if (tokenMode && isKV) {
+        raw = arr.join('&') + `&token=${saltStr}`;
+        signData = arr.concat(['& token=' + saltStr]);
+      } else {
+        raw = arr.join('&') + '&' + saltStr;
+        signData = arr.concat(['& + SALT']);
+      }
       break;
     }
     case 'salt_end_na': {
-      const sorted = isKV ? base.slice() : base.slice().sort();
-      raw = sorted.join('&') + saltStr;
-      signData = sorted.concat([`+SALT(no-&)`]);
+      const arr = base.slice();
+      if (!isKV && !noSort) arr.sort();
+      if (tokenMode && isKV) {
+        raw = arr.join('&') + `&token=${saltStr}`;
+        signData = arr.concat(['& token=' + saltStr]);
+      } else {
+        raw = arr.join('&') + saltStr;
+        signData = arr.concat(['+SALT(no-& )']);
+      }
       break;
     }
     case 'ysd':
     default: {
       const arr = base.slice();
-      arr.push(saltStr);
-      arr.sort();
-      signData = arr;
-      raw = arr.join('&');
+      if (tokenMode && isKV) {
+        // ysd+token (KV): 不把salt参与排序，末尾追加 &token=salt
+        raw = arr.join('&') + `&token=${saltStr}`;
+        signData = arr.concat(['& token=' + saltStr]);
+      } else {
+        // ysd：salt 参与排序
+        arr.push(saltStr);
+        if (!isKV && !noSort) arr.sort();
+        signData = arr;
+        raw = arr.join('&');
+      }
       break;
     }
   }
