@@ -356,14 +356,16 @@ app.post('/preorder', async (req, res) => {
 
     const resp = await fetch(cfg.preorderUrl, {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers: { 'content-type': 'application/json', 'accept': 'application/json' },
       body: JSON.stringify(payload),
     });
 
-    const data = await resp.json().catch(() => ({}));
+    const rawText = await resp.text();
+    let data;
+    try { data = JSON.parse(rawText); } catch (e) { data = undefined; }
 
     if (!resp.ok) {
-      return res.status(502).json({ ok: false, message: 'precreate request failed', status: resp.status, data });
+      return res.status(502).json({ ok: false, message: 'precreate request failed', status: resp.status, data, rawText });
     }
 
     // 兼容不同返回结构，提取 order_id / order_token
@@ -372,7 +374,7 @@ app.post('/preorder', async (req, res) => {
     const order_token = maybe.order_token || maybe.data?.order_token || maybe.order?.order_token || maybe.result?.order_token;
 
     if (!order_id || !order_token) {
-      return res.status(500).json({ ok: false, message: 'missing order_id/order_token in response', data });
+      return res.status(500).json({ ok: false, message: 'missing order_id/order_token in response', data, rawText });
     }
 
     const orderInfo = JSON.stringify({ order_id, order_token });
