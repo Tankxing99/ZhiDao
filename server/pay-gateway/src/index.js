@@ -4,6 +4,46 @@ import crypto from 'crypto';
 const app = express();
 const PORT = process.env.PORT || 8000;
 
+// Open API access_token cache (for production create_order)
+let OPEN_TOKEN_CACHE = { token: null, expireAt: 0 };
+
+async function getOpenAccessToken() {
+  // 1) Direct token via env (preferred for quick debug)
+  if (process.env.DY_OPEN_ACCESS_TOKEN) return process.env.DY_OPEN_ACCESS_TOKEN;
+
+  // 2) Client credentials
+  const key = process.env.DY_OPEN_CLIENT_KEY;
+  const secret = process.env.DY_OPEN_CLIENT_SECRET;
+  if (!key || !secret) return null;
+
+  if (OPEN_TOKEN_CACHE.token && Date.now() < (OPEN_TOKEN_CACHE.expireAt - 60_000)) {
+    return OPEN_TOKEN_CACHE.token;
+  }
+
+  try {
+    const resp = await fetch('https://open.douyin.com/oauth/client_token', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        client_key: key,
+        client_secret: secret,
+        grant_type: 'client_credential'
+      })
+    });
+    const data = await resp.json().catch(() => ({}));
+    if (data && data.access_token) {
+      const ttl = Number(data.expires_in || 7000) * 1000;
+      OPEN_TOKEN_CACHE = { token: data.access_token, expireAt: Date.now() + ttl };
+      return OPEN_TOKEN_CACHE.token;
+    }
+    console.warn('[open-token] failed to obtain token', data);
+    return null;
+  } catch (e) {
+    console.error('[open-token] error', e);
+    return null;
+  }
+}
+
 // capture raw body if needed in future (e.g., signature)
 app.use(express.json({ limit: '1mb' }));
 
@@ -354,7 +394,14 @@ app.post('/preorder', async (req, res) => {
     const variant = String(req.query.variant || (req.body && req.body.variant) || process.env.DY_PAY_SIGN_VARIANT || 'ysd');
     payload.sign = signWithVariant(payload, cfg.paySalt, variant);
 
-    const resp = await fetch(cfg.preorderUrl, {
+    // attach access_token for production Open API when available
+    let url = cfg.preorderUrl;
+    const accessToken = await getOpenAccessToken();
+    if (accessToken) {
+      url += (url.includes('?') ? '&' : '?') + 'access_token=' + encodeURIComponent(accessToken);
+    }
+
+    const resp = await fetch(url, {
       method: 'POST',
       headers: { 'content-type': 'application/json', 'accept': 'application/json' },
       body: JSON.stringify(payload),
