@@ -213,6 +213,8 @@ export function registerShopPaymentRoutes(app){
     log('refund notify received', { orderNo, stored, verify: verify.mode || verify.ok });
     res.status(200).send('success');
 
+  });
+
   // 订单查询兜底（通用交易系统建议：回调可能延迟/丢失 → 主动查询作为最终判定依据）
   // GET /api/shop/orders/:orderNo/confirm?force=1
   // 返回：{ ok: boolean, orderNo, status?: string, raw?: any, hint?: string }
