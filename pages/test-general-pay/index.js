@@ -2,6 +2,8 @@
 // 参考文档：通用交易系统 接入指引（basicapi）
 // https://developer.open-douyin.com/docs/resource/zh-CN/mini-app/open-capacity/business-monetization/guaranteed-payment/general/basicapi
 
+const { getConfig } = require('../../config/config');
+
 Page({
   data:{ log: '', lastOrderId: '' },
   append(msg){ this.setData({ log: (this.data.log + (this.data.log? '\n' : '') + msg) }); },
@@ -30,20 +32,25 @@ Page({
   // 官方示例：创建订单（请将示例中的字段与授权替换为服务端返回的真实值）
   async createOrder(){
     try{
+      console.log('[general-pay] createOrder tapped');
+      this.append('开始创建订单…');
       // 先向我们自建后端请求 data 与 byteAuthorization（官方要求：服务端生成并下发）
-      const app = getApp();
-      const cloud = app.globalData && app.globalData.cloud;
+      const { API_BASE } = getConfig();
       const payload = {
-        orderEntrySchema: { path: 'page/index/index', params: '{"id":1234, "name":"hello"}' },
+        orderEntrySchema: { path: 'pages/index/index', params: '{"id":1234, "name":"hello"}' },
         skuList: [{ tagGroupId: 'test', skuId: 'abcd', title: 'test', price: 1, imageList: ['https://example.com/test.png'], type: 101, quantity: 1 }],
-        outOrderNo: 'out_order_test_123456',
+        outOrderNo: `out_order_test_${Date.now()}`,
         totalAmount: 1,
         payExpireSeconds: 300,
         limitPayWayList: []
       };
-      const { data: resp, statusCode } = await cloud.callContainer({ path: '/api/shop/general/requestOrder', init: { method:'POST', header:{'content-type':'application/json'}, body: JSON.stringify(payload) } });
-      const r = (typeof resp === 'string') ? JSON.parse(resp) : (resp || {});
-      if (statusCode !== 200) { this.append('requestOrder后端接口失败 status=' + statusCode); return; }
+      const resp = await tt.request({
+        url: `${API_BASE}/api/shop/general/requestOrder`,
+        method: 'POST',
+        data: payload,
+        header: { 'content-type': 'application/json' }
+      });
+      const r = resp && resp.data || {};
       if (!r || r.ok !== true || !r.data || !r.byteAuthorization) {
         this.append('后端尚未返回可用 data/byteAuthorization，hint=' + (r && r.hint || r && r.message || ''));
         tt.showToast({ icon:'none', title:'后端未就绪，查看日志' });
@@ -55,7 +62,7 @@ Page({
         byteAuthorization: r.byteAuthorization,
         success: (res) => {
           const { orderId } = res || {};
-          console.log('orderId', orderId);
+          console.log('requestOrder success, orderId =', orderId);
           this.setData({ lastOrderId: orderId || '' });
           this.append('requestOrder success, orderId=' + (orderId || ''));
         },
@@ -63,9 +70,14 @@ Page({
           const { errLogId, errMsg, errNo } = res || {};
           console.log('requestOrder fail', errNo, errMsg, errLogId);
           this.append('requestOrder fail: ' + JSON.stringify({ errNo, errMsg, errLogId }));
+          tt.showToast({ icon:'none', title: '创建订单失败' });
         }
       });
-    }catch(e){ this.append('createOrder 调用异常：' + (e?.message || String(e))); }
+    }catch(e){
+      console.error('[general-pay] createOrder exception', e);
+      this.append('createOrder 调用异常：' + (e?.message || String(e)));
+      tt.showToast({ icon:'fail', title:'异常，请看日志' });
+    }
   },
 
   // 官方示例：拉起支付（将 orderId 替换为上一步成功返回的 orderId）
