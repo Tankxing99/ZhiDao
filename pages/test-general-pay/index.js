@@ -34,7 +34,6 @@ Page({
     try{
       console.log('[general-pay] createOrder tapped');
       this.append('开始创建订单…');
-      // 先向我们自建后端请求 data 与 byteAuthorization（官方要求：服务端生成并下发）
       const { API_BASE } = getConfig();
       const payload = {
         orderEntrySchema: { path: 'pages/index/index', params: '{"id":1234, "name":"hello"}' },
@@ -44,33 +43,52 @@ Page({
         payExpireSeconds: 300,
         limitPayWayList: []
       };
-      const resp = await tt.request({
+
+      // 使用 callback 版本，避免 await 在某些基础库不可用
+      tt.request({
         url: `${API_BASE}/api/shop/general/requestOrder`,
         method: 'POST',
         data: payload,
-        header: { 'content-type': 'application/json' }
-      });
-      const r = resp && resp.data || {};
-      if (!r || r.ok !== true || !r.data || !r.byteAuthorization) {
-        this.append('后端尚未返回可用 data/byteAuthorization，hint=' + (r && r.hint || r && r.message || ''));
-        tt.showToast({ icon:'none', title:'后端未就绪，查看日志' });
-        return;
-      }
-      // 调用官方 API：tt.requestOrder
-      tt.requestOrder({
-        data: r.data,
-        byteAuthorization: r.byteAuthorization,
-        success: (res) => {
-          const { orderId } = res || {};
-          console.log('requestOrder success, orderId =', orderId);
-          this.setData({ lastOrderId: orderId || '' });
-          this.append('requestOrder success, orderId=' + (orderId || ''));
+        header: { 'content-type': 'application/json' },
+        success: (resp) => {
+          try{
+            console.log('[general-pay] backend resp', resp);
+            const r = resp && resp.data || {};
+            if (!r || r.ok !== true || !r.data || !r.byteAuthorization) {
+              this.append('后端未返回可用 data/byteAuthorization，hint=' + (r && (r.hint || r.message) || ''));
+              tt.showToast({ icon:'none', title:'后端未就绪' });
+              return;
+            }
+            // 调用官方 API：tt.requestOrder
+            tt.requestOrder({
+              data: r.data,
+              byteAuthorization: r.byteAuthorization,
+              success: (res) => {
+                const { orderId } = res || {};
+                console.log('requestOrder success, orderId =', orderId);
+                this.setData({ lastOrderId: orderId || '' });
+                this.append('requestOrder success, orderId=' + (orderId || ''));
+              },
+              fail: (res) => {
+                const { errLogId, errMsg, errNo } = res || {};
+                console.log('requestOrder fail', errNo, errMsg, errLogId);
+                this.append('requestOrder fail: ' + JSON.stringify({ errNo, errMsg, errLogId }));
+                tt.showToast({ icon:'none', title: '创建订单失败' });
+              }
+            });
+          }catch(err){
+            console.error('[general-pay] parse backend resp error', err);
+            this.append('解析后端响应异常：' + (err?.message || String(err)));
+          }
         },
-        fail: (res) => {
-          const { errLogId, errMsg, errNo } = res || {};
-          console.log('requestOrder fail', errNo, errMsg, errLogId);
-          this.append('requestOrder fail: ' + JSON.stringify({ errNo, errMsg, errLogId }));
-          tt.showToast({ icon:'none', title: '创建订单失败' });
+        fail: (err) => {
+          console.error('[general-pay] request to backend failed', err);
+          this.append('请求后端失败：' + (err?.errMsg || JSON.stringify(err)));
+          // 域名未加白常见错误提示
+          if (err && /domain|not in domain|url/.test(err.errMsg || '')){
+            this.append('可能原因：请求域名未加入“request 合法域名”。开发阶段可在 IDE 勾选不校验域名，或到平台配置 api.iotvision.top');
+          }
+          tt.showToast({ icon:'none', title:'请求后端失败' });
         }
       });
     }catch(e){
@@ -82,7 +100,13 @@ Page({
 
   // 官方示例：拉起支付（将 orderId 替换为上一步成功返回的 orderId）
   pay(){
-    const orderId = this.data.lastOrderId || '123'; // 演示：无有效值时走占位 '123'
+    const orderId = this.data.lastOrderId;
+    if (!orderId){
+      tt.showToast({ icon: 'none', title: '请先创建订单' });
+      this.append('请先点击“创建订单”并成功返回 orderId 后再拉起支付');
+      console.warn('[general-pay] pay tapped without orderId');
+      return;
+    }
     tt.getOrderPayment({
       orderId,
       success: (res) => {
