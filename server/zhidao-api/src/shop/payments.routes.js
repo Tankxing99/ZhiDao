@@ -9,6 +9,26 @@ import { queryOrderGeneral } from './order.query.js';
 import crypto from 'crypto';
 import fs from 'fs';
 
+import path from 'path';
+
+async function ensurePrivateKeyFile(){
+  try{
+    const p = process.env.APP_PRIVATE_KEY_PATH;
+    const url = process.env.APP_PRIVATE_KEY_URL;
+    if (!p || !url) return;
+    if (fs.existsSync(p)) return;
+    const headers = {};
+    if (process.env.APP_PRIVATE_KEY_URL_AUTH) headers['Authorization'] = process.env.APP_PRIVATE_KEY_URL_AUTH;
+    const resp = await fetch(url, { headers });
+    if (!resp.ok) throw new Error(`download private key failed: ${resp.status}`);
+    const txt = await resp.text();
+    fs.mkdirSync(path.dirname(p), { recursive: true });
+    fs.writeFileSync(p, txt, 'utf8');
+  }catch(e){
+    warn('ensurePrivateKeyFile error:', e?.message || e);
+  }
+}
+
 function log(...args){ try{ console.log('[shop/payments]', ...args); }catch(_){} }
 function warn(...args){ try{ console.warn('[shop/payments]', ...args); }catch(_){} }
 
@@ -70,6 +90,7 @@ export function registerShopPaymentRoutes(app){
           data: dataStr
         });
       }
+      await ensurePrivateKeyFile();
       let privateKey = process.env.APP_PRIVATE_KEY || '';
       if (!privateKey && process.env.APP_PRIVATE_KEY_PATH) {
         try { privateKey = fs.readFileSync(process.env.APP_PRIVATE_KEY_PATH, 'utf8'); } catch(e) {}
