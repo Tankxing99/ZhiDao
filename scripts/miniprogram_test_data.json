@@ -1,0 +1,91 @@
+{
+  "generateDate": "2025-08-19T01:47:41.397Z",
+  "description": "小程序推荐结果页面测试数据",
+  "recommendations": [
+    {
+      "id": "dracaena_trifasciata",
+      "name": "虎皮兰",
+      "tags": [
+        "室内植物",
+        "易养护"
+      ],
+      "cover": "",
+      "_displayImage": {
+        "url": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iOTYiIGhlaWdodD0iOTYiIHZpZXdCb3g9IjAgMCA5NiA5NiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iOTYiIGhlaWdodD0iOTYiIGZpbGw9IiNGNUY1RjciLz4KICA8IS0tIOiKseeUsyAtLT4KICA8cGF0aCBkPSJNMzIgNzJINjRMNjAgNTZIMzZMMzIgNzJaIiBmaWxsPSIjOEU4RTkzIiBvcGFjaXR5PSIwLjMiLz4KICA8IS0tIOakreeJqeiMjuW5siAtLT4KICA8cGF0aCBkPSJNNDggNTZWNDAiIHN0cm9rZT0iIzM0Qzc1OSIgc3Ryb2tlLXdpZHRoPSIzIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICA8IS0tIOWPtuWtkCAtLT4KICA8cGF0aCBkPSJNNDggNDVDNTIgNDEgNTggNDMgNTYgNDhDNTggNTMgNTIgNTUgNDggNTEiIGZpbGw9IiMzNEM3NTkiIG9wYWNpdHk9IjAuNiIvPgogIDxwYXRoIGQ9Ik00OCA0NUM0NCA0MSAzOCA0MyA0MCA0OEMzOCA1MyA0NCA1NSA0OCA1MSIgZmlsbD0iIzM0Qzc1OSIgb3BhY2l0eT0iMC42Ii8+CiAgPCEtLSDoi7HmnLUgLS0+CiAgPGNpcmNsZSBjeD0iNDgiIGN5PSIzNSIgcj0iNSIgZmlsbD0iI0ZGOTUwMCIgb3BhY2l0eT0iMC43Ii8+CiAgPGNpcmNsZSBjeD0iNDUiIGN5PSIzMiIgcj0iMiIgZmlsbD0iI0ZGRDYwQSIvPgogIDxjaXJjbGUgY3g9IjUxIiBjeT0iMzIiIHI9IjIiIGZpbGw9IiNGRkQ2MEEiLz4KICA8Y2lyY2xlIGN4PSI0OCIgY3k9IjM4IiByPSIyIiBmaWxsPSIjRkZENjBBIi8+Cjwvc3ZnPg==",
+        "source": "placeholder",
+        "type": "placeholder",
+        "hasMultiple": false
+      },
+      "_reasonText": "契合:光照需求  兼容:空间大小",
+      "score": 90
+    },
+    {
+      "id": "epipremnum_aureum",
+      "name": "绿萝",
+      "tags": [
+        "室内植物",
+        "易养护"
+      ],
+      "cover": "",
+      "_displayImage": {
+        "url": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iOTYiIGhlaWdodD0iOTYiIHZpZXdCb3g9IjAgMCA5NiA5NiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iOTYiIGhlaWdodD0iOTYiIGZpbGw9IiNGNUY1RjciLz4KICA8IS0tIOiKseeUsyAtLT4KICA8cGF0aCBkPSJNMzIgNzJINjRMNjAgNTZIMzZMMzIgNzJaIiBmaWxsPSIjOEU4RTkzIiBvcGFjaXR5PSIwLjMiLz4KICA8IS0tIOakreeJqeiMjuW5siAtLT4KICA8cGF0aCBkPSJNNDggNTZWNDAiIHN0cm9rZT0iIzM0Qzc1OSIgc3Ryb2tlLXdpZHRoPSIzIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICA8IS0tIOWPtuWtkCAtLT4KICA8cGF0aCBkPSJNNDggNDVDNTIgNDEgNTggNDMgNTYgNDhDNTggNTMgNTIgNTUgNDggNTEiIGZpbGw9IiMzNEM3NTkiIG9wYWNpdHk9IjAuNiIvPgogIDxwYXRoIGQ9Ik00OCA0NUM0NCA0MSAzOCA0MyA0MCA0OEMzOCA1MyA0NCA1NSA0OCA1MSIgZmlsbD0iIzM0Qzc1OSIgb3BhY2l0eT0iMC42Ii8+CiAgPCEtLSDoi7HmnLUgLS0+CiAgPGNpcmNsZSBjeD0iNDgiIGN5PSIzNSIgcj0iNSIgZmlsbD0iI0ZGOTUwMCIgb3BhY2l0eT0iMC43Ii8+CiAgPGNpcmNsZSBjeD0iNDUiIGN5PSIzMiIgcj0iMiIgZmlsbD0iI0ZGRDYwQSIvPgogIDxjaXJjbGUgY3g9IjUxIiBjeT0iMzIiIHI9IjIiIGZpbGw9IiNGRkQ2MEEiLz4KICA8Y2lyY2xlIGN4PSI0OCIgY3k9IjM4IiByPSIyIiBmaWxsPSIjRkZENjBBIi8+Cjwvc3ZnPg==",
+        "source": "placeholder",
+        "type": "placeholder",
+        "hasMultiple": false
+      },
+      "_reasonText": "契合:光照需求  兼容:空间大小",
+      "score": 85
+    },
+    {
+      "id": "ficus_lyrata",
+      "name": "琴叶榕",
+      "tags": [
+        "室内植物",
+        "易养护"
+      ],
+      "cover": "",
+      "_displayImage": {
+        "url": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iOTYiIGhlaWdodD0iOTYiIHZpZXdCb3g9IjAgMCA5NiA5NiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iOTYiIGhlaWdodD0iOTYiIGZpbGw9IiNGNUY1RjciLz4KICA8IS0tIOiKseeUsyAtLT4KICA8cGF0aCBkPSJNMzIgNzJINjRMNjAgNTZIMzZMMzIgNzJaIiBmaWxsPSIjOEU4RTkzIiBvcGFjaXR5PSIwLjMiLz4KICA8IS0tIOakreeJqeiMjuW5siAtLT4KICA8cGF0aCBkPSJNNDggNTZWNDAiIHN0cm9rZT0iIzM0Qzc1OSIgc3Ryb2tlLXdpZHRoPSIzIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICA8IS0tIOWPtuWtkCAtLT4KICA8cGF0aCBkPSJNNDggNDVDNTIgNDEgNTggNDMgNTYgNDhDNTggNTMgNTIgNTUgNDggNTEiIGZpbGw9IiMzNEM3NTkiIG9wYWNpdHk9IjAuNiIvPgogIDxwYXRoIGQ9Ik00OCA0NUM0NCA0MSAzOCA0MyA0MCA0OEMzOCA1MyA0NCA1NSA0OCA1MSIgZmlsbD0iIzM0Qzc1OSIgb3BhY2l0eT0iMC42Ii8+CiAgPCEtLSDoi7HmnLUgLS0+CiAgPGNpcmNsZSBjeD0iNDgiIGN5PSIzNSIgcj0iNSIgZmlsbD0iI0ZGOTUwMCIgb3BhY2l0eT0iMC43Ii8+CiAgPGNpcmNsZSBjeD0iNDUiIGN5PSIzMiIgcj0iMiIgZmlsbD0iI0ZGRDYwQSIvPgogIDxjaXJjbGUgY3g9IjUxIiBjeT0iMzIiIHI9IjIiIGZpbGw9IiNGRkQ2MEEiLz4KICA8Y2lyY2xlIGN4PSI0OCIgY3k9IjM4IiByPSIyIiBmaWxsPSIjRkZENjBBIi8+Cjwvc3ZnPg==",
+        "source": "placeholder",
+        "type": "placeholder",
+        "hasMultiple": false
+      },
+      "_reasonText": "契合:光照需求  兼容:空间大小",
+      "score": 80
+    },
+    {
+      "id": "aloe_vera",
+      "name": "芦荟",
+      "tags": [
+        "室内植物",
+        "易养护"
+      ],
+      "cover": "",
+      "_displayImage": {
+        "url": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iOTYiIGhlaWdodD0iOTYiIHZpZXdCb3g9IjAgMCA5NiA5NiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iOTYiIGhlaWdodD0iOTYiIGZpbGw9IiNGNUY1RjciLz4KICA8IS0tIOiKseeUsyAtLT4KICA8cGF0aCBkPSJNMzIgNzJINjRMNjAgNTZIMzZMMzIgNzJaIiBmaWxsPSIjOEU4RTkzIiBvcGFjaXR5PSIwLjMiLz4KICA8IS0tIOakreeJqeiMjuW5siAtLT4KICA8cGF0aCBkPSJNNDggNTZWNDAiIHN0cm9rZT0iIzM0Qzc1OSIgc3Ryb2tlLXdpZHRoPSIzIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICA8IS0tIOWPtuWtkCAtLT4KICA8cGF0aCBkPSJNNDggNDVDNTIgNDEgNTggNDMgNTYgNDhDNTggNTMgNTIgNTUgNDggNTEiIGZpbGw9IiMzNEM3NTkiIG9wYWNpdHk9IjAuNiIvPgogIDxwYXRoIGQ9Ik00OCA0NUM0NCA0MSAzOCA0MyA0MCA0OEMzOCA1MyA0NCA1NSA0OCA1MSIgZmlsbD0iIzM0Qzc1OSIgb3BhY2l0eT0iMC42Ii8+CiAgPCEtLSDoi7HmnLUgLS0+CiAgPGNpcmNsZSBjeD0iNDgiIGN5PSIzNSIgcj0iNSIgZmlsbD0iI0ZGOTUwMCIgb3BhY2l0eT0iMC43Ii8+CiAgPGNpcmNsZSBjeD0iNDUiIGN5PSIzMiIgcj0iMiIgZmlsbD0iI0ZGRDYwQSIvPgogIDxjaXJjbGUgY3g9IjUxIiBjeT0iMzIiIHI9IjIiIGZpbGw9IiNGRkQ2MEEiLz4KICA8Y2lyY2xlIGN4PSI0OCIgY3k9IjM4IiByPSIyIiBmaWxsPSIjRkZENjBBIi8+Cjwvc3ZnPg==",
+        "source": "placeholder",
+        "type": "placeholder",
+        "hasMultiple": false
+      },
+      "_reasonText": "契合:光照需求  兼容:空间大小",
+      "score": 75
+    },
+    {
+      "id": "haworthiopsis_attenuata",
+      "name": "十二卷锦之类（斑马十二卷）",
+      "tags": [
+        "室内植物",
+        "易养护"
+      ],
+      "cover": "",
+      "_displayImage": {
+        "url": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iOTYiIGhlaWdodD0iOTYiIHZpZXdCb3g9IjAgMCA5NiA5NiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iOTYiIGhlaWdodD0iOTYiIGZpbGw9IiNGNUY1RjciLz4KICA8IS0tIOiKseeUsyAtLT4KICA8cGF0aCBkPSJNMzIgNzJINjRMNjAgNTZIMzZMMzIgNzJaIiBmaWxsPSIjOEU4RTkzIiBvcGFjaXR5PSIwLjMiLz4KICA8IS0tIOakreeJqeiMjuW5siAtLT4KICA8cGF0aCBkPSJNNDggNTZWNDAiIHN0cm9rZT0iIzM0Qzc1OSIgc3Ryb2tlLXdpZHRoPSIzIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICA8IS0tIOWPtuWtkCAtLT4KICA8cGF0aCBkPSJNNDggNDVDNTIgNDEgNTggNDMgNTYgNDhDNTggNTMgNTIgNTUgNDggNTEiIGZpbGw9IiMzNEM3NTkiIG9wYWNpdHk9IjAuNiIvPgogIDxwYXRoIGQ9Ik00OCA0NUM0NCA0MSAzOCA0MyA0MCA0OEMzOCA1MyA0NCA1NSA0OCA1MSIgZmlsbD0iIzM0Qzc1OSIgb3BhY2l0eT0iMC42Ii8+CiAgPCEtLSDoi7HmnLUgLS0+CiAgPGNpcmNsZSBjeD0iNDgiIGN5PSIzNSIgcj0iNSIgZmlsbD0iI0ZGOTUwMCIgb3BhY2l0eT0iMC43Ii8+CiAgPGNpcmNsZSBjeD0iNDUiIGN5PSIzMiIgcj0iMiIgZmlsbD0iI0ZGRDYwQSIvPgogIDxjaXJjbGUgY3g9IjUxIiBjeT0iMzIiIHI9IjIiIGZpbGw9IiNGRkQ2MEEiLz4KICA8Y2lyY2xlIGN4PSI0OCIgY3k9IjM4IiByPSIyIiBmaWxsPSIjRkZENjBBIi8+Cjwvc3ZnPg==",
+        "source": "placeholder",
+        "type": "placeholder",
+        "hasMultiple": false
+      },
+      "_reasonText": "契合:光照需求  兼容:空间大小",
+      "score": 70
+    }
+  ]
+}

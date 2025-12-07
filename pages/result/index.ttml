@@ -1,0 +1,46 @@
+<view class="page">
+  <view class="header">
+    <text class="title">为你推荐</text>
+  </view>
+  <block tt:if="{{list.length===0}}">
+    <view class="empty">暂无推荐，请返回重试</view>
+  </block>
+  <block tt:else>
+    <view class="list">
+      <block tt:for="{{list}}" tt:for-item="item" tt:key="id">
+        <view class="card" data-id="{{item.id}}" bindtap="goDetail">
+          <view class="image-container">
+            <image
+              class="cover"
+              src="{{item._displayImage.url}}"
+              mode="aspectFill"
+              lazy-load="{{true}}"
+            />
+            <!-- PlantNet图片标识 -->
+            <block tt:if="{{item._displayImage.source === 'PlantNet'}}">
+              <view class="image-badge">
+                <text class="badge-text">高清</text>
+              </view>
+            </block>
+            <!-- 多图片指示器 -->
+            <block tt:if="{{item._displayImage.hasMultiple}}">
+              <view class="multi-image-indicator">
+                <text class="indicator-text">多图</text>
+              </view>
+            </block>
+          </view>
+          <view class="info">
+            <text class="name">{{item.name}}</text>
+            <text class="tags">{{item.tags && item.tags.join(' / ')}}</text>
+            <text class="reason">{{item._reasonText}}</text>
+            <!-- 图片来源说明 -->
+            <block tt:if="{{item._displayImage.source === 'PlantNet'}}">
+              <text class="image-source">真实植物照片</text>
+            </block>
+          </view>
+        </view>
+      </block>
+    </view>
+  </block>
+</view>
+

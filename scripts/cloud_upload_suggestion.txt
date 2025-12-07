@@ -1,0 +1,15 @@
+
+建议将图片上传到抖音云存储：
+
+1. 在抖音开发者工具中：
+   - 打开云开发控制台
+   - 进入存储管理
+   - 创建 plants 文件夹
+   - 上传 zamioculcas_zamiifolia_11.jpg
+
+2. 获取云存储URL后，更新植物数据库：
+   - 将本地路径替换为云存储URL
+   - 格式类似：https://your-cloud-storage.com/plants/zamioculcas_zamiifolia_11.jpg
+
+3. 或者使用我们的上传脚本：
+   node scripts/upload_images_to_cloud.js

@@ -1,0 +1,755 @@
+[
+  {
+    "id": "p1",
+    "name": "虎皮兰",
+    "scientific_name": "Dracaena trifasciata",
+    "common_names": {
+      "zh": ["虎皮兰", "虎尾兰"],
+      "en": ["Snake plant", "Mother-in-law's tongue"]
+    },
+    "characteristics": {
+      "type": "evergreen perennial",
+      "max_height_cm": 200,
+      "leaf": "stiff, upright, variegated with cross-banding",
+      "flower": "greenish-white, rarely indoors"
+    },
+    "environment": {
+      "light_preference": "low",
+      "humidity": "low to medium",
+      "temperature_c": { "min": 10, "max": 35 },
+      "space": "small"
+    },
+    "care": {
+      "watering": "low; allow soil to dry; avoid overwatering",
+      "soil": "well-draining mix (cactus/succulent)",
+      "fertilization": "light feed every 2–3 months in growing season",
+      "propagation": ["rhizome division", "leaf cuttings"],
+      "difficulty": "beginner"
+    },
+    "toxicity": {
+      "pets": "mild – saponins may cause GI upset in cats/dogs",
+      "humans": "low – ingestion not advised"
+    },
+    "questionnaire_tags": {
+      "light": "low",
+      "space": "small",
+      "level": "beginner"
+    },
+    "tags": [
+      "low", "small", "beginner",
+      "shade-tolerant", "low-light", "drought-tolerant",
+      "ultra-low-maintenance", "hardy-plants", "care-simple",
+      "upright-growth", "architectural", "solid-green",
+      "desktop", "air-purifying", "compact", "foolproof",
+      "neglect-tolerant", "windowsill", "office-friendly"
+    ],
+    "safetyFlags": ["pet_unsafe", "toxic-to-cats", "toxic-to-dogs"],
+    "onShelf": true,
+    "cover": "https://example-cdn/plant1.jpg",
+    "updatedAt": 1754660000000,
+    "score": 0
+  },
+  {
+    "id": "p4",
+    "name": "芦荟",
+    "scientific_name": "Aloe vera",
+    "common_names": {
+      "zh": ["芦荟"],
+      "en": ["Aloe vera"]
+    },
+    "characteristics": {
+      "type": "succulent perennial",
+      "max_height_cm": 60,
+      "leaf": "fleshy rosettes with marginal teeth",
+      "flower": "tubular yellow to orange"
+    },
+    "environment": {
+      "light_preference": "high",
+      "humidity": "low",
+      "temperature_c": { "min": 15, "max": 35 },
+      "space": "small"
+    },
+    "care": {
+      "watering": "infrequent; drought-tolerant",
+      "soil": "well-draining cactus mix",
+      "fertilization": "minimal; occasional dilute feed",
+      "propagation": ["offsets", "leaf cuttings"],
+      "difficulty": "beginner"
+    },
+    "toxicity": {
+      "pets": "mild – may cause GI upset",
+      "humans": "mild – skin safe, ingestion not recommended"
+    },
+    "questionnaire_tags": {
+      "light": "high",
+      "space": "small",
+      "level": "beginner"
+    },
+    "tags": [
+      "high", "small", "beginner",
+      "full-sun", "sun-loving", "drought-tolerant",
+      "ultra-low-maintenance", "hardy-plants", "care-simple",
+      "rosette-form", "compact", "succulent",
+      "desktop", "windowsill", "medicinal", "healing"
+    ],
+    "safetyFlags": ["pet_unsafe"],
+    "onShelf": true,
+    "cover": "https://example-cdn/aloe.jpg",
+    "updatedAt": 1754663000000,
+    "score": 0
+  },
+  {
+    "id": "p5",
+    "name": "玉树",
+    "scientific_name": "Crassula ovata",
+    "common_names": {
+      "zh": ["玉树"],
+      "en": ["Jade plant"]
+    },
+    "characteristics": {
+      "type": "succulent shrub",
+      "max_height_cm": 150,
+      "leaf": "thick, glossy, obovate",
+      "flower": "small starry white-pink"
+    },
+    "environment": {
+      "light_preference": "high",
+      "humidity": "low",
+      "temperature_c": { "min": 10, "max": 30 },
+      "space": "medium"
+    },
+    "care": {
+      "watering": "infrequent; allow soil to dry completely",
+      "soil": "well-draining succulent mix",
+      "fertilization": "light feeding in growing season",
+      "propagation": ["stem cuttings", "leaf cuttings"],
+      "difficulty": "beginner"
+    },
+    "toxicity": {
+      "pets": "mild – may cause vomiting if ingested",
+      "humans": "mild – generally safe"
+    },
+    "questionnaire_tags": {
+      "light": "high",
+      "space": "medium",
+      "level": "beginner"
+    },
+    "tags": [
+      "high", "medium", "beginner",
+      "full-sun", "sun-loving", "drought-tolerant",
+      "low-maintenance", "hardy-plants", "care-simple",
+      "upright-growth", "tree-like", "succulent",
+      "tabletop", "good-luck", "feng-shui"
+    ],
+    "safetyFlags": ["pet_unsafe"],
+    "onShelf": true,
+    "cover": "https://example-cdn/jade.jpg",
+    "updatedAt": 1754664000000,
+    "score": 0
+  },
+  {
+    "id": "p6",
+    "name": "龟背竹",
+    "scientific_name": "Monstera deliciosa",
+    "common_names": {
+      "zh": ["龟背竹"],
+      "en": ["Swiss cheese plant", "Monstera"]
+    },
+    "characteristics": {
+      "type": "evergreen climber",
+      "max_height_cm": 300,
+      "leaf": "large fenestrated leaves",
+      "flower": "spadix with spathe"
+    },
+    "environment": {
+      "light_preference": "medium",
+      "humidity": "medium to high",
+      "temperature_c": { "min": 18, "max": 30 },
+      "space": "large"
+    },
+    "care": {
+      "watering": "moderate; keep soil moist but not waterlogged",
+      "soil": "well-draining potting mix with peat",
+      "fertilization": "monthly during growing season",
+      "propagation": ["stem cuttings", "air layering"],
+      "difficulty": "intermediate"
+    },
+    "toxicity": {
+      "pets": "moderate – calcium oxalate crystals",
+      "humans": "mild – may cause oral irritation"
+    },
+    "questionnaire_tags": {
+      "light": "medium",
+      "space": "large",
+      "level": "intermediate"
+    },
+    "tags": [
+      "medium", "large", "intermediate",
+      "partial-sun", "adaptable", "humidity-loving",
+      "moderate-care", "regular-attention", "skill-building",
+      "bushy-growth", "full-foliage", "architectural",
+      "large-leaves", "dramatic", "statement-piece",
+      "floor-standing", "solid-green", "instagram-famous"
+    ],
+    "safetyFlags": ["pet_unsafe", "toxic-to-cats", "toxic-to-dogs"],
+    "onShelf": true,
+    "cover": "https://example-cdn/monstera.jpg",
+    "updatedAt": 1754665000000,
+    "score": 0
+  },
+  {
+    "id": "p7",
+    "name": "雪铁芋",
+    "scientific_name": "Zamioculcas zamiifolia",
+    "common_names": {
+      "zh": ["雪铁芋"],
+      "en": ["ZZ plant"]
+    },
+    "characteristics": {
+      "type": "evergreen rhizomatous",
+      "max_height_cm": 100,
+      "leaf": "waxy pinnate leaflets",
+      "flower": "spadix; rare indoors"
+    },
+    "environment": {
+      "light_preference": "low",
+      "humidity": "low to medium",
+      "temperature_c": { "min": 15, "max": 30 },
+      "space": "medium"
+    },
+    "care": {
+      "watering": "infrequent; very drought tolerant",
+      "soil": "well-draining potting mix",
+      "fertilization": "minimal; occasional feed",
+      "propagation": ["leaf cuttings", "division"],
+      "difficulty": "beginner"
+    },
+    "toxicity": {
+      "pets": "mild – calcium oxalate crystals",
+      "humans": "mild – may cause skin irritation"
+    },
+    "questionnaire_tags": {
+      "light": "low",
+      "space": "medium",
+      "level": "beginner"
+    },
+    "tags": [
+      "low", "medium", "beginner",
+      "shade-tolerant", "low-light", "drought-tolerant",
+      "ultra-low-maintenance", "hardy-plants", "care-simple",
+      "upright-growth", "architectural", "solid-green",
+      "tabletop", "corner", "office-friendly", "foolproof"
+    ],
+    "safetyFlags": ["pet_unsafe", "toxic-to-cats", "toxic-to-dogs"],
+    "onShelf": true,
+    "cover": "https://example-cdn/zz-plant.jpg",
+    "updatedAt": 1754666000000,
+    "score": 0
+  },
+  {
+    "id": "p8",
+    "name": "吊兰",
+    "scientific_name": "Chlorophytum comosum",
+    "common_names": {
+      "zh": ["吊兰"],
+      "en": ["Spider plant"]
+    },
+    "characteristics": {
+      "type": "evergreen herb",
+      "max_height_cm": 50,
+      "leaf": "narrow arching leaves often variegated",
+      "flower": "small white starry"
+    },
+    "environment": {
+      "light_preference": "medium",
+      "humidity": "medium",
+      "temperature_c": { "min": 15, "max": 25 },
+      "space": "small"
+    },
+    "care": {
+      "watering": "moderate; keep soil lightly moist",
+      "soil": "well-draining potting mix",
+      "fertilization": "monthly during growing season",
+      "propagation": ["plantlets", "division"],
+      "difficulty": "beginner"
+    },
+    "toxicity": {
+      "pets": "safe – non-toxic to cats and dogs",
+      "humans": "safe – non-toxic"
+    },
+    "questionnaire_tags": {
+      "light": "medium",
+      "space": "small",
+      "level": "beginner"
+    },
+    "tags": [
+      "medium", "small", "beginner",
+      "partial-sun", "adaptable", "pet-safe",
+      "low-maintenance", "forgiving-plants", "care-easy",
+      "trailing-growth", "cascading", "hanging-basket",
+      "variegated", "colorful", "air-purifying",
+      "child-safe", "family-friendly", "easy-propagation"
+    ],
+    "safetyFlags": [],
+    "onShelf": true,
+    "cover": "https://example-cdn/spider-plant.jpg",
+    "updatedAt": 1754667000000,
+    "score": 0
+  },
+  {
+    "id": "p9",
+    "name": "一叶兰",
+    "scientific_name": "Aspidistra elatior",
+    "common_names": {
+      "zh": ["蜘蛛抱蛋", "一叶兰"],
+      "en": ["Cast-iron plant"]
+    },
+    "characteristics": {
+      "type": "evergreen perennial",
+      "max_height_cm": 60,
+      "leaf": "broad, tough leaves",
+      "flower": "ground-level, maroon"
+    },
+    "environment": {
+      "light_preference": "low",
+      "humidity": "low to medium",
+      "temperature_c": { "min": 10, "max": 25 },
+      "space": "medium"
+    },
+    "care": {
+      "watering": "low; very tolerant of neglect",
+      "soil": "any well-draining soil",
+      "fertilization": "minimal; very low needs",
+      "propagation": ["division"],
+      "difficulty": "beginner"
+    },
+    "toxicity": {
+      "pets": "safe – generally non-toxic",
+      "humans": "safe – non-toxic"
+    },
+    "questionnaire_tags": {
+      "light": "low",
+      "space": "medium",
+      "level": "beginner"
+    },
+    "tags": [
+      "low", "medium", "beginner",
+      "shade-tolerant", "low-light", "drought-tolerant",
+      "ultra-low-maintenance", "hardy-plants", "care-simple",
+      "upright-growth", "solid-green", "classic",
+      "corner", "neglect-tolerant", "cast-iron-tough",
+      "pet-safe", "child-safe", "family-friendly"
+    ],
+    "safetyFlags": [],
+    "onShelf": true,
+    "cover": "https://example-cdn/cast-iron-plant.jpg",
+    "updatedAt": 1754668000000,
+    "score": 0
+  },
+  {
+    "id": "p2",
+    "name": "绿萝",
+    "scientific_name": "Epipremnum aureum",
+    "common_names": {
+      "zh": ["绿萝", "黄金葛"],
+      "en": ["Golden pothos", "Devil's ivy"]
+    },
+    "characteristics": {
+      "type": "evergreen vine",
+      "max_height_cm": 200,
+      "leaf": "cordate juvenile leaves; variegated cultivars common",
+      "flower": "rare in cultivation; spathe"
+    },
+    "environment": {
+      "light_preference": "low",
+      "humidity": "medium to high",
+      "temperature_c": { "min": 15, "max": 32 },
+      "space": "medium"
+    },
+    "care": {
+      "watering": "moderate; water when topsoil is dry",
+      "soil": "well-aerated, well-draining (perlite/peat mix)",
+      "fertilization": "every 2–3 months during growing season",
+      "propagation": ["stem cuttings", "water rooting"],
+      "difficulty": "beginner"
+    },
+    "toxicity": {
+      "pets": "mild – insoluble calcium oxalate raphides; oral irritation",
+      "humans": "mild – may cause dermatitis/irritation if ingested or excessive contact"
+    },
+    "questionnaire_tags": {
+      "light": "low",
+      "space": "medium",
+      "level": "beginner"
+    },
+    "tags": [
+      "low", "medium", "beginner",
+      "shade-tolerant", "low-light", "humidity-loving",
+      "low-maintenance", "forgiving-plants", "care-easy",
+      "trailing-growth", "cascading", "hanging-basket",
+      "variegated", "colorful", "propagation-friendly",
+      "desktop", "air-purifying", "easy-propagation",
+      "water-rooting", "bathroom", "hanging"
+    ],
+    "safetyFlags": ["pet_unsafe", "toxic-to-cats", "toxic-to-dogs"],
+    "onShelf": true,
+    "cover": "https://example-cdn/plant2.jpg", 
+    "updatedAt": 1754661000000,
+    "score": 0
+  },
+  {
+    "id": "p10",
+    "name": "白鹤芋",
+    "scientific_name": "Spathiphyllum wallisii",
+    "common_names": {
+      "zh": ["白鹤芋", "和平百合"],
+      "en": ["Peace lily"]
+    },
+    "characteristics": {
+      "type": "evergreen herb",
+      "max_height_cm": 65,
+      "leaf": "glossy lanceolate",
+      "flower": "white spathe and spadix"
+    },
+    "environment": {
+      "light_preference": "low",
+      "humidity": "medium to high",
+      "temperature_c": { "min": 18, "max": 30 },
+      "space": "medium"
+    },
+    "care": {
+      "watering": "moderate; keep soil moist",
+      "soil": "well-draining potting mix",
+      "fertilization": "monthly during growing season",
+      "propagation": ["division"],
+      "difficulty": "intermediate"
+    },
+    "toxicity": {
+      "pets": "moderate – calcium oxalate crystals",
+      "humans": "mild – may cause oral irritation"
+    },
+    "questionnaire_tags": {
+      "light": "low",
+      "space": "medium",
+      "level": "intermediate"
+    },
+    "tags": [
+      "low", "medium", "intermediate",
+      "shade-tolerant", "low-light", "humidity-loving",
+      "moderate-care", "regular-attention", "skill-building",
+      "upright-growth", "flowering", "blooming",
+      "air-purifying", "elegant", "white-flowers",
+      "bathroom", "corner", "statement-piece"
+    ],
+    "safetyFlags": ["pet_unsafe", "toxic-to-cats", "toxic-to-dogs"],
+    "onShelf": true,
+    "cover": "https://example-cdn/peace-lily.jpg",
+    "updatedAt": 1754669000000,
+    "score": 0
+  },
+  {
+    "id": "p11",
+    "name": "袖珍椰子",
+    "scientific_name": "Chamaedorea elegans",
+    "common_names": {
+      "zh": ["袖珍椰子"],
+      "en": ["Parlor palm"]
+    },
+    "characteristics": {
+      "type": "palm",
+      "max_height_cm": 200,
+      "leaf": "pinnate fronds",
+      "flower": "yellowish panicles indoors"
+    },
+    "environment": {
+      "light_preference": "low",
+      "humidity": "medium to high",
+      "temperature_c": { "min": 16, "max": 27 },
+      "space": "medium"
+    },
+    "care": {
+      "watering": "moderate; keep soil lightly moist",
+      "soil": "well-draining potting mix",
+      "fertilization": "light feeding during growing season",
+      "propagation": ["seeds", "division"],
+      "difficulty": "intermediate"
+    },
+    "toxicity": {
+      "pets": "safe – non-toxic to cats and dogs",
+      "humans": "safe – non-toxic"
+    },
+    "questionnaire_tags": {
+      "light": "low",
+      "space": "medium",
+      "level": "intermediate"
+    },
+    "tags": [
+      "low", "medium", "intermediate",
+      "shade-tolerant", "low-light", "humidity-loving",
+      "moderate-care", "regular-attention", "skill-building",
+      "upright-growth", "tree-like", "tropical",
+      "air-purifying", "elegant", "palm-fronds",
+      "pet-safe", "child-safe", "family-friendly",
+      "corner", "floor-standing"
+    ],
+    "safetyFlags": [],
+    "onShelf": true,
+    "cover": "https://example-cdn/parlor-palm.jpg",
+    "updatedAt": 1754670000000,
+    "score": 0
+  },
+  {
+    "id": "p12",
+    "name": "波士顿蕨",
+    "scientific_name": "Nephrolepis exaltata",
+    "common_names": {
+      "zh": ["肾蕨", "波士顿蕨"],
+      "en": ["Boston fern"]
+    },
+    "characteristics": {
+      "type": "fern",
+      "max_height_cm": 90,
+      "leaf": "arching fronds",
+      "flower": "none"
+    },
+    "environment": {
+      "light_preference": "low",
+      "humidity": "high",
+      "temperature_c": { "min": 15, "max": 25 },
+      "space": "medium"
+    },
+    "care": {
+      "watering": "high; keep soil consistently moist",
+      "soil": "well-draining, moisture-retentive mix",
+      "fertilization": "light feeding during growing season",
+      "propagation": ["spores", "division"],
+      "difficulty": "intermediate"
+    },
+    "toxicity": {
+      "pets": "safe – non-toxic to cats and dogs",
+      "humans": "safe – non-toxic"
+    },
+    "questionnaire_tags": {
+      "light": "low",
+      "space": "medium",
+      "level": "intermediate"
+    },
+    "tags": [
+      "low", "medium", "intermediate",
+      "shade-tolerant", "low-light", "humidity-loving",
+      "moderate-care", "regular-attention", "skill-building",
+      "trailing-growth", "cascading", "hanging-basket",
+      "air-purifying", "lush", "tropical",
+      "pet-safe", "child-safe", "family-friendly",
+      "bathroom", "hanging"
+    ],
+    "safetyFlags": [],
+    "onShelf": true,
+    "cover": "https://example-cdn/boston-fern.jpg",
+    "updatedAt": 1754671000000,
+    "score": 0
+  },
+  {
+    "id": "p3",
+    "name": "琴叶榕",
+    "scientific_name": "Ficus lyrata",
+    "common_names": {
+      "zh": ["琴叶榕"],
+      "en": ["Fiddle-leaf fig"]
+    },
+    "characteristics": {
+      "type": "evergreen tree",
+      "max_height_cm": 300,
+      "leaf": "large, violin-shaped, glossy green",
+      "flower": "inconspicuous figs, rare indoors"
+    },
+    "environment": {
+      "light_preference": "high",
+      "humidity": "medium to high", 
+      "temperature_c": { "min": 18, "max": 30 },
+      "space": "large"
+    },
+    "care": {
+      "watering": "moderate; consistent moisture but not waterlogged",
+      "soil": "well-draining potting mix with peat",
+      "fertilization": "monthly during growing season",
+      "propagation": ["stem cuttings", "air layering"],
+      "difficulty": "intermediate"
+    },
+    "toxicity": {
+      "pets": "moderate – latex sap can cause irritation",
+      "humans": "mild – latex sap may cause skin irritation"
+    },
+    "questionnaire_tags": {
+      "light": "high",
+      "space": "large",
+      "level": "intermediate"
+    },
+    "tags": [
+      "high", "large", "intermediate",
+      "full-sun", "sun-loving", "humidity-loving",
+      "moderate-care", "regular-attention", "skill-building",
+      "upright-growth", "tree-like", "architectural",
+      "large-leaves", "dramatic", "sculptural", "statement-piece",
+      "floor-standing", "solid-green", "modern", "designer-plants"
+    ],
+    "safetyFlags": ["latex_sap_irritant", "latex-producing", "ficus-family"],
+    "onShelf": true,
+    "cover": "https://example-cdn/plant3.jpg",
+    "updatedAt": 1754662000000,
+    "score": 0
+  },
+  {
+    "id": "p13",
+    "name": "散尾葵",
+    "scientific_name": "Dypsis lutescens",
+    "common_names": {
+      "zh": ["黄椰子", "散尾葵"],
+      "en": ["Areca palm"]
+    },
+    "characteristics": {
+      "type": "palm",
+      "max_height_cm": 300,
+      "leaf": "feathery fronds",
+      "flower": "yellowish panicles"
+    },
+    "environment": {
+      "light_preference": "high",
+      "humidity": "medium to high",
+      "temperature_c": { "min": 18, "max": 30 },
+      "space": "large"
+    },
+    "care": {
+      "watering": "moderate; keep soil lightly moist",
+      "soil": "well-draining potting mix",
+      "fertilization": "regular feeding during growing season",
+      "propagation": ["seeds", "division"],
+      "difficulty": "intermediate"
+    },
+    "toxicity": {
+      "pets": "safe – non-toxic to cats and dogs",
+      "humans": "safe – non-toxic"
+    },
+    "questionnaire_tags": {
+      "light": "high",
+      "space": "large",
+      "level": "intermediate"
+    },
+    "tags": [
+      "high", "large", "intermediate",
+      "full-sun", "sun-loving", "humidity-loving",
+      "moderate-care", "regular-attention", "skill-building",
+      "upright-growth", "tree-like", "tropical",
+      "air-purifying", "elegant", "palm-fronds",
+      "pet-safe", "child-safe", "family-friendly",
+      "floor-standing", "statement-piece", "large-scale"
+    ],
+    "safetyFlags": [],
+    "onShelf": true,
+    "cover": "https://example-cdn/areca-palm.jpg",
+    "updatedAt": 1754672000000,
+    "score": 0
+  },
+  {
+    "id": "p14",
+    "name": "宝石花",
+    "scientific_name": "Echeveria elegans",
+    "common_names": {
+      "zh": ["花月夜", "宝石花类"],
+      "en": ["Mexican snowball"]
+    },
+    "characteristics": {
+      "type": "succulent rosette",
+      "max_height_cm": 15,
+      "leaf": "blue-green rosettes",
+      "flower": "pink-yellow on stalks"
+    },
+    "environment": {
+      "light_preference": "high",
+      "humidity": "low",
+      "temperature_c": { "min": 10, "max": 30 },
+      "space": "small"
+    },
+    "care": {
+      "watering": "infrequent; drought tolerant",
+      "soil": "well-draining succulent mix",
+      "fertilization": "minimal; light feeding",
+      "propagation": ["offsets", "leaf cuttings"],
+      "difficulty": "beginner"
+    },
+    "toxicity": {
+      "pets": "safe – generally non-toxic",
+      "humans": "safe – non-toxic"
+    },
+    "questionnaire_tags": {
+      "light": "high",
+      "space": "small",
+      "level": "beginner"
+    },
+    "tags": [
+      "high", "small", "beginner",
+      "full-sun", "sun-loving", "drought-tolerant",
+      "ultra-low-maintenance", "hardy-plants", "care-simple",
+      "rosette-form", "compact", "succulent",
+      "desktop", "windowsill", "colorful",
+      "pet-safe", "child-safe", "family-friendly",
+      "cute", "mini", "collection-worthy"
+    ],
+    "safetyFlags": [],
+    "onShelf": true,
+    "cover": "https://example-cdn/echeveria.jpg",
+    "updatedAt": 1754673000000,
+    "score": 0
+  },
+  {
+    "id": "p15",
+    "name": "铜钱草",
+    "scientific_name": "Pilea peperomioides",
+    "common_names": {
+      "zh": ["铜钱草", "中华圆叶草"],
+      "en": ["Chinese money plant"]
+    },
+    "characteristics": {
+      "type": "evergreen herb",
+      "max_height_cm": 40,
+      "leaf": "round peltate leaves",
+      "flower": "insignificant"
+    },
+    "environment": {
+      "light_preference": "medium",
+      "humidity": "medium",
+      "temperature_c": { "min": 15, "max": 25 },
+      "space": "small"
+    },
+    "care": {
+      "watering": "moderate; allow soil to dry between waterings",
+      "soil": "well-draining potting mix",
+      "fertilization": "monthly during growing season",
+      "propagation": ["plantlets", "stem cuttings"],
+      "difficulty": "beginner"
+    },
+    "toxicity": {
+      "pets": "safe – non-toxic to cats and dogs",
+      "humans": "safe – non-toxic"
+    },
+    "questionnaire_tags": {
+      "light": "medium",
+      "space": "small",
+      "level": "beginner"
+    },
+    "tags": [
+      "medium", "small", "beginner",
+      "partial-sun", "adaptable", "easy-care",
+      "low-maintenance", "forgiving-plants", "care-simple",
+      "upright-growth", "compact", "unique-leaves",
+      "desktop", "tabletop", "instagram-famous",
+      "pet-safe", "child-safe", "family-friendly",
+      "good-luck", "money-plant", "easy-propagation"
+    ],
+    "safetyFlags": [],
+    "onShelf": true,
+    "cover": "https://example-cdn/pilea.jpg",
+    "updatedAt": 1754674000000,
+    "score": 0
+  }
+]

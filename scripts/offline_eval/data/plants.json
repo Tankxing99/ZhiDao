@@ -1,0 +1,6 @@
+[
+  {"id":"p1","tags":["low","small","beginner"],"onShelf":true},
+  {"id":"p2","tags":["high","large","expert"],"onShelf":true},
+  {"id":"p3","tags":["medium","small","intermediate"],"onShelf":true}
+]
+

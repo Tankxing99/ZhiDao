@@ -1,0 +1,120 @@
+{
+  "description": "能够匹配到雪铁芋的问卷答案",
+  "generateDate": "2025-08-19T01:57:03.779Z",
+  "expectedRank": 3,
+  "expectedScore": 5.6,
+  "answers": [
+    {
+      "id": "light",
+      "value": "low"
+    },
+    {
+      "id": "space",
+      "value": "medium"
+    },
+    {
+      "id": "level",
+      "value": "beginner"
+    },
+    {
+      "id": "lightCondition",
+      "value": "low"
+    },
+    {
+      "id": "spaceType",
+      "value": "medium"
+    },
+    {
+      "id": "experienceLevel",
+      "value": "beginner"
+    },
+    {
+      "id": "careTime",
+      "value": "low"
+    },
+    {
+      "id": "wateringFrequency",
+      "value": "low"
+    },
+    {
+      "id": "plantShape",
+      "value": "upright"
+    },
+    {
+      "id": "colorPreference",
+      "value": "green"
+    },
+    {
+      "id": "hasPets",
+      "value": false
+    },
+    {
+      "id": "hasAllergies",
+      "value": false
+    },
+    {
+      "id": "humidity",
+      "value": "low"
+    },
+    {
+      "id": "temperature",
+      "value": "normal"
+    },
+    {
+      "id": "preferredStyle",
+      "value": "modern"
+    },
+    {
+      "id": "plantSize",
+      "value": "medium"
+    },
+    {
+      "id": "droughtTolerant",
+      "value": true
+    },
+    {
+      "id": "lowMaintenance",
+      "value": true
+    },
+    {
+      "id": "modernStyle",
+      "value": true
+    },
+    {
+      "id": "glossyLeaves",
+      "value": true
+    }
+  ],
+  "topResults": [
+    {
+      "name": "虎皮兰",
+      "id": "dracaena_trifasciata",
+      "score": 5.6,
+      "hasImages": false
+    },
+    {
+      "name": "绿萝",
+      "id": "epipremnum_aureum",
+      "score": 5.6,
+      "hasImages": false
+    },
+    {
+      "name": "雪铁芋",
+      "id": "zamioculcas_zamiifolia",
+      "score": 5.6,
+      "hasImages": true
+    },
+    {
+      "name": "芦荟",
+      "id": "aloe_vera",
+      "score": 5.6,
+      "hasImages": false
+    },
+    {
+      "name": "十二卷锦之类（斑马十二卷）",
+      "id": "haworthiopsis_attenuata",
+      "score": 5.6,
+      "hasImages": false
+    }
+  ]
+}

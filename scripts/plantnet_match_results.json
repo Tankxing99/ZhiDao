@@ -1,0 +1,1718 @@
+{
+  "exactMatches": [
+    {
+      "plant": {
+        "id": "zamioculcas_zamiifolia",
+        "scientific_name": "Zamioculcas zamiifolia",
+        "common_names": {
+          "zh": [
+            "雪铁芋"
+          ],
+          "en": [
+            "ZZ plant"
+          ]
+        },
+        "synonyms": [],
+        "taxonomy": {
+          "family": "Araceae",
+          "genus": "Zamioculcas",
+          "species": "zamiifolia"
+        },
+        "characteristics": {
+          "type": "evergreen rhizomatous",
+          "max_height_cm": 100,
+          "leaf": "waxy pinnate leaflets",
+          "flower": "spadix; rare indoors"
+        },
+        "environment": {
+          "native_range": [
+            "Eastern Africa"
+          ],
+          "habitat": "dry forests",
+          "light_preference": "low",
+          "humidity": "low to medium",
+          "temperature_c": {
+            "min": 10,
+            "max": 30
+          },
+          "space": "medium"
+        },
+        "care": {
+          "watering": "low; drought tolerant",
+          "soil": "well-draining",
+          "fertilization": "infrequent",
+          "propagation": [
+            "division",
+            "leaf cuttings"
+          ],
+          "difficulty": "beginner"
+        },
+        "uses": [
+          "ornamental",
+          "tolerant of low light"
+        ],
+        "toxicity": {
+          "pets": "toxic if ingested",
+          "humans": "caution – sap may irritate"
+        },
+        "questionnaire_tags": {
+          "light": "low",
+          "space": "medium",
+          "level": "beginner"
+        },
+        "tags": [
+          "low",
+          "medium",
+          "beginner"
+        ],
+        "images": [],
+        "safety_flags": [
+          "pet_unsafe"
+        ],
+        "sources": [
+          {
+            "title": "Wikipedia – Zamioculcas zamiifolia",
+            "url": "https://en.wikipedia.org/wiki/Zamioculcas",
+            "accessed_at": "2025-08-15"
+          }
+        ]
+      },
+      "plantnetMatch": {
+        "id": "1385937",
+        "name": "Zamioculcas zamiifolia (Lodd.) Engl.",
+        "parsed": {
+          "genus": "Zamioculcas",
+          "species": "zamiifolia",
+          "full": "Zamioculcas zamiifolia"
+        }
+      }
+    },
+    {
+      "plant": {
+        "id": "nephrolepis_exaltata",
+        "scientific_name": "Nephrolepis exaltata",
+        "common_names": {
+          "zh": [
+            "肾蕨（波士顿蕨）"
+          ],
+          "en": [
+            "Boston fern"
+          ]
+        },
+        "synonyms": [],
+        "taxonomy": {
+          "family": "Nephrolepidaceae",
+          "genus": "Nephrolepis",
+          "species": "exaltata"
+        },
+        "characteristics": {
+          "type": "fern",
+          "max_height_cm": 90,
+          "leaf": "arching fronds",
+          "flower": "none"
+        },
+        "environment": {
+          "native_range": [
+            "Tropics"
+          ],
+          "habitat": "humid forests",
+          "light_preference": "medium",
+          "humidity": "high",
+          "temperature_c": {
+            "min": 12,
+            "max": 30
+          },
+          "space": "medium"
+        },
+        "care": {
+          "watering": "keep evenly moist; high humidity",
+          "soil": "peaty, well-draining",
+          "fertilization": "light, regular",
+          "propagation": [
+            "division"
+          ],
+          "difficulty": "beginner"
+        },
+        "uses": [
+          "ornamental",
+          "airiness"
+        ],
+        "toxicity": {
+          "pets": "non-toxic",
+          "humans": "generally safe"
+        },
+        "questionnaire_tags": {
+          "light": "medium",
+          "space": "medium",
+          "level": "beginner"
+        },
+        "tags": [
+          "medium",
+          "medium",
+          "beginner"
+        ],
+        "images": [],
+        "safety_flags": [],
+        "sources": [
+          {
+            "title": "Wikipedia – Nephrolepis exaltata",
+            "url": "https://en.wikipedia.org/wiki/Nephrolepis_exaltata",
+            "accessed_at": "2025-08-15"
+          }
+        ]
+      },
+      "plantnetMatch": {
+        "id": "1356421",
+        "name": "Nephrolepis exaltata (L.) Schott",
+        "parsed": {
+          "genus": "Nephrolepis",
+          "species": "exaltata",
+          "full": "Nephrolepis exaltata"
+        }
+      }
+    },
+    {
+      "plant": {
+        "id": "anthurium_andraeanum",
+        "scientific_name": "Anthurium andraeanum",
+        "common_names": {
+          "zh": [
+            "红掌"
+          ],
+          "en": [
+            "Flamingo flower"
+          ]
+        },
+        "synonyms": [],
+        "taxonomy": {
+          "family": "Araceae",
+          "genus": "Anthurium",
+          "species": "andraeanum"
+        },
+        "characteristics": {
+          "type": "evergreen herb",
+          "max_height_cm": 60,
+          "leaf": "cordate glossy",
+          "flower": "colored spathe and spadix"
+        },
+        "environment": {
+          "native_range": [
+            "Colombia, Ecuador"
+          ],
+          "habitat": "humid forests",
+          "light_preference": "medium",
+          "humidity": "high",
+          "temperature_c": {
+            "min": 16,
+            "max": 30
+          },
+          "space": "small"
+        },
+        "care": {
+          "watering": "moderate; high humidity",
+          "soil": "airy aroid mix",
+          "fertilization": "regular light",
+          "propagation": [
+            "division"
+          ],
+          "difficulty": "intermediate"
+        },
+        "uses": [
+          "ornamental flowering"
+        ],
+        "toxicity": {
+          "pets": "toxic – calcium oxalate",
+          "humans": "caution – sap may irritate"
+        },
+        "questionnaire_tags": {
+          "light": "medium",
+          "space": "small",
+          "level": "intermediate"
+        },
+        "tags": [
+          "medium",
+          "small",
+          "intermediate"
+        ],
+        "images": [],
+        "safety_flags": [
+          "pet_unsafe"
+        ],
+        "sources": [
+          {
+            "title": "Wikipedia – Anthurium andraeanum",
+            "url": "https://en.wikipedia.org/wiki/Anthurium_andraeanum",
+            "accessed_at": "2025-08-15"
+          }
+        ]
+      },
+      "plantnetMatch": {
+        "id": "1409238",
+        "name": "Anthurium andraeanum Linden ex André",
+        "parsed": {
+          "genus": "Anthurium",
+          "species": "andraeanum",
+          "full": "Anthurium andraeanum"
+        }
+      }
+    }
+  ],
+  "genusMatches": [],
+  "noMatches": [
+    {
+      "plant": {
+        "id": "dracaena_trifasciata",
+        "scientific_name": "Dracaena trifasciata",
+        "common_names": {
+          "zh": [
+            "虎皮兰",
+            "虎尾兰"
+          ],
+          "en": [
+            "Snake plant",
+            "Mother-in-law's tongue"
+          ]
+        },
+        "synonyms": [
+          "Sansevieria trifasciata"
+        ],
+        "taxonomy": {
+          "family": "Asparagaceae",
+          "genus": "Dracaena",
+          "species": "trifasciata"
+        },
+        "characteristics": {
+          "type": "evergreen perennial",
+          "max_height_cm": 200,
+          "leaf": "stiff, upright, variegated with cross-banding",
+          "flower": "greenish-white, rarely indoors"
+        },
+        "environment": {
+          "native_range": [
+            "West Tropical Africa (Nigeria to Congo)"
+          ],
+          "habitat": "tropical savanna/woodland margins",
+          "light_preference": "low",
+          "humidity": "low to medium",
+          "temperature_c": {
+            "min": 10,
+            "max": 35
+          },
+          "space": "small"
+        },
+        "care": {
+          "watering": "low; allow soil to dry; avoid overwatering",
+          "soil": "well-draining mix (cactus/succulent)",
+          "fertilization": "light feed every 2–3 months in growing season",
+          "propagation": [
+            "rhizome division",
+            "leaf cuttings (variegation may be lost)"
+          ],
+          "difficulty": "beginner"
+        },
+        "uses": [
+          "ornamental",
+          "historical fiber (bowstring hemp)",
+          "indoor air research (limited practical effect)"
+        ],
+        "toxicity": {
+          "pets": "mild – saponins may cause GI upset in cats/dogs",
+          "humans": "low – ingestion not advised"
+        },
+        "questionnaire_tags": {
+          "light": "low",
+          "space": "small",
+          "level": "beginner"
+        },
+        "tags": [
+          "low",
+          "small",
+          "beginner"
+        ],
+        "images": [],
+        "safety_flags": [
+          "pet_unsafe"
+        ],
+        "sources": [
+          {
+            "title": "Wikipedia – Dracaena trifasciata",
+            "url": "https://en.wikipedia.org/wiki/Dracaena_trifasciata",
+            "accessed_at": "2025-08-15"
+          },
+          {
+            "title": "POWO – urn:lsid:ipni.org:names:77164235-1",
+            "url": "https://powo.science.kew.org/taxon/urn:lsid:ipni.org:names:77164235-1",
+            "accessed_at": "2025-08-15"
+          },
+          {
+            "title": "ASPCA – Mother-in-Law's Tongue",
+            "url": "https://www.aspca.org/pet-care/animal-poison-control/toxic-and-non-toxic-plants/mother-laws-tongue",
+            "accessed_at": "2025-08-15"
+          }
+        ]
+      },
+      "reason": "无匹配"
+    },
+    {
+      "plant": {
+        "id": "epipremnum_aureum",
+        "scientific_name": "Epipremnum aureum",
+        "common_names": {
+          "zh": [
+            "绿萝",
+            "黄金葛"
+          ],
+          "en": [
+            "Golden pothos",
+            "Devil's ivy"
+          ]
+        },
+        "synonyms": [
+          "Pothos aureus",
+          "Scindapsus aureus",
+          "Rhaphidophora aurea"
+        ],
+        "taxonomy": {
+          "family": "Araceae",
+          "genus": "Epipremnum",
+          "species": "aureum"
+        },
+        "characteristics": {
+          "type": "evergreen vine",
+          "max_height_cm": 200,
+          "leaf": "cordate juvenile leaves; variegated cultivars common",
+          "flower": "rare in cultivation; spathe"
+        },
+        "environment": {
+          "native_range": [
+            "Mo'orea (Society Islands)"
+          ],
+          "habitat": "tropical forest climber",
+          "light_preference": "low",
+          "humidity": "medium to high",
+          "temperature_c": {
+            "min": 15,
+            "max": 32
+          },
+          "space": "medium"
+        },
+        "care": {
+          "watering": "moderate; water when topsoil is dry",
+          "soil": "well-aerated, well-draining (perlite/peat mix)",
+          "fertilization": "every 2–3 months during growing season",
+          "propagation": [
+            "stem cuttings",
+            "water rooting"
+          ],
+          "difficulty": "beginner"
+        },
+        "uses": [
+          "ornamental",
+          "hydroponics",
+          "indoor pollutant studies (sealed conditions)"
+        ],
+        "toxicity": {
+          "pets": "mild – insoluble calcium oxalate raphides; oral irritation",
+          "humans": "mild – may cause dermatitis/irritation if ingested or excessive contact"
+        },
+        "questionnaire_tags": {
+          "light": "low",
+          "space": "medium",
+          "level": "beginner"
+        },
+        "tags": [
+          "low",
+          "medium",
+          "beginner"
+        ],
+        "images": [],
+        "safety_flags": [
+          "pet_unsafe"
+        ],
+        "sources": [
+          {
+            "title": "Wikipedia – Epipremnum aureum",
+            "url": "https://en.wikipedia.org/wiki/Epipremnum_aureum",
+            "accessed_at": "2025-08-15"
+          },
+          {
+            "title": "POWO – urn:lsid:ipni.org:names:87014-1",
+            "url": "https://powo.science.kew.org/taxon/urn:lsid:ipni.org:names:87014-1",
+            "accessed_at": "2025-08-15"
+          },
+          {
+            "title": "ASPCA – Devils Ivy",
+            "url": "http://www.aspca.org/pet-care/poison-control/plants/devils_ivy.html",
+            "accessed_at": "2025-08-15"
+          }
+        ]
+      },
+      "reason": "无匹配"
+    },
+    {
+      "plant": {
+        "id": "ficus_lyrata",
+        "scientific_name": "Ficus lyrata",
+        "common_names": {
+          "zh": [
+            "琴叶榕"
+          ],
+          "en": [
+            "Fiddle-leaf fig"
+          ]
+        },
+        "synonyms": [],
+        "taxonomy": {
+          "family": "Moraceae",
+          "genus": "Ficus",
+          "species": "lyrata"
+        },
+        "characteristics": {
+          "type": "evergreen tree/shrub",
+          "max_height_cm": 1200,
+          "leaf": "large, lyre-shaped, leathery, prominent veins",
+          "flower": "fig-type inflorescence; rarely indoors"
+        },
+        "environment": {
+          "native_range": [
+            "West and Central African moist lowland forests"
+          ],
+          "habitat": "tropical rainforest edges and canopy gaps",
+          "light_preference": "high",
+          "humidity": "medium",
+          "temperature_c": {
+            "min": 10,
+            "max": 30
+          },
+          "space": "large"
+        },
+        "care": {
+          "watering": "moderate; allow topsoil to slightly dry; avoid drastic moves",
+          "soil": "well-draining, rich potting mix",
+          "fertilization": "balanced feed in growing season",
+          "propagation": [
+            "air layering",
+            "stem cuttings",
+            "division"
+          ],
+          "difficulty": "intermediate"
+        },
+        "uses": [
+          "ornamental indoor tree"
+        ],
+        "toxicity": {
+          "pets": "caution – information varies; avoid ingestion; verify locally",
+          "humans": "caution – latex sap may irritate skin (handle with care)"
+        },
+        "questionnaire_tags": {
+          "light": "high",
+          "space": "large",
+          "level": "intermediate"
+        },
+        "tags": [
+          "high",
+          "large",
+          "intermediate"
+        ],
+        "images": [],
+        "safety_flags": [
+          "latex_sap_irritant"
+        ],
+        "sources": [
+          {
+            "title": "Wikipedia – Ficus lyrata",
+            "url": "https://en.wikipedia.org/wiki/Ficus_lyrata",
+            "accessed_at": "2025-08-15"
+          },
+          {
+            "title": "POWO – urn:lsid:ipni.org:names:853158-1",
+            "url": "https://powo.science.kew.org/taxon/urn:lsid:ipni.org:names:853158-1",
+            "accessed_at": "2025-08-15"
+          },
+          {
+            "title": "NCSU Extension – Ficus lyrata (general care/toxicity notes)",
+            "url": "https://plants.ces.ncsu.edu/plants/ficus-lyrata/",
+            "accessed_at": "2025-08-15"
+          }
+        ]
+      },
+      "reason": "无匹配"
+    },
+    {
+      "plant": {
+        "id": "aloe_vera",
+        "scientific_name": "Aloe vera",
+        "common_names": {
+          "zh": [
+            "芦荟"
+          ],
+          "en": [
+            "Aloe vera"
+          ]
+        },
+        "synonyms": [],
+        "taxonomy": {
+          "family": "Asphodelaceae",
+          "genus": "Aloe",
+          "species": "vera"
+        },
+        "characteristics": {
+          "type": "succulent perennial",
+          "max_height_cm": 60,
+          "leaf": "fleshy rosettes with marginal teeth",
+          "flower": "tubular yellow to orange"
+        },
+        "environment": {
+          "native_range": [
+            "Arabian Peninsula (naturalized widely)"
+          ],
+          "habitat": "arid/semi-arid",
+          "light_preference": "medium",
+          "humidity": "low",
+          "temperature_c": {
+            "min": 10,
+            "max": 35
+          },
+          "space": "small"
+        },
+        "care": {
+          "watering": "sparingly; let soil fully dry",
+          "soil": "gritty, fast-draining succulent mix",
+          "fertilization": "light feeding in growing season",
+          "propagation": [
+            "offsets"
+          ],
+          "difficulty": "beginner"
+        },
+        "uses": [
+          "ornamental",
+          "medicinal gel (external)",
+          "indoor air research (limited practical effect)"
+        ],
+        "toxicity": {
+          "pets": "mild to moderate – toxic to cats/dogs if ingested",
+          "humans": "caution – latex in outer leaf may irritate"
+        },
+        "questionnaire_tags": {
+          "light": "medium",
+          "space": "small",
+          "level": "beginner"
+        },
+        "tags": [
+          "medium",
+          "small",
+          "beginner"
+        ],
+        "images": [],
+        "safety_flags": [
+          "pet_unsafe"
+        ],
+        "sources": [
+          {
+            "title": "Wikipedia – Aloe vera",
+            "url": "https://en.wikipedia.org/wiki/Aloe_vera",
+            "accessed_at": "2025-08-15"
+          }
+        ]
+      },
+      "reason": "无匹配"
+    },
+    {
+      "plant": {
+        "id": "haworthiopsis_attenuata",
+        "scientific_name": "Haworthiopsis attenuata",
+        "common_names": {
+          "zh": [
+            "十二卷锦之类（斑马十二卷）"
+          ],
+          "en": [
+            "Zebra haworthia"
+          ]
+        },
+        "synonyms": [
+          "Haworthia attenuata"
+        ],
+        "taxonomy": {
+          "family": "Asphodelaceae",
+          "genus": "Haworthiopsis",
+          "species": "attenuata"
+        },
+        "characteristics": {
+          "type": "succulent perennial",
+          "max_height_cm": 15,
+          "leaf": "dark green leaves with white bands",
+          "flower": "small tubular, white"
+        },
+        "environment": {
+          "native_range": [
+            "South Africa"
+          ],
+          "habitat": "rocky arid areas",
+          "light_preference": "medium",
+          "humidity": "low",
+          "temperature_c": {
+            "min": 10,
+            "max": 32
+          },
+          "space": "small"
+        },
+        "care": {
+          "watering": "low; avoid waterlogging",
+          "soil": "well-draining succulent mix",
+          "fertilization": "light monthly in growing season",
+          "propagation": [
+            "offsets",
+            "leaf cuttings"
+          ],
+          "difficulty": "beginner"
+        },
+        "uses": [
+          "ornamental desk succulent"
+        ],
+        "toxicity": {
+          "pets": "generally considered non-toxic",
+          "humans": "generally safe; do not ingest"
+        },
+        "questionnaire_tags": {
+          "light": "medium",
+          "space": "small",
+          "level": "beginner"
+        },
+        "tags": [
+          "medium",
+          "small",
+          "beginner"
+        ],
+        "images": [],
+        "safety_flags": [],
+        "sources": [
+          {
+            "title": "Wikipedia – Haworthiopsis attenuata",
+            "url": "https://en.wikipedia.org/wiki/Haworthiopsis_attenuata",
+            "accessed_at": "2025-08-15"
+          }
+        ]
+      },
+      "reason": "无匹配"
+    },
+    {
+      "plant": {
+        "id": "crassula_ovata",
+        "scientific_name": "Crassula ovata",
+        "common_names": {
+          "zh": [
+            "玉树"
+          ],
+          "en": [
+            "Jade plant"
+          ]
+        },
+        "synonyms": [
+          "Crassula argentea"
+        ],
+        "taxonomy": {
+          "family": "Crassulaceae",
+          "genus": "Crassula",
+          "species": "ovata"
+        },
+        "characteristics": {
+          "type": "succulent shrub",
+          "max_height_cm": 150,
+          "leaf": "thick, glossy, obovate",
+          "flower": "small starry white-pink"
+        },
+        "environment": {
+          "native_range": [
+            "South Africa, Mozambique"
+          ],
+          "habitat": "dry scrub",
+          "light_preference": "medium",
+          "humidity": "low",
+          "temperature_c": {
+            "min": 7,
+            "max": 32
+          },
+          "space": "medium"
+        },
+        "care": {
+          "watering": "low; allow to dry",
+          "soil": "gritty, well-draining",
+          "fertilization": "light feeding in spring-summer",
+          "propagation": [
+            "stem cuttings",
+            "leaf cuttings"
+          ],
+          "difficulty": "beginner"
+        },
+        "uses": [
+          "ornamental",
+          "bonsai-style training"
+        ],
+        "toxicity": {
+          "pets": "toxic – may cause vomiting/depression in pets",
+          "humans": "caution – do not ingest"
+        },
+        "questionnaire_tags": {
+          "light": "medium",
+          "space": "medium",
+          "level": "beginner"
+        },
+        "tags": [
+          "medium",
+          "medium",
+          "beginner"
+        ],
+        "images": [],
+        "safety_flags": [
+          "pet_unsafe"
+        ],
+        "sources": [
+          {
+            "title": "Wikipedia – Crassula ovata",
+            "url": "https://en.wikipedia.org/wiki/Crassula_ovata",
+            "accessed_at": "2025-08-15"
+          }
+        ]
+      },
+      "reason": "无匹配"
+    },
+    {
+      "plant": {
+        "id": "monstera_deliciosa",
+        "scientific_name": "Monstera deliciosa",
+        "common_names": {
+          "zh": [
+            "龟背竹"
+          ],
+          "en": [
+            "Swiss cheese plant",
+            "Monstera"
+          ]
+        },
+        "synonyms": [],
+        "taxonomy": {
+          "family": "Araceae",
+          "genus": "Monstera",
+          "species": "deliciosa"
+        },
+        "characteristics": {
+          "type": "evergreen climber",
+          "max_height_cm": 300,
+          "leaf": "large fenestrated leaves",
+          "flower": "spadix with spathe"
+        },
+        "environment": {
+          "native_range": [
+            "Mexico to Panama"
+          ],
+          "habitat": "tropical forest understory/climber",
+          "light_preference": "medium",
+          "humidity": "medium to high",
+          "temperature_c": {
+            "min": 10,
+            "max": 30
+          },
+          "space": "large"
+        },
+        "care": {
+          "watering": "moderate; allow topsoil to dry",
+          "soil": "rich, well-draining mix",
+          "fertilization": "balanced monthly in growing season",
+          "propagation": [
+            "stem cuttings"
+          ],
+          "difficulty": "intermediate"
+        },
+        "uses": [
+          "ornamental foliage",
+          "indoor air research (limited practical effect)"
+        ],
+        "toxicity": {
+          "pets": "toxic – calcium oxalate crystals",
+          "humans": "caution – sap may irritate"
+        },
+        "questionnaire_tags": {
+          "light": "medium",
+          "space": "large",
+          "level": "intermediate"
+        },
+        "tags": [
+          "medium",
+          "large",
+          "intermediate"
+        ],
+        "images": [],
+        "safety_flags": [
+          "pet_unsafe"
+        ],
+        "sources": [
+          {
+            "title": "Wikipedia – Monstera deliciosa",
+            "url": "https://en.wikipedia.org/wiki/Monstera_deliciosa",
+            "accessed_at": "2025-08-15"
+          }
+        ]
+      },
+      "reason": "无匹配"
+    },
+    {
+      "plant": {
+        "id": "chlorophytum_comosum",
+        "scientific_name": "Chlorophytum comosum",
+        "common_names": {
+          "zh": [
+            "吊兰"
+          ],
+          "en": [
+            "Spider plant"
+          ]
+        },
+        "synonyms": [],
+        "taxonomy": {
+          "family": "Asparagaceae",
+          "genus": "Chlorophytum",
+          "species": "comosum"
+        },
+        "characteristics": {
+          "type": "evergreen herb",
+          "max_height_cm": 50,
+          "leaf": "narrow arching leaves often variegated",
+          "flower": "small white starry"
+        },
+        "environment": {
+          "native_range": [
+            "Southern Africa"
+          ],
+          "habitat": "woodlands/grasslands",
+          "light_preference": "low",
+          "humidity": "medium",
+          "temperature_c": {
+            "min": 10,
+            "max": 30
+          },
+          "space": "small"
+        },
+        "care": {
+          "watering": "moderate; keep evenly moist",
+          "soil": "well-draining potting mix",
+          "fertilization": "every 2–3 months",
+          "propagation": [
+            "plantlets"
+          ],
+          "difficulty": "beginner"
+        },
+        "uses": [
+          "ornamental",
+          "indoor air research (limited practical effect)",
+          "pet-friendly"
+        ],
+        "toxicity": {
+          "pets": "non-toxic (generally regarded)",
+          "humans": "generally safe"
+        },
+        "questionnaire_tags": {
+          "light": "low",
+          "space": "small",
+          "level": "beginner"
+        },
+        "tags": [
+          "low",
+          "small",
+          "beginner"
+        ],
+        "images": [],
+        "safety_flags": [],
+        "sources": [
+          {
+            "title": "Wikipedia – Chlorophytum comosum",
+            "url": "https://en.wikipedia.org/wiki/Chlorophytum_comosum",
+            "accessed_at": "2025-08-15"
+          }
+        ]
+      },
+      "reason": "无匹配"
+    },
+    {
+      "plant": {
+        "id": "aspidistra_elatior",
+        "scientific_name": "Aspidistra elatior",
+        "common_names": {
+          "zh": [
+            "蜘蛛抱蛋",
+            "一叶兰"
+          ],
+          "en": [
+            "Cast-iron plant"
+          ]
+        },
+        "synonyms": [],
+        "taxonomy": {
+          "family": "Asparagaceae",
+          "genus": "Aspidistra",
+          "species": "elatior"
+        },
+        "characteristics": {
+          "type": "evergreen perennial",
+          "max_height_cm": 60,
+          "leaf": "broad, tough leaves",
+          "flower": "ground-level, maroon"
+        },
+        "environment": {
+          "native_range": [
+            "Japan, Taiwan"
+          ],
+          "habitat": "shaded forest floor",
+          "light_preference": "low",
+          "humidity": "medium",
+          "temperature_c": {
+            "min": 5,
+            "max": 30
+          },
+          "space": "medium"
+        },
+        "care": {
+          "watering": "low to moderate; very tolerant",
+          "soil": "well-draining loam",
+          "fertilization": "light",
+          "propagation": [
+            "division"
+          ],
+          "difficulty": "beginner"
+        },
+        "uses": [
+          "ornamental",
+          "shade-tolerant"
+        ],
+        "toxicity": {
+          "pets": "generally non-toxic",
+          "humans": "generally safe"
+        },
+        "questionnaire_tags": {
+          "light": "low",
+          "space": "medium",
+          "level": "beginner"
+        },
+        "tags": [
+          "low",
+          "medium",
+          "beginner"
+        ],
+        "images": [],
+        "safety_flags": [],
+        "sources": [
+          {
+            "title": "Wikipedia – Aspidistra elatior",
+            "url": "https://en.wikipedia.org/wiki/Aspidistra_elatior",
+            "accessed_at": "2025-08-15"
+          }
+        ]
+      },
+      "reason": "无匹配"
+    },
+    {
+      "plant": {
+        "id": "spathiphyllum_wallisii",
+        "scientific_name": "Spathiphyllum wallisii",
+        "common_names": {
+          "zh": [
+            "白鹤芋",
+            "和平百合"
+          ],
+          "en": [
+            "Peace lily"
+          ]
+        },
+        "synonyms": [],
+        "taxonomy": {
+          "family": "Araceae",
+          "genus": "Spathiphyllum",
+          "species": "wallisii"
+        },
+        "characteristics": {
+          "type": "evergreen herb",
+          "max_height_cm": 65,
+          "leaf": "glossy lanceolate",
+          "flower": "white spathe and spadix"
+        },
+        "environment": {
+          "native_range": [
+            "Central/South America"
+          ],
+          "habitat": "forest understory",
+          "light_preference": "low",
+          "humidity": "medium to high",
+          "temperature_c": {
+            "min": 12,
+            "max": 30
+          },
+          "space": "small"
+        },
+        "care": {
+          "watering": "moderate; prefers evenly moist",
+          "soil": "rich, well-draining",
+          "fertilization": "monthly in growing season",
+          "propagation": [
+            "division"
+          ],
+          "difficulty": "beginner"
+        },
+        "uses": [
+          "ornamental flowering",
+          "indoor air research (limited practical effect)"
+        ],
+        "toxicity": {
+          "pets": "toxic – calcium oxalate",
+          "humans": "caution – sap may irritate"
+        },
+        "questionnaire_tags": {
+          "light": "low",
+          "space": "small",
+          "level": "beginner"
+        },
+        "tags": [
+          "low",
+          "small",
+          "beginner"
+        ],
+        "images": [],
+        "safety_flags": [
+          "pet_unsafe"
+        ],
+        "sources": [
+          {
+            "title": "Wikipedia – Spathiphyllum",
+            "url": "https://en.wikipedia.org/wiki/Spathiphyllum",
+            "accessed_at": "2025-08-15"
+          }
+        ]
+      },
+      "reason": "无匹配"
+    },
+    {
+      "plant": {
+        "id": "goeppertia_orbifolia",
+        "scientific_name": "Goeppertia orbifolia",
+        "common_names": {
+          "zh": [
+            "大叶竹芋（卡拉蒂亚）"
+          ],
+          "en": [
+            "Calathea orbifolia"
+          ]
+        },
+        "synonyms": [
+          "Calathea orbifolia"
+        ],
+        "taxonomy": {
+          "family": "Marantaceae",
+          "genus": "Goeppertia",
+          "species": "orbifolia"
+        },
+        "characteristics": {
+          "type": "evergreen herb",
+          "max_height_cm": 80,
+          "leaf": "very large round striped leaves",
+          "flower": "inconspicuous indoors"
+        },
+        "environment": {
+          "native_range": [
+            "Bolivia"
+          ],
+          "habitat": "tropical forest understory",
+          "light_preference": "low",
+          "humidity": "high",
+          "temperature_c": {
+            "min": 16,
+            "max": 30
+          },
+          "space": "medium"
+        },
+        "care": {
+          "watering": "keep evenly moist; avoid fluoride/chlorine",
+          "soil": "peaty well-draining",
+          "fertilization": "light, regular",
+          "propagation": [
+            "division"
+          ],
+          "difficulty": "intermediate"
+        },
+        "uses": [
+          "ornamental foliage"
+        ],
+        "toxicity": {
+          "pets": "generally non-toxic",
+          "humans": "generally safe"
+        },
+        "questionnaire_tags": {
+          "light": "low",
+          "space": "medium",
+          "level": "intermediate"
+        },
+        "tags": [
+          "low",
+          "medium",
+          "intermediate"
+        ],
+        "images": [],
+        "safety_flags": [],
+        "sources": [
+          {
+            "title": "Wikipedia – Goeppertia orbifolia",
+            "url": "https://en.wikipedia.org/wiki/Goeppertia_orbifolia",
+            "accessed_at": "2025-08-15"
+          }
+        ]
+      },
+      "reason": "无匹配"
+    },
+    {
+      "plant": {
+        "id": "chamaedorea_elegans",
+        "scientific_name": "Chamaedorea elegans",
+        "common_names": {
+          "zh": [
+            "袖珍椰子"
+          ],
+          "en": [
+            "Parlor palm"
+          ]
+        },
+        "synonyms": [],
+        "taxonomy": {
+          "family": "Arecaceae",
+          "genus": "Chamaedorea",
+          "species": "elegans"
+        },
+        "characteristics": {
+          "type": "palm",
+          "max_height_cm": 200,
+          "leaf": "pinnate fronds",
+          "flower": "yellowish panicles indoors"
+        },
+        "environment": {
+          "native_range": [
+            "Mexico, Guatemala"
+          ],
+          "habitat": "forest understory",
+          "light_preference": "low",
+          "humidity": "medium",
+          "temperature_c": {
+            "min": 12,
+            "max": 30
+          },
+          "space": "medium"
+        },
+        "care": {
+          "watering": "moderate; avoid waterlogging",
+          "soil": "well-draining peat-based",
+          "fertilization": "regular light",
+          "propagation": [
+            "seed"
+          ],
+          "difficulty": "beginner"
+        },
+        "uses": [
+          "ornamental",
+          "pet-friendly"
+        ],
+        "toxicity": {
+          "pets": "non-toxic (generally regarded)",
+          "humans": "generally safe"
+        },
+        "questionnaire_tags": {
+          "light": "low",
+          "space": "medium",
+          "level": "beginner"
+        },
+        "tags": [
+          "low",
+          "medium",
+          "beginner"
+        ],
+        "images": [],
+        "safety_flags": [],
+        "sources": [
+          {
+            "title": "Wikipedia – Chamaedorea elegans",
+            "url": "https://en.wikipedia.org/wiki/Chamaedorea_elegans",
+            "accessed_at": "2025-08-15"
+          }
+        ]
+      },
+      "reason": "无匹配"
+    },
+    {
+      "plant": {
+        "id": "saintpaulia_ionantha",
+        "scientific_name": "Saintpaulia ionantha",
+        "common_names": {
+          "zh": [
+            "非洲堇（非洲紫罗兰）"
+          ],
+          "en": [
+            "African violet"
+          ]
+        },
+        "synonyms": [
+          "Streptocarpus ionanthus"
+        ],
+        "taxonomy": {
+          "family": "Gesneriaceae",
+          "genus": "Saintpaulia",
+          "species": "ionantha"
+        },
+        "characteristics": {
+          "type": "evergreen herb",
+          "max_height_cm": 25,
+          "leaf": "hairy rosettes",
+          "flower": "violet/white/pink"
+        },
+        "environment": {
+          "native_range": [
+            "Tanzania, Kenya"
+          ],
+          "habitat": "rocky shaded",
+          "light_preference": "medium",
+          "humidity": "medium",
+          "temperature_c": {
+            "min": 16,
+            "max": 28
+          },
+          "space": "small"
+        },
+        "care": {
+          "watering": "bottom water; avoid leaf wetting",
+          "soil": "light, porous mix",
+          "fertilization": "regular dilute",
+          "propagation": [
+            "leaf cuttings"
+          ],
+          "difficulty": "beginner"
+        },
+        "uses": [
+          "ornamental flowering"
+        ],
+        "toxicity": {
+          "pets": "generally non-toxic",
+          "humans": "generally safe"
+        },
+        "questionnaire_tags": {
+          "light": "medium",
+          "space": "small",
+          "level": "beginner"
+        },
+        "tags": [
+          "medium",
+          "small",
+          "beginner"
+        ],
+        "images": [],
+        "safety_flags": [],
+        "sources": [
+          {
+            "title": "Wikipedia – African violet",
+            "url": "https://en.wikipedia.org/wiki/African_violet",
+            "accessed_at": "2025-08-15"
+          }
+        ]
+      },
+      "reason": "无匹配"
+    },
+    {
+      "plant": {
+        "id": "phalaenopsis_aphrodite",
+        "scientific_name": "Phalaenopsis aphrodite",
+        "common_names": {
+          "zh": [
+            "蝴蝶兰"
+          ],
+          "en": [
+            "Moth orchid"
+          ]
+        },
+        "synonyms": [],
+        "taxonomy": {
+          "family": "Orchidaceae",
+          "genus": "Phalaenopsis",
+          "species": "aphrodite"
+        },
+        "characteristics": {
+          "type": "epiphytic orchid",
+          "max_height_cm": 60,
+          "leaf": "broad leathery",
+          "flower": "showy long-lasting"
+        },
+        "environment": {
+          "native_range": [
+            "Taiwan, Philippines"
+          ],
+          "habitat": "forest canopy",
+          "light_preference": "medium",
+          "humidity": "high",
+          "temperature_c": {
+            "min": 16,
+            "max": 30
+          },
+          "space": "small"
+        },
+        "care": {
+          "watering": "soak-and-dry; high humidity",
+          "soil": "orchid bark mix",
+          "fertilization": "weakly weekly in growth",
+          "propagation": [
+            "keiki division"
+          ],
+          "difficulty": "intermediate"
+        },
+        "uses": [
+          "ornamental flowering"
+        ],
+        "toxicity": {
+          "pets": "generally non-toxic",
+          "humans": "generally safe"
+        },
+        "questionnaire_tags": {
+          "light": "medium",
+          "space": "small",
+          "level": "intermediate"
+        },
+        "tags": [
+          "medium",
+          "small",
+          "intermediate"
+        ],
+        "images": [],
+        "safety_flags": [],
+        "sources": [
+          {
+            "title": "Wikipedia – Phalaenopsis aphrodite",
+            "url": "https://en.wikipedia.org/wiki/Phalaenopsis_aphrodite",
+            "accessed_at": "2025-08-15"
+          }
+        ]
+      },
+      "reason": "无匹配"
+    },
+    {
+      "plant": {
+        "id": "aglaonema_commutatum",
+        "scientific_name": "Aglaonema commutatum",
+        "common_names": {
+          "zh": [
+            "广东万年青"
+          ],
+          "en": [
+            "Chinese evergreen"
+          ]
+        },
+        "synonyms": [],
+        "taxonomy": {
+          "family": "Araceae",
+          "genus": "Aglaonema",
+          "species": "commutatum"
+        },
+        "characteristics": {
+          "type": "evergreen herb",
+          "max_height_cm": 80,
+          "leaf": "variegated lanceolate",
+          "flower": "spadix/spathe"
+        },
+        "environment": {
+          "native_range": [
+            "Philippines, Sulawesi"
+          ],
+          "habitat": "shaded forest",
+          "light_preference": "low",
+          "humidity": "medium",
+          "temperature_c": {
+            "min": 16,
+            "max": 30
+          },
+          "space": "medium"
+        },
+        "care": {
+          "watering": "moderate; avoid cold drafts",
+          "soil": "well-draining aroid mix",
+          "fertilization": "regular light",
+          "propagation": [
+            "stem cuttings",
+            "division"
+          ],
+          "difficulty": "beginner"
+        },
+        "uses": [
+          "ornamental",
+          "shade-tolerant"
+        ],
+        "toxicity": {
+          "pets": "toxic – calcium oxalate",
+          "humans": "caution – sap may irritate"
+        },
+        "questionnaire_tags": {
+          "light": "low",
+          "space": "medium",
+          "level": "beginner"
+        },
+        "tags": [
+          "low",
+          "medium",
+          "beginner"
+        ],
+        "images": [],
+        "safety_flags": [
+          "pet_unsafe"
+        ],
+        "sources": [
+          {
+            "title": "Wikipedia – Aglaonema commutatum",
+            "url": "https://en.wikipedia.org/wiki/Aglaonema",
+            "accessed_at": "2025-08-15"
+          }
+        ]
+      },
+      "reason": "无匹配"
+    },
+    {
+      "plant": {
+        "id": "dypsis_lutescens",
+        "scientific_name": "Dypsis lutescens",
+        "common_names": {
+          "zh": [
+            "黄椰子/散尾葵"
+          ],
+          "en": [
+            "Areca palm"
+          ]
+        },
+        "synonyms": [
+          "Chrysalidocarpus lutescens"
+        ],
+        "taxonomy": {
+          "family": "Arecaceae",
+          "genus": "Dypsis",
+          "species": "lutescens"
+        },
+        "characteristics": {
+          "type": "palm",
+          "max_height_cm": 300,
+          "leaf": "feathery fronds",
+          "flower": "yellowish panicles"
+        },
+        "environment": {
+          "native_range": [
+            "Madagascar"
+          ],
+          "habitat": "tropical",
+          "light_preference": "medium",
+          "humidity": "medium",
+          "temperature_c": {
+            "min": 15,
+            "max": 32
+          },
+          "space": "large"
+        },
+        "care": {
+          "watering": "moderate; avoid salt buildup",
+          "soil": "well-draining",
+          "fertilization": "regular balanced",
+          "propagation": [
+            "division",
+            "seed"
+          ],
+          "difficulty": "beginner"
+        },
+        "uses": [
+          "ornamental",
+          "interior landscaping"
+        ],
+        "toxicity": {
+          "pets": "non-toxic (generally regarded)",
+          "humans": "generally safe"
+        },
+        "questionnaire_tags": {
+          "light": "medium",
+          "space": "large",
+          "level": "beginner"
+        },
+        "tags": [
+          "medium",
+          "large",
+          "beginner"
+        ],
+        "images": [],
+        "safety_flags": [],
+        "sources": [
+          {
+            "title": "Wikipedia – Dypsis lutescens",
+            "url": "https://en.wikipedia.org/wiki/Dypsis_lutescens",
+            "accessed_at": "2025-08-15"
+          }
+        ]
+      },
+      "reason": "无匹配"
+    },
+    {
+      "plant": {
+        "id": "echeveria_elegans",
+        "scientific_name": "Echeveria elegans",
+        "common_names": {
+          "zh": [
+            "花月夜（拟）/宝石花类"
+          ],
+          "en": [
+            "Mexican snowball"
+          ]
+        },
+        "synonyms": [],
+        "taxonomy": {
+          "family": "Crassulaceae",
+          "genus": "Echeveria",
+          "species": "elegans"
+        },
+        "characteristics": {
+          "type": "succulent rosette",
+          "max_height_cm": 15,
+          "leaf": "blue-green rosettes",
+          "flower": "pink-yellow on stalks"
+        },
+        "environment": {
+          "native_range": [
+            "Mexico"
+          ],
+          "habitat": "arid rocky",
+          "light_preference": "high",
+          "humidity": "low",
+          "temperature_c": {
+            "min": 7,
+            "max": 32
+          },
+          "space": "small"
+        },
+        "care": {
+          "watering": "low; avoid crown rot",
+          "soil": "gritty succulent mix",
+          "fertilization": "sparse",
+          "propagation": [
+            "leaf cuttings",
+            "offsets"
+          ],
+          "difficulty": "beginner"
+        },
+        "uses": [
+          "ornamental succulent"
+        ],
+        "toxicity": {
+          "pets": "generally non-toxic",
+          "humans": "generally safe"
+        },
+        "questionnaire_tags": {
+          "light": "high",
+          "space": "small",
+          "level": "beginner"
+        },
+        "tags": [
+          "high",
+          "small",
+          "beginner"
+        ],
+        "images": [],
+        "safety_flags": [],
+        "sources": [
+          {
+            "title": "Wikipedia – Echeveria elegans",
+            "url": "https://en.wikipedia.org/wiki/Echeveria_elegans",
+            "accessed_at": "2025-08-15"
+          }
+        ]
+      },
+      "reason": "无匹配"
+    },
+    {
+      "plant": {
+        "id": "pilea_peperomioides",
+        "scientific_name": "Pilea peperomioides",
+        "common_names": {
+          "zh": [
+            "铜钱草（盆栽流通名/非泽泻科）",
+            "中华圆叶草"
+          ],
+          "en": [
+            "Chinese money plant"
+          ]
+        },
+        "synonyms": [],
+        "taxonomy": {
+          "family": "Urticaceae",
+          "genus": "Pilea",
+          "species": "peperomioides"
+        },
+        "characteristics": {
+          "type": "evergreen herb",
+          "max_height_cm": 40,
+          "leaf": "round peltate leaves",
+          "flower": "insignificant"
+        },
+        "environment": {
+          "native_range": [
+            "Yunnan, China"
+          ],
+          "habitat": "shaded rocky",
+          "light_preference": "medium",
+          "humidity": "medium",
+          "temperature_c": {
+            "min": 10,
+            "max": 28
+          },
+          "space": "small"
+        },
+        "care": {
+          "watering": "moderate; allow topsoil to dry slightly",
+          "soil": "well-draining peat/perlite",
+          "fertilization": "light",
+          "propagation": [
+            "offsets"
+          ],
+          "difficulty": "beginner"
+        },
+        "uses": [
+          "ornamental foliage"
+        ],
+        "toxicity": {
+          "pets": "generally non-toxic",
+          "humans": "generally safe"
+        },
+        "questionnaire_tags": {
+          "light": "medium",
+          "space": "small",
+          "level": "beginner"
+        },
+        "tags": [
+          "medium",
+          "small",
+          "beginner"
+        ],
+        "images": [],
+        "safety_flags": [],
+        "sources": [
+          {
+            "title": "Wikipedia – Pilea peperomioides",
+            "url": "https://en.wikipedia.org/wiki/Pilea_peperomioides",
+            "accessed_at": "2025-08-15"
+          }
+        ]
+      },
+      "reason": "无匹配"
+    }
+  ],
+  "plantnetStats": {
+    "totalSpecies": 107,
+    "genusCount": {
+      "Pelargonium": 23,
+      "Tradescantia": 16,
+      "Nephrolepis": 5,
+      "Sedum": 61,
+      "Zamioculcas": 1,
+      "Anthurium": 1
+    }
+  }
+}

@@ -1,16 +1,15 @@
 {
   "pages": [
     "pages/index/index",
-    "pages/examples/examples",
-    "pages/exampleDetail/exampleDetail",
-    "pages/updateRecord/updateRecord",
-    "pages/updateRecordResult/updateRecordResult",
-    "pages/updateRecordSuccess/updateRecordSuccess"
+    "pages/quiz/step/index",
+    "pages/question/index",
+    "pages/result/index",
+    "pages/detail/index"
   ],
   "window": {
     "backgroundTextStyle": "light",
     "navigationBarBackgroundColor": "#fff",
-    "navigationBarTitleText": "Mini Program",
+    "navigationBarTitleText": "植道",
     "navigationBarTextStyle": "black"
   },
   "tabBar": {
@@ -20,15 +19,9 @@
     "list": [
       {
         "pagePath": "pages/index/index",
-        "text": "快速开始",
+        "text": "首页",
         "iconPath": "images/icons/home.png",
         "selectedIconPath": "images/icons/home-active.png"
-      },
-      {
-        "pagePath": "pages/examples/examples",
-        "text": "基础能力",
-        "iconPath": "images/icons/examples.png",
-        "selectedIconPath": "images/icons/examples-active.png"
       }
     ]
   },

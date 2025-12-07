@@ -1,0 +1,16 @@
+<!-- SVG植物占位图片 -->
+<svg width="96" height="96" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="96" height="96" fill="#F5F5F7"/>
+  <!-- 花盆 -->
+  <path d="M32 72H64L60 56H36L32 72Z" fill="#8E8E93" opacity="0.3"/>
+  <!-- 植物茎干 -->
+  <path d="M48 56V40" stroke="#34C759" stroke-width="3" stroke-linecap="round"/>
+  <!-- 叶子 -->
+  <path d="M48 45C52 41 58 43 56 48C58 53 52 55 48 51" fill="#34C759" opacity="0.6"/>
+  <path d="M48 45C44 41 38 43 40 48C38 53 44 55 48 51" fill="#34C759" opacity="0.6"/>
+  <!-- 花朵 -->
+  <circle cx="48" cy="35" r="5" fill="#FF9500" opacity="0.7"/>
+  <circle cx="45" cy="32" r="2" fill="#FFD60A"/>
+  <circle cx="51" cy="32" r="2" fill="#FFD60A"/>
+  <circle cx="48" cy="38" r="2" fill="#FFD60A"/>
+</svg>

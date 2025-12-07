@@ -1,0 +1,197 @@
+{
+  "phase1": {
+    "title": "第一阶段：精确匹配植物图片获取",
+    "description": "获取3个精确匹配植物的高质量图片",
+    "plants": [
+      {
+        "id": "zamioculcas_zamiifolia",
+        "name": "雪铁芋",
+        "scientificName": "Zamioculcas zamiifolia (Lodd.) Engl.",
+        "plantnetId": "1385937",
+        "imageStrategy": "直接下载PlantNet中的所有图片",
+        "expectedImages": "5-20张不同角度的高质量图片"
+      },
+      {
+        "id": "nephrolepis_exaltata",
+        "name": "肾蕨（波士顿蕨）",
+        "scientificName": "Nephrolepis exaltata (L.) Schott",
+        "plantnetId": "1356421",
+        "imageStrategy": "直接下载PlantNet中的所有图片",
+        "expectedImages": "5-20张不同角度的高质量图片"
+      },
+      {
+        "id": "anthurium_andraeanum",
+        "name": "红掌",
+        "scientificName": "Anthurium andraeanum Linden ex André",
+        "plantnetId": "1409238",
+        "imageStrategy": "直接下载PlantNet中的所有图片",
+        "expectedImages": "5-20张不同角度的高质量图片"
+      }
+    ],
+    "estimatedImages": 30
+  },
+  "phase2": {
+    "title": "第二阶段：替代图片获取",
+    "description": "为其他植物寻找同科或形态相似的替代图片",
+    "plants": [
+      {
+        "id": "crassula_ovata",
+        "originalGenus": "Crassula",
+        "alternatives": [
+          {
+            "genus": "Sedum",
+            "count": 61,
+            "note": "同为景天科多肉植物，形态相似"
+          }
+        ],
+        "imageStrategy": "选择形态最相似的同科植物图片",
+        "expectedImages": "2-5张代表性图片"
+      },
+      {
+        "id": "echeveria_elegans",
+        "originalGenus": "Echeveria",
+        "alternatives": [
+          {
+            "genus": "Sedum",
+            "count": 61,
+            "note": "同为景天科多肉植物，莲座状形态相似"
+          }
+        ],
+        "imageStrategy": "选择形态最相似的同科植物图片",
+        "expectedImages": "2-5张代表性图片"
+      },
+      {
+        "id": "chlorophytum_comosum",
+        "originalGenus": "Chlorophytum",
+        "alternatives": [
+          {
+            "genus": "Tradescantia",
+            "count": 16,
+            "note": "同为观叶植物，叶形相似"
+          }
+        ],
+        "imageStrategy": "选择形态最相似的同科植物图片",
+        "expectedImages": "2-5张代表性图片"
+      },
+      {
+        "id": "saintpaulia_ionantha",
+        "originalGenus": "Saintpaulia",
+        "alternatives": [
+          {
+            "genus": "Pelargonium",
+            "count": 23,
+            "note": "同为开花观赏植物"
+          }
+        ],
+        "imageStrategy": "选择形态最相似的同科植物图片",
+        "expectedImages": "2-5张代表性图片"
+      }
+    ],
+    "estimatedImages": 12
+  },
+  "phase3": {
+    "title": "第三阶段：通用植物图片补充",
+    "description": "使用PlantNet中的通用植物图片作为占位符",
+    "plants": [
+      {
+        "id": "dracaena_trifasciata",
+        "name": "虎皮兰",
+        "scientificName": "Dracaena trifasciata",
+        "imageStrategy": "使用通用室内植物图片或寻找外部图片资源",
+        "expectedImages": "1-2张通用图片"
+      },
+      {
+        "id": "epipremnum_aureum",
+        "name": "绿萝",
+        "scientificName": "Epipremnum aureum",
+        "imageStrategy": "使用通用室内植物图片或寻找外部图片资源",
+        "expectedImages": "1-2张通用图片"
+      },
+      {
+        "id": "ficus_lyrata",
+        "name": "琴叶榕",
+        "scientificName": "Ficus lyrata",
+        "imageStrategy": "使用通用室内植物图片或寻找外部图片资源",
+        "expectedImages": "1-2张通用图片"
+      },
+      {
+        "id": "aloe_vera",
+        "name": "芦荟",
+        "scientificName": "Aloe vera",
+        "imageStrategy": "使用通用室内植物图片或寻找外部图片资源",
+        "expectedImages": "1-2张通用图片"
+      },
+      {
+        "id": "haworthiopsis_attenuata",
+        "name": "十二卷锦之类（斑马十二卷）",
+        "scientificName": "Haworthiopsis attenuata",
+        "imageStrategy": "使用通用室内植物图片或寻找外部图片资源",
+        "expectedImages": "1-2张通用图片"
+      },
+      {
+        "id": "monstera_deliciosa",
+        "name": "龟背竹",
+        "scientificName": "Monstera deliciosa",
+        "imageStrategy": "使用通用室内植物图片或寻找外部图片资源",
+        "expectedImages": "1-2张通用图片"
+      },
+      {
+        "id": "aspidistra_elatior",
+        "name": "蜘蛛抱蛋",
+        "scientificName": "Aspidistra elatior",
+        "imageStrategy": "使用通用室内植物图片或寻找外部图片资源",
+        "expectedImages": "1-2张通用图片"
+      },
+      {
+        "id": "spathiphyllum_wallisii",
+        "name": "白鹤芋",
+        "scientificName": "Spathiphyllum wallisii",
+        "imageStrategy": "使用通用室内植物图片或寻找外部图片资源",
+        "expectedImages": "1-2张通用图片"
+      },
+      {
+        "id": "goeppertia_orbifolia",
+        "name": "大叶竹芋（卡拉蒂亚）",
+        "scientificName": "Goeppertia orbifolia",
+        "imageStrategy": "使用通用室内植物图片或寻找外部图片资源",
+        "expectedImages": "1-2张通用图片"
+      },
+      {
+        "id": "chamaedorea_elegans",
+        "name": "袖珍椰子",
+        "scientificName": "Chamaedorea elegans",
+        "imageStrategy": "使用通用室内植物图片或寻找外部图片资源",
+        "expectedImages": "1-2张通用图片"
+      },
+      {
+        "id": "phalaenopsis_aphrodite",
+        "name": "蝴蝶兰",
+        "scientificName": "Phalaenopsis aphrodite",
+        "imageStrategy": "使用通用室内植物图片或寻找外部图片资源",
+        "expectedImages": "1-2张通用图片"
+      },
+      {
+        "id": "aglaonema_commutatum",
+        "name": "广东万年青",
+        "scientificName": "Aglaonema commutatum",
+        "imageStrategy": "使用通用室内植物图片或寻找外部图片资源",
+        "expectedImages": "1-2张通用图片"
+      },
+      {
+        "id": "dypsis_lutescens",
+        "name": "黄椰子/散尾葵",
+        "scientificName": "Dypsis lutescens",
+        "imageStrategy": "使用通用室内植物图片或寻找外部图片资源",
+        "expectedImages": "1-2张通用图片"
+      },
+      {
+        "id": "pilea_peperomioides",
+        "name": "铜钱草（盆栽流通名/非泽泻科）",
+        "scientificName": "Pilea peperomioides",
+        "imageStrategy": "使用通用室内植物图片或寻找外部图片资源",
+        "expectedImages": "1-2张通用图片"
+      }
+    ],
+    "estimatedImages": 14
+  }
+}

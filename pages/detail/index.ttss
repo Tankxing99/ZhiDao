@@ -1,0 +1,48 @@
+page{background:#f5f5f7}
+.container.detail{padding:0 0 16px}
+.hero{width:100%}
+.section{background:#fff;margin-top:-12px;border-radius:12px 12px 0 0;padding:16px}
+.title{font-size:20px;font-weight:700;color:#000}
+.subtitle{color:#6e6e73;margin-top:6px}
+
+/* 信息区块样式 */
+.info-section{
+  margin-top:24px;
+  padding-top:16px;
+  border-top:1px solid #f0f0f0;
+}
+
+.info-section.warning{
+  background:#fff8f0;
+  margin:24px -16px 0;
+  padding:16px;
+  border-radius:8px;
+  border:1px solid #ffeaa7;
+}
+
+.section-title{
+  font-size:16px;
+  font-weight:600;
+  color:#1d1d1f;
+  margin-bottom:12px;
+}
+
+.info-item{
+  display:flex;
+  margin-bottom:8px;
+  line-height:1.4;
+}
+
+.info-item .label{
+  color:#6e6e73;
+  font-size:14px;
+  min-width:80px;
+  flex-shrink:0;
+}
+
+.info-item .value{
+  color:#1d1d1f;
+  font-size:14px;
+  flex:1;
+}
+
